@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.1.7.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/common.js"></script>
+</head>
+<body>
+ <div class="top">
+     <span class="back" onclick="javascript:history.go(-1);"></span>招投标公告详情
+ </div>
+ 
+ <div class="container mb_60">
+     <!-- {if $utype == 'S'}
+ <div class="bm_box">
+ 	{if $issign=='N'}
+ 	<a href="javascript:;" onclick="FUNC.tosign({$bidcon.id})" class="iwillsign">我要报名</a>
+ 	{elseif $issign=='Y'}
+ 	<a href="javascript:;" class="havesign">已经报名</a>
+ 	{/if}
+ </div>
+     {/if} -->
+     <div class="bm_box">
+         <p>报名网址：http://supplier.modernland.hk （电脑端浏览器登录）</p>
+     </div>
+  <div class="wrap">
+    <h2>项目名称工程招标公告</h2>
+    <table class="table_xq mb10" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th colspan="2"><span></span>一.工程概况</th>
+    </tr>
+  <tr>
+    <td class="td_tit">项目名称</td>
+    <td>{$bidcon.bnname}</td>
+  </tr>
+  <tr>
+    <td class="td_tit">项目位置</td>
+    <td>{$bidcon.loc}</td>
+  </tr>
+  <tr>
+    <td class="td_tit">招标内容</td>
+    <td>{$bidcon.con}</td>
+  </tr>
+  <tr>
+    <td class="td_tit">招标类别</td>
+    <td>{$bidcon.type}</td>
+  </tr>
+  <tr>
+    <td class="td_tit">项目规模</td>
+    <td>{$bidcon.scale}</td>
+  </tr>
+  <tr>
+    <td class="td_tit">招标范围</td>
+    <td>{$bidcon.range}</td>
+  </tr>
+</table>
+<table class="table_xq mb10" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th><span></span>二.投标资格要求</th>
+    </tr>
+  <tr>
+    <td>
+     <div class="text_box">
+       <h4>总承包类</h4>
+       {for $rq=$start to $end}
+       <p>{$rq+1}.{$bidcon.ctp[$rq]}</p>
+       {/for}
+     </div>
+    </td>
+    </tr>
+</table>
+<table class="table_xq mb10" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th><span></span>三.报名截止日期</th>
+    </tr>
+  <tr>
+    <td>
+     <div class="text_box">
+       <p>报名截止日期：{$bidcon.sline|date_format:"%Y-%m-%d"}</p>
+     </div>
+    </td>
+    </tr>
+</table>
+<table class="table_xq mb10" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th><span></span>四.报名联系方式</th>
+    </tr>
+  <tr>
+    <td>
+     <div class="text_box">
+       <p>联系人：{$bidcon.contactor}</p>
+       <p>联系电话：{$bidcon.mobile}</p>
+       <p>电子邮箱：{$bidcon.email}</p>
+     </div>
+    </td>
+    </tr>
+</table>
+  </div>
+</div>
+</body>
+</html>

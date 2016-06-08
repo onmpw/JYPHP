@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://118.144.133.92:9999/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.1.7.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/chatclient.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+                    CHAT.init();
+                }
+        function tosearch(){
+            var gname = $(".search_group").val();
+            if(gname == ''){
+                location.href='/Chat/Group/mygroup';
+            }else{
+                location.href='/Chat/Group/mygroup/search/'+gname;
+            }
+        }
+    </script>
+</head>
+<body>
+ <div class="top">
+     {if $ismanager=='Y'}
+     <a class="btn_add" href="/Chat/Group/grant/">添加成员</a>
+     {/if}
+     我的群({$count})
+ </div>
+ <div class="menu_box">
+     <ul>
+         <li><a href="/Onlinebid/Bidinfo/bidlist"><em class="icon_zb"></em><br />招标公告</a></li>
+         <li class="current"><a href="javascript:;"><em class="icon_wdq"></em><br />我的群</a></li>
+         <li><a href="/News/News/newslist"><em class="icon_chat"></em><br />我的消息</a></li>
+         <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+     </ul>
+ </div>
+ <div class="container mb_60">
+     <div class="group_list">
+         <div class="r_box search_g">
+            <input type="text" class="search_group" name="segroup" placeholder="搜索群" />
+             <input type="button" class="search_btn" value="搜索" onclick="tosearch()" />
+         </div>
+     </div>
+ {section name=index loop=$cta}
+   <div class="group_list">
+    <div class="r_box contshownc">
+      <!--<span>{$cta[index].dline|date_format:"%m-%d %H:%M"}</span>-->
+      {if $cta[index].nc==0}
+      {else}
+      <em>{$cta[index].nc}</em>
+      {/if}
+    </div>
+    <div class="l_tx" onclick="javascript:location.href='/Chat/Member/groupmem/cid/{$cta[index].id}'"></div>
+    <a href="/Chat/Group/topic/cid/{$cta[index].id}" class="c_text contlastmes">
+        <input type="hidden" name="contractid" class="contractid" value="{$cta[index].id}" />
+      <h4>{$cta[index].cname|truncate:40:"...":true}</h4>
+      {if $cta[index].lastmes=="#@#"}
+      	<p>还没有聊天记录</p>
+      {else}
+      <p>{$cta[index].lastmes}</p>
+      {/if}
+    </a>
+  </div>
+  {/section}
+</div>
+</body>
+</html>

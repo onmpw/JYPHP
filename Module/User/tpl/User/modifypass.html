@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/common.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $(".btn_ok").click(function(){
+                var infos={
+                    FAIL1:"修改失败",
+                    FAIL2:"原密码错误",
+                    SUC0:"修改成功",
+                }
+                var flag = true;
+                //首先判断是否有空
+                if($("#textfield_o").val() == '') {
+                    $(".grant_info").html('原密码不能为空').show();
+                    return false;
+                }
+                if($("#textfield_n").val() == ''){
+                    $(".grant_info").html('新密码不能为空').show();
+                    return false;
+                }
+                if($("#textfield_c").val() != $("#textfield_n").val()){
+                    $(".grant_info").html('两次密码不一致').show();
+                    return false;
+                }
+                var oldpass = $("#textfield_o").val();
+                var newpass = $("#textfield_n").val();
+                var confirmpass = $("#textfield_c").val();
+                var uid = $(".userid").val();
+                $.post("/User/User/modifypass_do",
+                        {
+                            oldpass:oldpass,
+                            newpass:newpass,
+                            userid:uid,
+                        },
+                        function(data){
+                            data = eval('(' +data+ ')');
+                            $('.grant_info').html(infos[data.info]).show();
+                        }
+                );
+
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="top">
+    <span class="back" onclick="javascript:history.go(-1);"></span>修改密码
+</div>
+ <div class="container">
+   <div class="fq_topic">
+    <h4>{$uname}</h4>
+    <input type="hidden" name="userid" class="userid" value="{$uid}" />
+
+    <span><input type="password" name="oldpass" id="textfield_o" placeholder="原密码"></span>
+    <span><input type="password" name="newpass" id="textfield_n" placeholder="新密码"></span>
+    <span><input type="password" name="confirmpass" id="textfield_c" placeholder="确认密码"></span>
+    <input type="button" class="btn_ok" value="确认修改" />
+       <p style="margin-top:20px;color:#cf001b; display:none;" class="grant_info"></p>
+  </div>
+     <!--<div class="">
+         <input type="file" name="upfiletest" class="upfiletest" id="upfiletest" onchange="FUNC.uploadimages()" />
+         <div class="blank5" style="clear:both;width:100%;height:5px;font-size:0;"></div>
+         <span id="countpersent"></span>
+     </div>-->
+</div>
+</body>
+</html>

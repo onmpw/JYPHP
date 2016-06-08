@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://118.144.133.92:9999/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.1.7.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/localResizeIMG/dist/lrz.bundle.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/chatclient.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/mobile_web.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            CHAT.userid = {$uid};
+            CHAT.username = "{$uname}";
+            CHAT.topicid = {$tid};
+            CHAT.companyid = {$cmpid};
+            CHAT.headimage = "{$himg}";
+            CHAT.contractid = {$cid}; //添加了合同id
+            CHAT.init();
+            window.scrollTo(0,document.getElementById('container_mb_100').clientHeight);
+        }
+        $(function(){
+        	$("a.btn_send").click(function(){
+        		//alert("heheh");
+        		CHAT.sendmessage();
+        		
+        	});
+        });
+    </script>
+</head>
+<body>
+<div class="chat_top">
+ <div class="top">
+     <a class="btn_add" href="/Chat/Member/groupmem/cid/{$cid}">群成员</a>
+     <span class="back" onclick="javascript:location.href='/Chat/Group/topic/cid/{$cid}'"></span>
+     <span class="groupname">{$topicname|truncate:16:"...":true}</span>
+ </div>
+    </div>
+ <div class="IM_bottom">
+    <a href="javascript:;" class="btn_send">发送</a>
+    <a href="#" class="btn_pic">
+        <img src="__PUBLIC__/Images/btn_pic.png" width="100%"/>
+        <form name="form" id="form">
+            <input type="file" name="upimage" class="upimage" id="upimage" onchange="CHAT.uploadFile(this)" />
+        </form>
+    </a>
+    <span class="con"><input type="text" name="textfield" id="textfield"></span>
+  </div>
+<div class="IM checkmore">
+    <a class="a_loadmore" onclick="loadMore()" data-num="{$num}" data-noclic="0">
+        查看更多
+    </a>
+</div>
+ <div class="container mb_110" id="container_mb_100">
+   {section name=index loop=$mess}
+  <div class="IM">
+      {if $mess[index].showtime==1}
+    <h3>{$mess[index].addtime|date_format:"%Y-%m-%d %H:%M"}</h3>
+      {/if}
+   <div {if $mess[index].userid==$uid} class="r_box" {else}class="l_box"{/if}>
+     <div class="tx">
+         <!--<img src="__PUBLIC__/Images/group_tx.png" width="100%" />-->
+         <img src="{$mess[index].headimg}" width="100%" height="100%" />
+     </div>
+     <div class="text">
+     <h4>{$mess[index].uname}</h4>
+      <p>
+      {if $mess[index].isimage==0}
+       <span class="icon_jt"></span>
+       {$mess[index].message}
+       {elseif $mess[index].isimage==1}
+       	<img src="{$mess[index].message}" class="chat_uploadimage"/>
+       {/if}
+     </p>
+     </div>
+   </div>
+     </div>
+   {/section}
+  </div>
+<div class="background_img"></div>
+<img src="/Data/Upload/Images/e99778920e30d0110e71bb648c44702603e40046.jpg" class="original_img"/>
+<script type="text/javascript">
+    function loadMore(){
+        var noclic = $(".a_loadmore").data('noclic');
+        if(noclic == 0) {
+            var num = $(".a_loadmore").data('num');
+            $(".a_loadmore").html("<img class='ajax_loader' src='/Module/Public/Images/ajax-loader.gif' />");
+            $.post(
+                    '/Chat/Group/chat_load',
+                    {
+                        tid: {$tid},
+                        num: num
+                    },
+                    function (data) {
+                        data = eval('(' + data + ')');
+                        if (data.code == 0) {
+                            $(".a_loadmore").html("没有更多");
+                            $(".a_loadmore").data('noclic', 1);
+                            return false;
+                        }
+                        var curnc = data.length;
+                        $(".a_loadmore").attr('data-num', num + curnc);
+                        for (var i = 0; i < curnc; i++) {
+                            var info = "<div class='IM'>";
+                            if (data[i].showtime == 1) {
+                                info += "<h3>" + data[i].addtime + "</h3>";
+                            }
+                            if (data[i].userid == {$uid}) {
+                                info += "<div class='r_box'>";
+                            } else {
+                                info += "<div class='l_box'>";
+                            }
+                            info += "<div class='tx'>";
+                            info += "<img src='" + data[i].headimg + "' width='100%' height='100%' />";
+                            info += "</div>";
+                            info += "<div class='text'>";
+                            info += "<h4>" + data[i].uname + "</h4>";
+                            if (data[i].isimage == 0) {
+                                info += "<p><span class='icon_jt'></span>" + data[i].message + "</p>";
+                            } else if (data[i].isimage == 1) {
+                                info += "<p><img src='" + data[i].message + "' class='chat_uploadimage' /></p>";
+                            }
+                            info += "</div></div></div>";
+                            $(".mb_110").prepend(info);
+                        }
+                        $(".a_loadmore").data('num', num + curnc).html("查看更多");
+                    }
+            )
+        }else if(noclic == 1){
+            return false;
+        }
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title></title>
+    <script type="text/javascript" src="__PUBLIC__/Js/ckeditor/ckeditor.js"></script>
+</head>
+<body>
+<!--<input type="text" name="mname" placeholder="用户名" /><br />
+<input type="password" name="password" placeholder="密码" /><br />
+<input type="submit" class="admin_submit" value="登录" />-->
+<form action="/Admin/Index/addnews_do" method="post" name="form">
+<textarea name="content" cols="25" rows="5"></textarea><br />
+    <script type="text/javascript">CKEDITOR.replace('content',{ filebrowserUploadUrl:"/Admin/Index/handle_img" });</script>
+    <input type="submit" value="添加" />
+</form>
+</body>
+</html>

@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+</head>
+<body>
+ <div class="top">
+ {if $news.isshow == 0}
+     <span class="back" onclick="javascript:history.go(-1);"></span>
+     {/if}
+     消息内容
+ </div>
+ {if $news.isshow == 0}
+ <div class="menu_box">
+     <ul>
+         <li><a href="/Onlinebid/Bidinfo/bidlist"><em class="icon_zb"></em><br />招标公告</a></li>
+         <li><a href="/Chat/Group/mygroup"><em class="icon_wdq"></em><br />我的群</a></li>
+         <li class="current"><a href="javascript:;"><em class="icon_chat"></em><br />我的消息</a></li>
+         <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+     </ul>
+ </div>
+ {/if}
+ <div class="container">
+  <div class="news_box">
+  <div class="news_text">
+     <h3>{$news.title}</h3>
+     <em>{$news.ptime|date_format:"%Y-%m-%d %H:%M"}</em>
+     <!--<img src="__PUBLIC__/Images/pic_new.png" width="100%"/>
+     <p>【当代置业荣登“2015中国华北房地产公司品牌价值TOP10”排行榜，并作为绿色科技地产标杆企业荣获“2015 中国房地产专业领先品牌价值TOP10”】</p>
+     <p>当代置业执行董事兼总裁张鹏先生受邀出席此次论坛，并向与会嘉宾分享了当代置业的品牌建设经验——蓝绿相间，创新深绿，走向深蓝。</p>
+     <p>坚持“可持续发展”理念的“绿色地产”，以打造“绿色+舒适+节能+移动互联的全生命周期的生活家园”和“取暖制冷的独特解决之道+空气质量的独特解决之道+能耗运行费用降低的独特解决之道+全生命周期的人口老龄化解决之道+可持续发展主题下的行业领先之道”为核心竞争力。2015年当代置业提出“四创思想”，利用互联网思维，打造绿色地产项目，现已成功孵化无忧我房、爱助家、第一设施、看孩子等逾十家互联网+创业项目。</p>-->
+      {$news.content}
+  </div>
+  </div>
+</div>
+<div class="blank50"></div>
+</body>
+</html>

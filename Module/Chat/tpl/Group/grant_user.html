@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $(".btn_ok").click(function(){
+                var infos={
+                    FAIL1:"添加用户失败",
+                    FAIL2:"关联用户和合同失败",
+                    SUC0:"添加成功",
+                    HAD2:"此用户已经被添加",
+                }
+                var flag = true;
+                //首先判断是否有空
+                if($(".companyname").val() == '0'){
+                    $(".grant_info").html('请选择公司名称').show();
+                    return false;
+                }
+                if($("#textfield_m").val() == '') {
+                    $(".grant_info").html('手机号不能为空').show();
+                    return false;
+                }
+                if($("#textfield_u").val() == ''){
+                    $(".grant_info").html('用户姓名不能为空').show();
+                    return false;
+                }
+                var uname = $("#textfield_u").val();
+                var mobile = $("#textfield_m").val();
+                var position = $("#textfield_p").val();
+                if(position != ''){
+                    uname += "("+position+")";
+                }
+                var cid = $(".contractid").val();
+                var companyname = $(".companyname").val();
+//                var comid = $('.companyid').val();
+                $.post("/Chat/Group/add_do",
+                        {
+                            username:uname,
+                            mobilenum:mobile,
+                            contractid:cid,
+                            companyname:companyname
+//                            companyid:comid
+                        },
+                        function(data){
+                            data = eval('(' +data+ ')');
+                            $('.grant_info').html(infos[data.info]).show();
+                        }
+                );
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="top">
+    <span class="back" onclick="javascript:history.go(-1);"></span>添加新用户
+</div>
+ <div class="container">
+   <div class="fq_topic">
+    <h4>{$contractname}</h4>
+    <input type="hidden" name="cid" class="contractid" value="{$cid}" />
+    <!--<input type="hidden" name="comid" class="companyid" value="{$comid}" />-->
+
+       <span><select name="companyname" class="companyname">
+           <option value="0">请选择公司名称</option>
+           {section name=index loop=$cname}
+           <option value="{$cname[index]}">{$cname[index]}</option>
+           {/section}
+           <option value="{$enter}">{$enter}</option>
+       </select></span>
+    <!--<span><input type="text" name="companyname" id="textfield_c" placeholder="公司名称"></span>-->
+    <span><input type="text" name="mobile" id="textfield_m" placeholder="手机号"></span>
+    <span><input type="text" name="username" id="textfield_u" placeholder="用户姓名"></span>
+    <span><input type="text" name="position" id="textfield_p" placeholder="用户职务"></span>
+    <input type="button" class="btn_ok" value="确认添加" />
+       <p style="margin-top:20px;color:#cf001b; display:none;" class="grant_info"></p>
+  </div>
+</div>
+</body>
+</html>

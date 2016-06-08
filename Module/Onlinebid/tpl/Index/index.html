@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+</head>
+<body>
+<div class="top">登录</div>
+<div class="footer_img"><span></span></div>
+<form name="form" action="/User/User/login_do" method="post">
+    <input type="hidden" name="mobileid" value="{$mobileid}" />
+<div class="login_box">
+       <div class="logo"><img src="__PUBLIC__/Images/logo.png" width="100"/></div>
+       <div class="inp_box">
+         <p>
+           <em><img src="__PUBLIC__/Images/icon_iphone.png"/></em>
+           <input name="mobile" type="telephone" placeholder="手机号">
+         </p>
+         <p>
+           <em><img src="__PUBLIC__/Images/icon_password.png"/></em>
+           <input name="password" type="password" placeholder="密码">
+         </p>
+         <!-- <a href="javascript:;" class="btn_login">登录</a> -->
+         <input type="submit" name="submit" value="登录" class="btn_login" />
+         <!--<a href="#">注册
+         </a>-->
+         <i>copyright@2015当代节能</i>
+       </div>
+</div>
+</form>
+</body>
+</html>

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript">
+        function grant(cid){
+            var url = "/Chat/Group/grant_user/cid/"+cid;
+            location.href=url;
+        }
+    </script>
+</head>
+<body>
+ <div class="top">
+     <span class="back" onclick="javascript:history.go(-1);"></span>
+     添加群成员
+ </div>
+ <div class="menu_box">
+     <ul>
+         <li><a href="/Onlinebid/Bidinfo/bidlist"><em class="icon_zb"></em><br />招标公告</a></li>
+         <li class="current"><a href="javascript:;"><em class="icon_wdq"></em><br />我的群</a></li>
+         <li><a href="/News/News/newslist"><em class="icon_chat"></em><br />我的消息</a></li>
+         <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+     </ul>
+   </div>
+ <div class="container mb_60">
+ {section name=index loop=$cta}
+   <div class="group_list">
+       <a class="btn_delete" onclick="grant({$cta[index].id})">添加</a>
+    <div class="r_box">
+      <!--<span>{$cta[index].dline|date_format:"%m-%d %H:%M"}</span>-->
+    </div>
+    <div class="l_tx"></div>
+    <a href="/Chat/Group/topic/cid/{$cta[index].id}" class="c_text">
+      <h4>{$cta[index].cname|truncate:40:"...":true}</h4>
+    </a>
+  </div>
+  {/section}
+</div>
+</body>
+</html>

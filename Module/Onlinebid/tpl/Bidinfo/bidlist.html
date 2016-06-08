@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+</head>
+<body>
+ <div class="top">
+     招投标
+ </div>
+ <div class="menu_box">
+    <ul>
+      <li class="current"><a href="#"><em class="icon_zb"></em><br />招标公告</a></li>
+      <li><a href="/Chat/Group/mygroup"><em class="icon_wdq"></em><br />我的群</a></li>
+      <li><a href="/News/News/newslist"><em class="icon_chat"></em><br />我的消息</a></li>
+      <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+    </ul>
+  </div>
+ <div class="container mb_60">
+  <div class="ztb_box">
+    <ul>
+    {section name=index loop=$bids}
+      <li>
+        <a class="rq" href="/Onlinebid/Bidinfo/bidinfocon/noticeid/{$bids[index].id}"></a>
+        <p>{$bids[index].bname}<i>(公开招标)</i></p>
+        <span class="time">截止时间：{$bids[index].sline|date_format:"%Y-%m-%d"}</span>
+        <em>{$bids[index].addtime|date_format:"%Y-%m-%d %H:%M"}</em>
+        <span class="r_b">
+        <!-- {if $bids[index].issign == 'N' and $utype == 'S'}
+         <a href="/Onlinebid/Bidinfo/bidinfocon/noticeid/{$bids[index].id}" class="btn_bm">报名</a>
+         {else}
+         <a href="#" class="btn_ck">查看进度</a>
+         {/if} -->
+        </span>
+      </li>
+      {/section}
+    </ul>
+  </div>
+ </div>
+</body>
+</html>

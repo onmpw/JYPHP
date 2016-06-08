@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>当代节能置业手机招投标后台管理系统</title>
+<link href="__PUBLIC__/Css/admin.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/common.js"></script>
+<script type="text/javascript" src="__PUBLIC__/Js/ckeditor/ckeditor.js"></script>
+</head>
+
+<body>
+
+ <div class="header">
+   
+   <div class="logo fl"></div>
+   <div class="con">
+     <div class="r_inf"><img src="__PUBLIC__/Images/tx.png" width="22" height="22" /> 欢迎<span>admin</span>登录系统，<a href="#">退出</a></div>
+     <div class="zb_name"><img src="__PUBLIC__/Images/zb_name.png" width="100%" /></div>
+     <div class="h_bg">
+     <img src="__PUBLIC__/Images/header_bg.png" width="100%" height="102px"/>
+     </div>
+   </div>
+ </div>
+ <div class="con_box">
+   <div class="l_menu">
+     <ul>
+         <li class="li_current">
+             <a href="/Admin/Index/articlelist"><em><img src="__PUBLIC__/Images/icon_hygl2.png" /></em>消息管理</a>
+             <ol class="sec_con">
+                 <li><a href="/Admin/Index/articlelist">所有消息</a></li>
+                 <li class="selected"><a href="/Admin/Index/addarticle">添加消息</a></li>
+             </ol>
+         </li>
+         <li>
+	      <a href="/Admin/Index/notice"><em><img src="__PUBLIC__/Images/icon_hygl2.png" /></em>招标项管理</a>
+	      <ol class="sec_con">
+	        <li><a href="/Admin/Index/notice">招标项</a></li>
+	        <!-- <li><a href="/Admin/Index/addarticle">添加消息</a></li> -->
+	      </ol>
+	     </li>
+         <li>
+             <a href="/Admin/Contract/contractlist"><em><img src="__PUBLIC__/Images/icon_htgl1.png" /></em>合同管理</a>
+             <ol class="sec_con">
+                 <li><a href="/Admin/Contract/contractlist">所有合同</a></li>
+                 <li><a href="/Admin/Contract/topiclist">所有话题</a></li>
+             </ol>
+         </li>
+     <!--<li><a href="#"><em><img src="__PUBLIC__/Images/icon_htgl1.png" /></em>合同管理</a></li>
+     <li><a href="#"><em><img src="__PUBLIC__/Images/icon_glysz1.png" /></em>管理员设置</a></li>
+     <li><a href="#"><em><img src="__PUBLIC__/Images/icon_gggl1.png" /></em>公告管理</a></li>
+     <li><a href="#"><em><img src="__PUBLIC__/Images/icon_xxgl1.png" /></em>消息管理</a></li>-->
+    </ul>
+   </div>
+   <div class="r_con">
+     <h3>金牌会员</h3>
+     <div class="content">
+         <form action="/Admin/Index/editarticle_do" method="post" name="form">
+             <input type="hidden" name="aid" value="{$article['id']}" />
+       <table width="100%" class="table02 mt_20" cellspacing="0" cellpadding="0">
+           <tr>
+            <td class="ar">标题：</td>
+            <td><input name="title" type="text"  class="input02" id="textfield" value="{$article['title']}" /></td>
+          </tr>
+          <tr>
+            <td class="ar">缩略图：</td>
+            <td class="td_thumb">
+                <input type="file" name="thumimg" class="file_thumimg" onchange="FUNC.uploadThumimg(this)" />
+                <button class="up_btn" value="选择图片">选择图片</button>
+                <input type="text" name="thumbimage" class="thumimg_name" value="" />
+            </td>
+          </tr>
+          <tr>
+            <td class="ar">MOMA Office显示：</td>
+            <td><input type="radio" name='isshow' value='1' {if $article['isshow'] == 1}checked{/if} /></td>
+          </tr>
+          <tr>
+            <td class="ar">云链显示：</td>
+            <td><input type="radio" name='isshow' value='0' {if $article['isshow'] == 0}checked{/if}  /></td>
+          </tr>
+          <tr>
+            <td class="ar">文章简介：</td>
+            <td><textarea  class="texta1" name="description" id="textdescrip" cols="45" rows="5">{$article['des']}</textarea></td>
+          </tr>
+          <tr>
+            <td class="ar">文章内容：</td>
+            <td>
+                <textarea  class="texta1" name="content" id="textarea" cols="45" rows="5">{$article['content']}</textarea>
+                <script type="text/javascript">CKEDITOR.replace('content',{ filebrowserUploadUrl:"/Admin/Index/handle_img" });</script>
+            </td>
+          </tr>
+           <tr>
+            <td class="ar">&nbsp;</td>
+            <td><input type="submit" class="btn_ok" name="button" id="button" value="保存" /><input type="submit" class="btn_cancel" name="button" id="button" value="取消" /></td>
+          </tr>
+        </table>
+             </form>
+</div>
+</div>
+</div>
+<div class="footer">版权所有Copyright@2015当代节能置业</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript">
+        window.onload = function(){
+            window.scrollTo(0,document.getElementById('container_mb_100').clientHeight);
+        }
+        $(function(){
+        	$("a.btn_send").click(function(){
+        		//alert("heheh");
+        		CHAT.sendmessage();
+        		
+        	});
+        });
+    </script>
+</head>
+<body>
+ <div class="top">
+     <!--<span class="back"></span>-->消息列表
+ </div>
+ <div class="menu_box">
+     <ul>
+         <li><a href="/Onlinebid/Bidinfo/bidlist"><em class="icon_zb"></em><br />招标公告</a></li>
+         <li><a href="/Chat/Group/mygroup"><em class="icon_wdq"></em><br />我的群</a></li>
+         <li class="current"><a href="javascript:;"><em class="icon_chat"></em><br />我的消息</a></li>
+         <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+     </ul>
+ </div>
+ <div class="container" id="container_mb_100">
+  <div class="news_box">
+      {section name=index loop=$news}
+  <a href="/News/News/newscontent/nid/{$news[index].id}" class="news_list">
+     <h3>{$news[index].title}</h3>
+     <em>{$news[index].ptime|date_format:"%Y-%m-%d %H:%M"}</em>
+      {if $news[index].timg != ''}
+     <img src="{$news[index].timg}" width="100%"/>
+      {/if}
+     <p>{$news[index].des|truncate:40:"...":true}</p>
+  </a>
+      {/section}
+
+  </div>
+</div>
+<div class="blank50"></div> 
+</body>
+</html>

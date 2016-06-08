@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>当代节能置业手机招投标后台管理系统</title>
+<link href="__PUBLIC__/Css/admin.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/common.js"></script>
+<script type="text/javascript" src="__PUBLIC__/Js/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        function edit_do(){
+            $.post(
+                    "/Admin/Contract/editcontract_do",
+                    {
+                        ctid:$(".ctid").val(),
+                        shortname:$(".shortname").val(),
+                        item:$(".item").val(),
+                    },
+                    function(data){
+                        if(data == 1) location.href='/Admin/Contract/contractlist';
+                        else{
+                            $(".changeinfo").html("修改失败");
+                        }
+                    }
+            );
+        }
+        $(function(){
+            $(".shortname").focus(function(){
+                $(".changeinfo").html("");
+            })
+        })
+    </script>
+</head>
+
+<body>
+
+ <div class="header">
+   <div class="logo fl"></div>
+   <div class="con">
+     <div class="r_inf"><img src="__PUBLIC__/Images/tx.png" width="22" height="22" /> 欢迎<span>admin</span>登录系统，<a href="#">退出</a></div>
+     <div class="zb_name"><img src="__PUBLIC__/Images/zb_name.png" width="100%" /></div>
+     <div class="h_bg">
+     <img src="__PUBLIC__/Images/header_bg.png" width="100%" height="102px"/>
+     </div>
+   </div>
+ </div>
+ <div class="con_box">
+   <div class="l_menu">
+     <ul>
+         <li>
+             <a href="/Admin/Index/articlelist"><em><img src="__PUBLIC__/Images/icon_hygl2.png" /></em>消息管理</a>
+             <ol class="sec_con">
+                 <li><a href="/Admin/Index/articlelist">所有消息</a></li>
+                 <li><a href="/Admin/Index/addarticle">添加消息</a></li>
+             </ol>
+         </li>
+         <li>
+	      <a href="/Admin/Index/notice"><em><img src="__PUBLIC__/Images/icon_hygl2.png" /></em>招标项管理</a>
+	      <ol class="sec_con">
+	        <li><a href="/Admin/Index/notice">招标项</a></li>
+	        <!-- <li><a href="/Admin/Index/addarticle">添加消息</a></li> -->
+	      </ol>
+	     </li>
+         <li class="li_current">
+             <a href="/Admin/Contract/contractlist"><em><img src="__PUBLIC__/Images/icon_htgl1.png" /></em>合同管理</a>
+             <ol class="sec_con">
+                 <li><a href="/Admin/Contract/contractlist">所有合同</a></li>
+                 <li><a href="/Admin/Contract/topiclist">所有话题</a></li>
+             </ol>
+         </li>
+         <!--<li><a href="#"><em><img src="__PUBLIC__/Images/icon_htgl1.png" /></em>合同管理</a></li>
+         <li><a href="#"><em><img src="__PUBLIC__/Images/icon_glysz1.png" /></em>管理员设置</a></li>
+         <li><a href="#"><em><img src="__PUBLIC__/Images/icon_gggl1.png" /></em>公告管理</a></li>
+         <li><a href="#"><em><img src="__PUBLIC__/Images/icon_xxgl1.png" /></em>消息管理</a></li>-->
+    </ul>
+   </div>
+   <div class="r_con">
+     <h3>合同简称修改 --- 仅能修改合同简称</h3>
+     <div class="content">
+         <form action="" method="post" name="form" onsubmit="return false;">
+             <input type="hidden" name="ctid" class="ctid" value="{$ctid}" />
+       <table width="100%" class="table02 mt_20" cellspacing="0" cellpadding="0">
+           <tr>
+            <td class="ar">合同名称：</td>
+            <td><input name="cname" type="text"  class="input02 ctname" id="textfield_c" value="{$ct['cname']}" readonly="readonly"/></td>
+          </tr>
+           <tr>
+            <td class="ar">合同简称：</td>
+            <td><input name="sname" type="text"  class="input02 shortname" value="{$ct['sname']}" id="textfield_s" /></td>
+          </tr>
+           <tr>
+            <td class="ar">项目公司：</td>
+            <td><input name="item" type="text"  class="input02 item" value="{$ct['item']}" id="textfield_i" /></td>
+          </tr>
+           <tr>
+            <td class="ar">&nbsp;</td>
+            <td><input type="submit" class="btn_ok" name="button" id="button" value="修改" onclick="edit_do()" /><span style="padding-left:10px;color:#cf001b;" class="changeinfo"></span></td>
+          </tr>
+        </table>
+             </form>
+</div>
+</div>
+</div>
+<div class="footer">版权所有Copyright@2015当代节能置业</div>
+</body>
+</html>

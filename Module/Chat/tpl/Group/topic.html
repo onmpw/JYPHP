@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://118.144.133.92:9999/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/jquery.min.1.7.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Js/chatclient.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            CHAT.init();
+        }
+        function close_topic(tid){
+            if(confirm("您确定要关闭该话题吗？")) {
+                var url = "/Chat/Group/close_topic";
+                $.post(url,
+                        {
+                            topicid: tid
+                        },
+                        function (data) {
+                            data = eval('(' + data + ')');
+                            if (data.code == 0) {
+                                window.location.reload();
+                            }
+                        });
+            }
+        }
+        function tosearch(){
+            var tname = $(".search_topic").val();
+            if(tname == ''){
+                location.href='/Chat/Group/topic/cid/{$contractid}';
+            }else{
+                location.href='/Chat/Group/topic/cid/{$contractid}/search/'+tname;
+            }
+        }
+    </script>
+</head>
+<body>
+ <div class="top">
+     <a class="btn_add" href="/Chat/Group/addtopic/contractid/{$contractid}"><em>+</em>添加</a>
+     <span class="back" onclick="javascript:location.href='/Chat/Group/mygroup';"></span>
+     <span class="groupname">{$groupname|truncate:16:"...":true}</span>
+ </div>
+ <div class="menu_box">
+     <ul>
+         <li><a href="/Onlinebid/Bidinfo/bidlist"><em class="icon_zb"></em><br />招标公告</a></li>
+         <li class="current"><a href="javascript:;"><em class="icon_wdq"></em><br />我的群</a></li>
+         <li><a href="/News/News/newslist"><em class="icon_chat"></em><br />我的消息</a></li>
+         <li><a href="/User/User/myinfo"><em class="icon_my"></em><br />我</a></li>
+     </ul>
+ </div>
+ <div class="container">
+     <div class="group_list">
+         <div class="r_box search_g">
+             <input type="text" class="search_group search_topic" name="segroup" placeholder="搜索话题" />
+             <input type="button" class="search_btn" value="搜索" onclick="tosearch()" />
+         </div>
+     </div>
+ {section name=index loop=$topics}
+  <div class="group_subject">
+      {if $topics[index].uid==$uid}
+      <a class="btn_delete" onclick="close_topic({$topics[index].id})">关闭</a>
+      {/if}
+    <div class="r_box shownc">
+      <span>{$topics[index].addtime|date_format:"%Y-%m-%d %H:%M"}</span>
+      {if $topics[index].nc==0}
+      {else}
+      <em>{$topics[index].nc}</em>
+      {/if}
+    </div>
+    <a href="/Chat/Group/chat/tid/{$topics[index].id}" class="l_text lastmes">
+        <input type="hidden" name="topicid" class="topicid" value="{$topics[index].id}" />
+      <h4>{$topics[index].title|truncate:40:"...":true}</h4>
+      <span>发起人：{$topics[index].username}</span>
+      {if $topics[index].lastmes=="#@#"}
+      	<p>还没有聊天记录</p>
+      {else}
+      <p>{$topics[index].lastmes}</p>
+      {/if}
+    </a>
+  </div>
+  {/section}
+  <!-- <div class="group_subject">
+    <div class="r_box">
+      <span>09-15 14:20</span>
+      <em>21</em>
+    </div>
+    <a href="/Chat/Group/chat" class="l_text">
+      <h4>话题名称话题名称话题名称话题名称话题名称话题名称...</h4>
+      <span>发起人：张彬</span>
+      <p>什么时候能确定？</p>
+    </a>
+  </div>
+  <div class="group_subject">
+    <div class="r_box">
+      <span>09-15 14:20</span>
+      <em>21</em>
+    </div>
+    <a href="/Chat/Group/chat" class="l_text">
+      <h4>话题名称话题名称话题名称话题名称话题名称话题名称...</h4>
+      <span>发起人：张彬</span>
+      <p>什么时候能确定？</p>
+    </a>
+  </div>
+  <div class="group_subject">
+    <div class="r_box">
+      <span>09-15 14:20</span>
+      <em>21</em>
+    </div>
+    <a href="/Chat/Group/chat" class="l_text">
+      <h4>话题名称话题名称话题名称话题名称话题名称话题名称...</h4>
+      <span>发起人：张彬</span>
+      <p>什么时候能确定？</p>
+    </a>
+  </div> -->
+</div>
+</body>
+</html>

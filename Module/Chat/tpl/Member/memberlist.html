@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>招投标</title>
+    <link href="__PUBLIC__/Css/global.css" rel="stylesheet" />
+</head>
+<body>
+ <div class="top">
+     <span class="back" onclick="javascript:history.go(-1);"></span>会员列表
+ </div>
+ <div class="container">
+  <div class="search_box">
+    <a href="#">搜索</a>
+    <span><em></em><input name="" type="text" placeholder="请输入搜索内容"></span>
+  </div>
+  {section name=index loop=$memlist}
+  <div class="group_member">
+      {if $memlist[index].isadded=='N'}
+    <a class="btn_add" href="/Chat/Group/addmember/uid/{$memlist[index].id}/cid/{$cid}">添加</a>
+      {elseif $memlist[index].isadded=='Y'}
+    <a class="btn_add" href="javascript:;">已添加</a>
+      {/if}
+    <div class="l_tx">
+    {if $memlist[index].headimg==''}
+    	<img src="__PUBLIC__/Images/touxiang2.png"/>
+    {else}
+    	<img src="{$memlist[index].headimg}" />
+    {/if}
+    </div>
+    <div class="c_inf">
+      <h4>{$memlist[index].uname}</h4>
+      <p>{$memlist[index].cname}</p>
+    </div>
+  </div>
+  {/section}
+</div>
+</body>
+</html>
