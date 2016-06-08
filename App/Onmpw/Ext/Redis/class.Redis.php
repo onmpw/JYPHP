@@ -250,8 +250,3 @@ class Redis{
         return $this->errinfo;
     }
 }
-
-$obj = new Redis('192.168.144.133',6379);
-$obj->command('get','mykey','hello')->exec();
-var_dump($obj->result());
-echo $obj->get_errinfo();
