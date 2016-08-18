@@ -585,7 +585,6 @@ class Mysql implements IMysql{
              if(empty($config['dsn'])) $config = $this->parseDsn($config);
              try{
                  $this->_links[$identify] = new \PDO($config['dsn'],$config['user'],$config['password']);
-                 var_dump($this->_links);
              }catch(\PDOException $e){
                  if($reconnect)
                     return "reconnect";
