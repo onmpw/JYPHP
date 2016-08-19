@@ -5,31 +5,7 @@ class Router{
     public static function router(){
         
         
-        $uri = $_SERVER['QUERY_STRING'];
-        
-        if (! empty($uri)) {
-            
-            /*
-             * 解析uri
-             */
-            $url = parse_url($uri, PHP_URL_PATH);
-            $url = explode('&', $url);
-            // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
-            $urlarr = array();
-            /*
-             * 遍历url数组 开始解析
-             */
-            foreach ($url as $val) {
-                $a = explode('=', $val);
-//                 echo $a[0];echo "<br />";
-                $urlarr[$a[0]] = $a[1];
-//                 print_r($urlarr);exit;
-            }
-        }else{
-            $urlarr['m'] = \Common::C('DEFAULT_MODULE');
-            $urlarr['a'] = \Common::C('DEFAULT_ACTION');
-            $urlarr['f'] = \Common::C('DEFAULT_FUNC');
-        }
+        $urlarr = self::parseUrl();
         /*
          * 首先判断模块参数是否存在
          */
@@ -136,7 +112,73 @@ class Router{
         }
         
     }
+    /**
+     * 解析url
+     * 
+     * @return array
+     * @access private
+     */
+    private static function parseUrl(){
+        $uri = $_SERVER['QUERY_STRING'];
+        $urlarr = array();
+        if (! empty($uri)) {
+            /*
+             * 解析uri
+             */
+            $url = parse_url($uri, PHP_URL_PATH);
+            $url = explode('&', $url);
+            // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
+//             $urlarr = array();
+            /*
+             * 遍历url数组 开始解析
+            */
+            foreach ($url as $val) {
+                $a = explode('=', $val);
+                //                 echo $a[0];echo "<br />";
+                $urlarr[$a[0]] = $a[1];
+                //                 print_r($urlarr);exit;
+            }
+        }else{
+            if(isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'],'/'))){
+                //pathinfo 模式
+                $uri = $_SERVER['PATH_INFO'];
+                $uri = $this->check($uri);
+                $uri = explode('/', trim($uri,'/'));
+                //模块
+                if(($m = array_shift($uri)) != false){
+                    $urlarr[\Common::C("URL:M_NAME")] = $m;
+                }
+                //控制器
+                if(($a = array_shift($uri)) != false){
+                    $urlarr[\Common::C("URL:A_NAME")] = $a;
+                }
+                //方法
+                if(($f = array_shift($uri)) != false){
+                    $urlarr[\Common::C("URL:F_NAME")] = $f;
+                }
+                //参数
+                if(!empty($uri)){
+                    $urlarr[\Common::C("URL:P_NAME")] = implode('/', $uri);
+                }
+                
+            }else{
+                $urlarr[\Common::C("URL:M_NAME")] = \Common::C('DEFAULT_MODULE');
+                $urlarr[\Common::C("URL:A_NAME")] = \Common::C('DEFAULT_ACTION');
+                $urlarr[\Common::C("URL:F_NAME")] = \Common::C('DEFAULT_FUNC');
+            }
+        }
+        return $urlarr;
+    }
     
+    private function check($uri){
+        /*
+         * 检测是否开启了路由功能
+         */
+        if(!\Common::C("ROUTER:START")){
+            return $uri;
+        }
+        
+    }
     /**
      * 解析url参数方法
      * 

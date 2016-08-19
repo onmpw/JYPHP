@@ -12,6 +12,12 @@ return array(
 //     'PUSH_URL'=>'http://192.168.18.215/supplierMsg/PushMessage',  //消息推送的url
     'CHAT_SHOW_NUM'=>10,
     'CHAT_EVERY_TIME'=>6, //聊天内容每隔多少个小时显示时间
+    'ROUTER'=>array(
+        'START'=>true,
+        'RULE'=>array(
+            '/p/:id'=>'/Web/Index/content'
+        )
+    ),
     /**
      * 数据库配置部分
      */
