@@ -142,7 +142,7 @@ class Router{
             if(isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'],'/'))){
                 //pathinfo 模式
                 $uri = $_SERVER['PATH_INFO'];
-                $uri = $this->check($uri);
+                $uri = self::check($uri);
                 $uri = explode('/', trim($uri,'/'));
                 //模块
                 if(($m = array_shift($uri)) != false){
@@ -170,14 +170,48 @@ class Router{
         return $urlarr;
     }
     
-    private function check($uri){
+    private static function check($uri){
         /*
          * 检测是否开启了路由功能
          */
         if(!\Common::C("ROUTER:START")){
             return $uri;
         }
-        
+        $routes = \Common::C("ROUTER:RULE");
+        foreach($routes as $rule=>$route){
+            if(strpos($rule, "/")===0 && preg_match($rule, $uri,$matches)){
+                array_shift($matches);
+                $match = array();
+                for($i=0;$i<count($matches);$i++){
+                    $match[':'.($i+1)] = $matches[$i];
+                }
+                foreach($match as $key=>$val){
+                    $route = str_replace($key, $val, $route);
+                }
+               return $route;
+            }
+            if(trim($rule,'/') == trim($uri,'/')) return $route;
+            $url = explode('/',trim($uri,'/'));
+            if(preg_match_all('/(?:[\w\d]+\/)?:([\w\d]+)/i',$rule,$matches)){
+                $r = explode('/',substr($rule,0,strpos($rule, ':')-1));
+                if(implode('/',$r) != implode('/',array_slice($url,0,count($r)))){
+                    continue;
+                }
+                $r = array_slice($url,count($r));
+                if(count($matches[1]) != count($r)) continue;
+                $url = array();
+                for($i = 0;$i<count($r);$i++){
+                    $url[':'.$matches[1][$i]] = $r[$i];
+                }
+                foreach($url as $key=>$val){
+                    $route = str_replace($key, $val, $route,$count);
+                    if($count == 1) unset($url[$key]);
+                }
+                if(count($url)>0) $route = rtrim($route,'/').'/'.implode('/',array_values($url));
+                return $route;
+            }
+        }
+        return $uri;
     }
     /**
      * 解析url参数方法
