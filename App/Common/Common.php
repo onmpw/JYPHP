@@ -331,7 +331,7 @@ class Common{
             unset($_POST);
         }
         foreach($data as $k=>$v){
-            $data[$k] = addslashes($v);
+            $data[$k] = htmlspecialchars(addslashes($v));
         }
         if(!isset($data[$key])) return false;
         return $data[$key];
