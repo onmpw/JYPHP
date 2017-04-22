@@ -7,12 +7,12 @@ class Router{
         
         $urlarr = self::parseUrl();
         /*
-         * Ê×ÏÈÅÐ¶ÏÄ£¿é²ÎÊýÊÇ·ñ´æÔÚ
+         * é¦–å…ˆåˆ¤æ–­æ¨¡å—å‚æ•°æ˜¯å¦å­˜åœ¨
          */
         if(in_array(\Common::C('URL:M_NAME'),array_keys($urlarr))){
-            //Èç¹û´æÔÚ£¬ÔòÅÐ¶Ïµ±Ç°µÄÄ£¿éÊÇ·ñ´æÔÚ
-            if(in_array($urlarr[\Common::C('URL:M_NAME')],\Common::C('MODULE'))){
-                defined('MODULE_NAME') or define('MODULE_NAME',$urlarr[\Common::C('URL:M_NAME')]);
+            //å¦‚æžœå­˜åœ¨ï¼Œåˆ™åˆ¤æ–­å½“å‰çš„æ¨¡å—æ˜¯å¦å­˜åœ¨
+            if(in_array(strtolower($urlarr[\Common::C('URL:M_NAME')]),array_map(function($v){ return strtolower($v);}, \Common::C('MODULE')))){
+                defined('MODULE_NAME') or define('MODULE_NAME',ucwords(strtolower($urlarr[\Common::C('URL:M_NAME')])));
             }elseif(!empty($urlarr[\Common::C('URL:M_NAME')])){
                 echo "Error!";
                 exit;
@@ -24,38 +24,38 @@ class Router{
         }
         
         /*
-         * È»ºóÅÐ¶Ï¿ØÖÆÆ÷ÊÇ·ñ´æÔÚ
+         * ç„¶åŽåˆ¤æ–­æŽ§åˆ¶å™¨æ˜¯å¦å­˜åœ¨
          */
         if (in_array(\Common::C('URL:A_NAME'), array_keys($urlarr)) && ! empty($urlarr[\Common::C('URL:A_NAME')])) {
-            // ¿ØÖÆÆ÷´æÔÚ ²¢ÇÒ²»Îª¿Õ
-            $class = MODULE_NAME . '\\Action\\' . $urlarr[\Common::C('URL:A_NAME')] . 'Action';
-            defined('AC_NAME') or define('AC_NAME',$urlarr[\Common::C('URL:A_NAME')]);
+            // æŽ§åˆ¶å™¨å­˜åœ¨ å¹¶ä¸”ä¸ä¸ºç©º
+            $class = MODULE_NAME . '\\Action\\' . ucwords(strtolower($urlarr[\Common::C('URL:A_NAME')])) . 'Action';
+            defined('AC_NAME') or define('AC_NAME',ucwords(strtolower($urlarr[\Common::C('URL:A_NAME')])));
             if (class_exists($class)) {
                 $class = new \ReflectionClass($class);
                 /*
-                 * ¼ì²â·½·¨²ÎÊýÊÇ·ñ´æÔÚ
+                 * æ£€æµ‹æ–¹æ³•å‚æ•°æ˜¯å¦å­˜åœ¨
                  */
-                // Ê×ÏÈÈ¡³ö´Î¿ØÖÆÆ÷µÄËùÓÐ·½·¨ ²¢ÇÒÖ»¹ýÂË³ö public ·½·¨
+                // é¦–å…ˆå–å‡ºæ¬¡æŽ§åˆ¶å™¨çš„æ‰€æœ‰æ–¹æ³• å¹¶ä¸”åªè¿‡æ»¤å‡º public æ–¹æ³•
                 $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-                $methods = array_map(function ($val) { //ÀûÓÃ»Øµ÷º¯Êý ½«·Ç static º¯ÊýµÄÃû³Æ·µ»Ø¸øÊý×é
+                $methods = array_map(function ($val) { //åˆ©ç”¨å›žè°ƒå‡½æ•° å°†éž static å‡½æ•°çš„åç§°è¿”å›žç»™æ•°ç»„
                     if(!$val->isStatic())
                         return $val->name;
                 }, $methods);
-                //È¥³ý¿ÕÔªËØ
+                //åŽ»é™¤ç©ºå…ƒç´ 
                 /* $methods = array_filter($methods); */
                 $func = '';
                 if (in_array(\Common::C('URL:F_NAME'), array_keys($urlarr)) && ! empty($urlarr[\Common::C('URL:F_NAME')])) {
-                    // ´æÔÚ ²¢ÇÒ²»Îª¿ÕÄÇÃ´¼ì²âµ±Ç°¿ØÖÆÆ÷ÖÐÊÇ·ñ´æÔÚ´Ë·½·¨
-                    $func = $urlarr[\Common::C('URL:F_NAME')]; // ½« ·ÃÎÊµÄ·½·¨¸³Öµ¸ø±äÁ¿
-                                                           // Ê×ÏÈÅÐ¶Ï·½·¨Ãû³ÆÊÇ·ñ·ûºÏ¹æ·¶
-                    if (! preg_match('/^[A-Za-z](\w)*$/', $func)) // ²»ºÏºõ¹æ·¶ Å×³öÒì³£
+                    // å­˜åœ¨ å¹¶ä¸”ä¸ä¸ºç©ºé‚£ä¹ˆæ£€æµ‹å½“å‰æŽ§åˆ¶å™¨ä¸­æ˜¯å¦å­˜åœ¨æ­¤æ–¹æ³•
+                    $func = $urlarr[\Common::C('URL:F_NAME')]; // å°† è®¿é—®çš„æ–¹æ³•èµ‹å€¼ç»™å˜é‡
+                                                           // é¦–å…ˆåˆ¤æ–­æ–¹æ³•åç§°æ˜¯å¦ç¬¦åˆè§„èŒƒ
+                    if (! preg_match('/^[A-Za-z](\w)*$/', $func)) // ä¸åˆä¹Žè§„èŒƒ æŠ›å‡ºå¼‚å¸¸
                         throw new \ReflectionException();
                 } elseif (empty($urlarr[\Common::C('URL:F_NAME')]) || ! in_array(\Common::C('URL:F_NAME'), array_keys($urlarr))) {
                     $func = 'index';
                 }
                 /*
-                 * ´ËÅÐ¶ÏÊÇÎªÁËÊ¹·½·¨Ãû³Æ²»Çø·Ö´óÐ¡Ð´
-                 * ÅÐ¶Ïµ±Ç°·½·¨ÊÇ·ñÔÚ¿ØÖÆÆ÷ÖÐ´æÔÚ
+                 * æ­¤åˆ¤æ–­æ˜¯ä¸ºäº†ä½¿æ–¹æ³•åç§°ä¸åŒºåˆ†å¤§å°å†™
+                 * åˆ¤æ–­å½“å‰æ–¹æ³•æ˜¯å¦åœ¨æŽ§åˆ¶å™¨ä¸­å­˜åœ¨
                  */
                 $if = false;
                 for ($i = 0; $i < count($methods); $i++) {
@@ -67,18 +67,18 @@ class Router{
                 }
                 
                 /*
-                 *Èç¹ûÃ»ÓÐÕÒµ½·½·¨ »òÕß¸Ã·½·¨Îª¾²Ì¬static ·½·¨ ÄÇÃ´Êä³ö´íÎó  ·ñÔò
+                 *å¦‚æžœæ²¡æœ‰æ‰¾åˆ°æ–¹æ³• æˆ–è€…è¯¥æ–¹æ³•ä¸ºé™æ€static æ–¹æ³• é‚£ä¹ˆè¾“å‡ºé”™è¯¯  å¦åˆ™
                  */
                 if (!$if || $class->getMethod($func)->isStatic()) {
                     echo 'Func not found!';
                 } else {
                     defined('FC_NAME') or define('FC_NAME',$func);
                     $method = $class->getMethod($func);
-                    //µÃµ½·½·¨²ÎÊýµÄ¸öÊý
+                    //å¾—åˆ°æ–¹æ³•å‚æ•°çš„ä¸ªæ•°
                     $par = $method->getNumberOfParameters();
-                    //µÃµ½±ØÐë²ÎÊýµÄ¸öÊý
+                    //å¾—åˆ°å¿…é¡»å‚æ•°çš„ä¸ªæ•°
                     $rpar = $method->getNumberOfRequiredParameters();
-                    $pararr = array(); //¶¨Òå´æ·Å²ÎÊýÃû³ÆµÄÊý×é
+                    $pararr = array(); //å®šä¹‰å­˜æ”¾å‚æ•°åç§°çš„æ•°ç»„
                     if($par > 0){
                         $pararr = array_map(function($val){return $val->name;},$method->getParameters());
                     }
@@ -92,8 +92,8 @@ class Router{
                         if(false === $args){
                             $method->invoke($class->newInstance());
                         }elseif(is_array($args)){
-                            //¸ù¾Ý·µ»ØµÄ²ÎÊýÊý×éµÄ¸öÊý  ºÍ¸Ã·½·¨±ØÐëµÄ²ÎÊý¸öÊý×ö±È½Ï
-                            //Èç¹ûÇ°ÕßÐ¡ÓÚºóÕß ÄÇÃ´ ²ÎÊý¸öÊý´íÎó ·ñÔò Ôòµ÷ÓÃº¯Êý
+                            //æ ¹æ®è¿”å›žçš„å‚æ•°æ•°ç»„çš„ä¸ªæ•°  å’Œè¯¥æ–¹æ³•å¿…é¡»çš„å‚æ•°ä¸ªæ•°åšæ¯”è¾ƒ
+                            //å¦‚æžœå‰è€…å°äºŽåŽè€… é‚£ä¹ˆ å‚æ•°ä¸ªæ•°é”™è¯¯ å¦åˆ™ åˆ™è°ƒç”¨å‡½æ•°
                             if(count($args) < $rpar){
                                 echo "Paramater Is Required!";
                             }else{
@@ -113,7 +113,7 @@ class Router{
         
     }
     /**
-     * ½âÎöurl
+     * è§£æžurl
      * 
      * @return array
      * @access private
@@ -123,14 +123,14 @@ class Router{
         $urlarr = array();
         if (! empty($uri)) {
             /*
-             * ½âÎöuri
+             * è§£æžuri
              */
             $url = parse_url($uri, PHP_URL_PATH);
             $url = explode('&', $url);
-            // ¶¨ÒåÒ»¸öÊý×é ÓÃÀ´´æ´¢urlµÄÄ£¿é¡¢¿ØÖÆÆ÷¡¢·½·¨ ¼°ÆäËù¶ÔÓ¦µÄÖµ
+            // å®šä¹‰ä¸€ä¸ªæ•°ç»„ ç”¨æ¥å­˜å‚¨urlçš„æ¨¡å—ã€æŽ§åˆ¶å™¨ã€æ–¹æ³• åŠå…¶æ‰€å¯¹åº”çš„å€¼
 //             $urlarr = array();
             /*
-             * ±éÀúurlÊý×é ¿ªÊ¼½âÎö
+             * éåŽ†urlæ•°ç»„ å¼€å§‹è§£æž
             */
             foreach ($url as $val) {
                 $a = explode('=', $val);
@@ -140,23 +140,23 @@ class Router{
             }
         }else{
             if(isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'],'/'))){
-                //pathinfo Ä£Ê½
+                //pathinfo æ¨¡å¼
                 $uri = $_SERVER['PATH_INFO'];
                 $uri = self::check($uri);
                 $uri = explode('/', trim($uri,'/'));
-                //Ä£¿é
+                //æ¨¡å—
                 if(($m = array_shift($uri)) != false){
                     $urlarr[\Common::C("URL:M_NAME")] = $m;
                 }
-                //¿ØÖÆÆ÷
+                //æŽ§åˆ¶å™¨
                 if(($a = array_shift($uri)) != false){
                     $urlarr[\Common::C("URL:A_NAME")] = $a;
                 }
-                //·½·¨
+                //æ–¹æ³•
                 if(($f = array_shift($uri)) != false){
                     $urlarr[\Common::C("URL:F_NAME")] = $f;
                 }
-                //²ÎÊý
+                //å‚æ•°
                 if(!empty($uri)){
                     $urlarr[\Common::C("URL:P_NAME")] = implode('/', $uri);
                 }
@@ -172,7 +172,7 @@ class Router{
     
     private static function check($uri){
         /*
-         * ¼ì²âÊÇ·ñ¿ªÆôÁËÂ·ÓÉ¹¦ÄÜ
+         * æ£€æµ‹æ˜¯å¦å¼€å¯äº†è·¯ç”±åŠŸèƒ½
          */
         if(!\Common::C("ROUTER:START")){
             return $uri;
@@ -214,7 +214,7 @@ class Router{
         return $uri;
     }
     /**
-     * ½âÎöurl²ÎÊý·½·¨
+     * è§£æžurlå‚æ•°æ–¹æ³•
      * 
      * @param string $uri
      * @param int $parnum
@@ -222,12 +222,12 @@ class Router{
      * @return mixed
      */
     private static function parseParam($uri = '',$parnum = 0,$parnames = array()){
-        //Çå³ý GET ÖÐµÄ Ä£¿é¡¢¿ØÖÆÆ÷¡¢·½·¨¡¢²ÎÊýµÈÔªËØ
+        //æ¸…é™¤ GET ä¸­çš„ æ¨¡å—ã€æŽ§åˆ¶å™¨ã€æ–¹æ³•ã€å‚æ•°ç­‰å…ƒç´ 
         array_walk_recursive($_GET,'\\Common::Url_filter');
-        //Çå³ý¿ÕÔªËØ
+        //æ¸…é™¤ç©ºå…ƒç´ 
         \Common::parse_empty($_GET);
         /*
-         * Èç¹ûÃ»ÓÐ²ÎÊý´«½øÀ´ ÄÇÃ´½âÎöÊ§°Ü ·µ»Øfalse
+         * å¦‚æžœæ²¡æœ‰å‚æ•°ä¼ è¿›æ¥ é‚£ä¹ˆè§£æžå¤±è´¥ è¿”å›žfalse
          */
         $str = '';
         if(empty($uri)) 
@@ -236,8 +236,8 @@ class Router{
             else return array();
         
         /*
-         * Èç¹ûurl²ÎÊýÖÐÃ»ÓÐÕÒµ½ / ËµÃ÷Ö»ÓÐÒ»ÌõÊý¾Ý
-         * È»ºóÅÐ¶Ï²ÎÊý¸öÊýÊÇ·ñÎª1
+         * å¦‚æžœurlå‚æ•°ä¸­æ²¡æœ‰æ‰¾åˆ° / è¯´æ˜Žåªæœ‰ä¸€æ¡æ•°æ®
+         * ç„¶åŽåˆ¤æ–­å‚æ•°ä¸ªæ•°æ˜¯å¦ä¸º1
          */
         if(!strpos($uri,'/')){
             $_GET[$uri] = '';
@@ -249,25 +249,25 @@ class Router{
         $uri = explode('/',$uri);
         
         /*
-         * È¥³ý Êý×éÖÐµÄ¿ÕµÄ±äÁ¿
+         * åŽ»é™¤ æ•°ç»„ä¸­çš„ç©ºçš„å˜é‡
          */
         \Common::parse_empty($uri);
 
         
-        //±È½ÏurlÖÐ²ÎÊýµÄ¸öÊýºÍ$parnum µÄ´óÐ¡ ¸ù¾ÝÁ½ÕßµÄÊýÁ¿È·¶¨·½·¨µÄ²ÎÊý
+        //æ¯”è¾ƒurlä¸­å‚æ•°çš„ä¸ªæ•°å’Œ$parnum çš„å¤§å° æ ¹æ®ä¸¤è€…çš„æ•°é‡ç¡®å®šæ–¹æ³•çš„å‚æ•°
         if(count($uri) <= 0){
             return false;   
         }elseif(count($uri) == 1){
-            //Èç¹ûurlÖÐ²ÎÊýµÄ¸öÊýÎª1 
+            //å¦‚æžœurlä¸­å‚æ•°çš„ä¸ªæ•°ä¸º1 
             $_GET[$uri[0]] = '';
             if($parnum >= 0) return array($parnames[0] => $uri[0]);
             
             return false;
         }
         /*
-         * ÅÐ¶Ïurl´«µÝµÄ²ÎÊý¸öÊý ºÍ ·½·¨²ÎÊý¸öÊý±È½Ï
-         * Èç¹ûÇ°Õß´ó Ôò°´ÕÕºóÕßÑ­»·
-         * ·ñÔò °´ÕÕÇ°ÕßÑ­»·
+         * åˆ¤æ–­urlä¼ é€’çš„å‚æ•°ä¸ªæ•° å’Œ æ–¹æ³•å‚æ•°ä¸ªæ•°æ¯”è¾ƒ
+         * å¦‚æžœå‰è€…å¤§ åˆ™æŒ‰ç…§åŽè€…å¾ªçŽ¯
+         * å¦åˆ™ æŒ‰ç…§å‰è€…å¾ªçŽ¯
          */
         if(count($uri) <= $parnum){
             for($i = 0; $i<count($uri); $i++)
