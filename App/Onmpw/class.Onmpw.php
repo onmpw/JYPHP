@@ -31,18 +31,18 @@ class Onmpw{
          */
        spl_autoload_register('Onmpw\Onmpw::autoload');
     }
-    
+
     /**
      * 自动载入函数
-     * 
+     *
      * @param string $class
-     * 
-     * @return
+     *
+     * @return bool
      */
     public static function autoload($class){
         $pre_ext = '';
         $after_ext = '.php';
-        if(isset(self::$_map[$class])){
+        if(isset(self::$_map[$class]) && !empty(self::$_map[$class])){
             require self::$_map[$class];
         }else{
             //返回 \ 第一次出现的位置之前的字符串
@@ -92,7 +92,7 @@ class Onmpw{
            
             
         } 
-        return ;
+        return true;
             
     }
     
