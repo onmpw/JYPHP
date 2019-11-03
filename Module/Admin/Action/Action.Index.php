@@ -3,12 +3,19 @@ namespace Admin\Action;
 use Common\Action\CommonAction;
 use News\Model\NewsModel;
 use Onlinebid\Model\BidsModel;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
+
 class IndexAction extends CommonAction{
     public function index(){
-        $sql = "select * from news";
+        /*$sql = "select * from news";
         $mod = new NewsModel();
-        $res = $mod->select_sql($sql);
-        var_dump($res);
+        $res = $mod->select_sql($sql);*/
+        var_dump(123);
+        $logger = new Logger('my_logger');
+        var_dump($logger);
+
     }
     public function login(){
         $this->display();

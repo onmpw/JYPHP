@@ -30,6 +30,7 @@ class Onmpw{
          * 注册自动载入类|接口方法
          */
        spl_autoload_register('Onmpw\Onmpw::autoload');
+       require APP_PATH.'../vendor/autoload.php';
     }
 
     /**
