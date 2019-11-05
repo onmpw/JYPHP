@@ -41,18 +41,17 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
         
         $this->auth = $this->config['AUTH'];
     }
-    
+
     /**
      * Redis服务器连接
-     * @param string $host   主机地址
-     * @param number $port    连接端口
-     * @param number $timeout  连接超时时间
+     * @param string $host 主机地址
+     * @param int $port 连接端口
+     * @param int $timeout 连接超时时间
      * @param string $reserved
-     * @param number $retry_interval 
-     * 
-     * @throws RedisException
-     * 
+     * @param int $retry_interval
+     *
      * @return boolean
+     * @throws \RedisException
      */
     public function redisConnect($host = '127.0.0.1',$port = 6379,$timeout = 0,$reserved = null,$retry_interval = 100){
         //实例化Redis对象
@@ -147,11 +146,14 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
         return $res;
         
     }
-    
+
     /**
      * 将session的数据写入到session的存储空间内。
      * 当session准备好存储和关闭的时候调用该函数
-     * 
+     *
+     * @param $session_id
+     * @param $session_data
+     * @return bool
      * @see SessionHandlerInterface::write()
      */
     public function write($session_id, $session_data){
@@ -175,10 +177,11 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
         return true;
         
     }
-    
+
     /**
      * 销毁session
-     * 
+     *
+     * @param $session_id
      * @see SessionHandlerInterface::destroy()
      */
     public function destroy($session_id){
@@ -188,12 +191,13 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
         $key = $this->prefix.':'.$session_id;
         $this->handle->hDel($key,'data');
     }
-    
+
     /**
      * 清除垃圾session，也就是清除过期的session。
      * 该函数是基于php.ini中的配置选项
      * session.gc_divisor, session.gc_probability 和 session.gc_lifetime所设置的值的
-     * 
+     *
+     * @param $maxlifetime
      * @see SessionHandlerInterface::gc()
      */
     public function gc($maxlifetime){
