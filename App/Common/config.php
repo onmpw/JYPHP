@@ -22,10 +22,10 @@ return array(
      * 数据库配置部分
      */
     'DB_TYPE' => 'mysql',
-    'DB_HOST' => '192.168.5.102',
-    'DB_USER'  => 'admin',
-    'DB_PASSWORD'  => 'q1w2e3r4',
-    'DB_DBNAME'    => 'moma_mobileapp',
+    'DB_HOST' => 'localhost',
+    'DB_USER'  => 'root',
+    'DB_PASSWORD'  => 'djz082818',
+    'DB_DBNAME'    => 'jiyi',
     'DB_PREFIX'    => '',
     'DB_CHARSET'   => 'utf8',
     'DB_PORT'   => '3306',

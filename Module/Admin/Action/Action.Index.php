@@ -9,10 +9,10 @@ use Monolog\Handler\FirePHPHandler;
 
 class IndexAction extends CommonAction{
     public function index(){
-        /*$sql = "select * from news";
+        $sql = "select * from users";
         $mod = new NewsModel();
-        $res = $mod->select_sql($sql);*/
-        var_dump(123);
+        $res = $mod->select_sql($sql);
+        var_dump($res);
         $logger = new Logger('my_logger');
         var_dump($logger);
 
