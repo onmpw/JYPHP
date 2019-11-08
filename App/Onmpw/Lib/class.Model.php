@@ -5,7 +5,7 @@ class Model{
     
     protected  $options = array();
     
-    protected $tableprefix = ''; //数据表名前缀
+    protected $tablePrefix = ''; //数据表名前缀
     
     protected $name = '';  //数据表主名称
     
@@ -17,7 +17,7 @@ class Model{
     
     protected $data = array();   //添加的数据
     
-    public function __construct($name = '',$tableprefix = ''){
+    public function __construct($name = '',$tablePrefix = ''){
         //模型初始化
         $this->__initialize();
         //获得模型名称
@@ -34,12 +34,12 @@ class Model{
         /*
          * 设置表前缀
          */
-        if(is_null($tableprefix)){
-            $this->tableprefix = '';
-        }elseif('' != $tableprefix){
-            $this->tableprefix = $tableprefix;
+        if(is_null($tablePrefix)){
+            $this->tablePrefix = '';
+        }elseif('' != $tablePrefix){
+            $this->tablePrefix = $tablePrefix;
         }else{
-            $this->tableprefix = \Common::C('DB_PREFIX');
+            $this->tablePrefix = \Common::C('DB_PREFIX');
         }
         //初始化数据库操作
         $this->db();
@@ -158,15 +158,15 @@ class Model{
         $name = false;
         //判断实例化的模型名称是否在得到的数据表中
         for($i = 0; $i<$this->db->getRowNum(); $i++){
-            if(strtolower($this->tableprefix.$this->name) == strtolower($tables[$i])){
+            if(strtolower($this->tablePrefix.$this->name) == strtolower($tables[$i])){
                 $name = $tables[$i];
             }
         }
         if(false === $name) return false;
         if(!empty($this->dbname)){
-            $tbname = $this->dbname.".".$this->tableprefix.$name;
+            $tbname = $this->dbname.".".$this->tablePrefix.$name;
         }else{
-            $tbname = $this->tableprefix.$name;
+            $tbname = $this->tablePrefix.$name;
         }
         $this->options['table'] = $this->tbname = $tbname;
         return $this->tbname;
