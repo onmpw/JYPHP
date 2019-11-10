@@ -64,12 +64,13 @@ class Model{
         }
         return substr($this->name,0,strrpos($this->name,'Model'));
     }
+
     /**
      * 指定字段查询
      * @access public
-     * @param mixed $field  要查询的字段
-     * @param boolean $expect  是否排除以上字段查询
-     * @return Lib\Model
+     * @param mixed $field 要查询的字段
+     * @param boolean $expect 是否排除以上字段查询
+     * @return Model
      */
     public function field($field,$expect=false){
         if(empty($field)){
