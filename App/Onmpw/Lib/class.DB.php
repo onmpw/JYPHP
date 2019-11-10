@@ -51,7 +51,7 @@ class DB{
                 'slave_no'=>$config['slave_no'],    //指定从服务器来进行读操作
                 'master_num'=>$config['master_num'],    //主服务器的数量
                 'deploy_type'=>$config['deploy_type'],   //数据库部署方式，1 表示主从分离   0 表示单一服务器
-                'rw_seprate'=>$config['rw_seprate'],    //读写是否分离
+                'rw_separate'=>$config['rw_separate'],    //读写是否分离
             );
         }else{
             $config = array(
@@ -66,7 +66,7 @@ class DB{
                 'slave_no'=> \Common::C('SLAVE_NO'),    //指定从服务器来进行读操作
                 'master_num'=>\Common::C('MASTER_NUM'),    //主服务器的数量
                 'deploy_type'=>\Common::C('DEPLOY_TYPE'),   //数据库部署方式，1 表示主从分离   0 表示单一服务器
-                'rw_seprate'=>\Common::C('RW_SEPRATE'),    //读写是否分离
+                'rw_separate'=>\Common::C('RW_SEPARATE'),    //读写是否分离
             );
         }
         return $config;

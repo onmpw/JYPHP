@@ -95,7 +95,7 @@ class Mysql implements IMysql
      *
      * @param string $sql
      * @param bool $getSql
-     * @return mixed
+     * @return bool
      */
     protected function query($sql, $getSql = false)
     {
@@ -357,7 +357,7 @@ class Mysql implements IMysql
     /**
      * 查询多条数据函数
      * @param array $options
-     * @return Ambigous <mixed, boolean, string, string, unknown>
+     * @return bool <mixed, boolean, string, string, unknown>
      */
     public function select($options = array())
     {
@@ -666,7 +666,7 @@ class Mysql implements IMysql
         $count = 0;
         $flag = false;
         do {
-            $m = floor(mt_rand(0, $this->config['master_num'] - 1));
+            $m = $s = floor(mt_rand(0, $this->config['master_num'] - 1));
             if (!in_array($m, $this->ignore)) {
                 $flag = true;
                 break;
@@ -685,19 +685,12 @@ class Mysql implements IMysql
                 $this->link = $this->transLink;
                 return $this->transLink;
             }
-            $db = array(
-                'host' => isset($config['host'][$m]) ? $config['host'][$m] : $config['host'][0],
-                'dbname' => isset($config['dbname'][$m]) ? $config['dbname'][$m] : $config['dbname'][0],
-                'port' => isset($config['port'][$m]) ? $config['port'][$m] : $config['port'][0],
-                'user' => isset($config['user'][$m]) ? $config['user'][$m] : $config['user'][0],
-                'password' => isset($config['password'][$m]) ? $config['password'][$m] : $config['password'][0],
-                'dsn' => isset($config['dsn'][$m]) ? $config['dsn'][$m] : $config['dsn'][0],
-            );
+            $db = $this->buildConnectDb($config,$m);
         } else { //读操作
             /*
              * 判断是否是读写分离
              */
-            if ($this->config['rw_seprate']) {  //读写分离
+            if ($this->config['rw_separate']) {  //读写分离
                 $count = 0;
                 $flag = false;
                 do {
@@ -723,14 +716,7 @@ class Mysql implements IMysql
                 } while (count($this->ignore) < count($config['host']));
                 if (false === $flag) return false;
             }
-            $db = array(
-                'host' => isset($config['host'][$s]) ? $config['host'][$s] : $config['host'][0],
-                'dbname' => isset($config['dbname'][$s]) ? $config['dbname'][$s] : $config['dbname'][0],
-                'port' => isset($config['port'][$s]) ? $config['port'][$s] : $config['port'][0],
-                'user' => isset($config['user'][$s]) ? $config['user'][$s] : $config['user'][0],
-                'password' => isset($config['password'][$s]) ? $config['password'][$s] : $config['password'][0],
-                'dsn' => isset($config['dsn'][$s]) ? $config['dsn'][$s] : $config['dsn'][0],
-            );
+            $db = $this->buildConnectDb($config,$s);
         }
         /*
          * 连接数据库
@@ -746,6 +732,25 @@ class Mysql implements IMysql
             return $res;
         }
         return $this->link;
+    }
+
+    /**
+     * 构建连接的db
+     * @param $config
+     * @param $host
+     * @return array
+     */
+    private function buildConnectDb($config,$host)
+    {
+        $db = array(
+            'host' => isset($config['host'][$host]) ? $config['host'][$host] : $config['host'][0],
+            'dbname' => isset($config['dbname'][$host]) ? $config['dbname'][$host] : $config['dbname'][0],
+            'port' => isset($config['port'][$host]) ? $config['port'][$host] : $config['port'][0],
+            'user' => isset($config['user'][$host]) ? $config['user'][$host] : $config['user'][0],
+            'password' => isset($config['password'][$host]) ? $config['password'][$host] : $config['password'][0],
+            'dsn' => isset($config['dsn'][$host]) ? $config['dsn'][$host] : $config['dsn'][0],
+        );
+        return $db;
     }
 
     /**
@@ -766,6 +771,7 @@ class Mysql implements IMysql
     /**
      * 解析dsn
      * @param string $config
+     * @return array
      */
     protected function parseDsn($config = '')
     {

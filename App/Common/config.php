@@ -33,7 +33,7 @@ return array(
     'SLAVE_NO'=>'2',    //指定从服务器来进行读操作
     'MASTER_NUM'=>1,    //主服务器的数量
     'DEPLOY_TYPE'=>0,   //数据库部署方式，1 表示主从分离   0 表示单一服务器
-    'RW_SEPRATE'=>false,    //读写是否分离
+    'RW_SEPARATE'=>false,    //读写是否分离
     
     /**
      * 可访问的功能模块
