@@ -11,9 +11,7 @@ class Mysql implements IMysql
 
     protected $dsn = '';  //数据库链接 dsn信息
 
-    protected $PDOstatement = null;
-
-    protected $transnum = 0;  //事务指令数量
+    protected $transNum = 0;  //事务指令数量
 
     protected $lastInsId;  //记录插入数据时最后插入的一条记录的id
 
@@ -36,9 +34,9 @@ class Mysql implements IMysql
 
     protected $PDOStatement;
 
-    private $starttrans = false; //是否开启事务处理
+    private $startTrans = false; //是否开启事务处理
 
-    private $translink;
+    private $transLink;
 
     /**
      * 私有化构造函数，使用单例模式
@@ -70,122 +68,9 @@ class Mysql implements IMysql
         return $this->link;
     }
 
-    public function getlinks()
+    public function getLinks()
     {
         return $this->_links;
-    }
-
-    /**
-     * 执行查询语句
-     *
-     * @param string $sql
-     * @param bool $getsql
-     *
-     * @return mixed
-     */
-    protected function query($sql, $getsql = false)
-    {
-        $this->parseConnect(false);
-        /*
-         * 判断连接资源是否存在
-         */
-        if (!$this->link) return false;
-        $this->sql = $sql;
-        if (!empty($this->bind)) {
-            $that = $this;
-            $sql = strtr($this->sql, array_map(function ($val) use ($that) {
-                return addslashes($val);
-            }, $this->bind));
-        }
-        if ($getsql) return $this->sql;
-        /*
-         * 释放上次执行的结果
-         */
-        if (!empty($this->PDOStatement)) $this->free();
-        /*
-         * 准备一条预处理语句
-         */
-        $this->PDOStatement = $this->link->prepare($sql);
-        if (false === $this->PDOStatement) return false;
-        /*
-         * 绑定参数
-         */
-        foreach ($this->bind as $key => $val) {
-            if (is_array($val)) {
-                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
-            } else {
-                $this->PDOStatement->bindValue($key, $val);
-            }
-        }
-        /*
-         * 释放绑定参数的变量
-         */
-        $this->bind = array();
-        /*
-         * 执行语句
-         */
-        $result = $this->PDOStatement->execute();
-        if (false === $result) return false;
-        else {
-            $result = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
-            $this->affectNum = count($result);
-            return $result;
-        }
-    }
-
-    /**
-     * 执行增删改的语句
-     *
-     * @param string $sql
-     * @param bool $getsql
-     *
-     * @return mixed
-     */
-    protected function execute($sql, $getsql = false)
-    {
-        $this->parseConnect(true);
-        if (!$this->link) return false;
-        $this->sql = $sql;
-        if (!empty($this->bind)) {
-            $that = $this;
-            $sql = strtr($this->sql, array_map(function ($val) use ($that) {
-                return addslashes($val);
-            }, $this->bind));
-        }
-        if ($getsql) return $this->sql;
-        /*
-         * 释放上次执行的结果
-         */
-        if (!empty($this->PDOStatement)) $this->free();
-        /*
-         * 准备一条预处理语句
-         */
-        $this->PDOStatement = $this->link->prepare($sql);
-        if (false === $this->PDOStatement) return false;
-        /*
-         * 绑定参数
-         */
-        foreach ($this->bind as $key => $val) {
-            if (is_array($val)) {
-                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
-            } else {
-                $this->PDOStatement->bindValue($key, $val);
-            }
-        }
-        /*
-         * 释放绑定的参数变量
-         */
-        $this->bind = array();
-        $result = $this->PDOStatement->execute();
-        if ($result === false) {
-            return false;
-        } else {
-            $this->affectNum = $this->PDOStatement->rowCount();
-            if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
-                $this->lastInsId = $this->link->lastInsertId();
-            }
-            return $this->affectNum;
-        }
     }
 
     /**
@@ -203,6 +88,104 @@ class Mysql implements IMysql
         } else {
             return $this->execute($sql);
         }
+    }
+
+    /**
+     * 执行查询语句
+     *
+     * @param string $sql
+     * @param bool $getSql
+     * @return mixed
+     */
+    protected function query($sql, $getSql = false)
+    {
+        $result = $this->executeSql($sql,$getSql,false);
+        if (false === $result){
+            return false;
+        } else {
+            $result = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
+            $this->affectNum = count($result);
+            return $result;
+        }
+    }
+
+    /**
+     * 执行增删改的语句
+     *
+     * @param string $sql
+     * @param bool $getSql
+     * @return mixed
+     */
+    protected function execute($sql, $getSql = false)
+    {
+        $result = $this->executeSql($sql,$getSql,true);
+        if ($result === false) {
+            return false;
+        } else {
+            $this->affectNum = $this->PDOStatement->rowCount();
+            if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
+                $this->lastInsId = $this->link->lastInsertId();
+            }
+            return $this->affectNum;
+        }
+    }
+
+    /**
+     * 执行sql
+     *
+     * @param $sql
+     * @param $getSql
+     * @param $master
+     * @return bool
+     */
+    private function executeSql($sql,$getSql,$master)
+    {
+        $this->parseConnect($master);
+        if (empty($this->link)){
+            return false;
+        }
+
+        if($getSql){
+            $this->sql = $sql;
+        }
+
+        if (!empty($this->bind)) {
+            $that = $this;
+            $sql = strtr($this->sql, array_map(function ($val) use ($that) {
+                return addslashes($val);
+            }, $this->bind));
+        }
+//        if ($getSql) return $this->sql;
+        /*
+         * 释放上次执行的结果
+         */
+        if (!empty($this->PDOStatement)){
+            $this->free();
+        }
+        /*
+         * 准备一条预处理语句
+         */
+        $this->PDOStatement = $this->link->prepare($sql);
+        if (false === $this->PDOStatement){
+            return false;
+        }
+        /*
+         * 绑定参数
+         */
+        foreach ($this->bind as $key => $val) {
+            if (is_array($val)) {
+                $this->PDOStatement->bindValue($key, $val[0], $val[1]);
+            } else {
+                $this->PDOStatement->bindValue($key, $val);
+            }
+        }
+        /*
+         * 释放绑定的参数变量
+         */
+        $this->bind = array();
+
+        return $this->PDOStatement->execute();
+
     }
 
     /**
@@ -236,8 +219,48 @@ class Mysql implements IMysql
     {
         $values = $fields = array();
         $this->parseBind(isset($options['bind']) ? $options['bind'] : array());
+        $this->parseData($data,$fields,$values);
+        $sql = "INSERT INTO " . $this->options['table'] . "(" . implode(',', $fields) . ") VALUES (" . implode(',', $values) . ")";
+        return $this->execute($sql);
+    }
+
+    /**
+     * 更新函数
+     * @param array $data
+     * @param array $options
+     * @return mixed
+     */
+    public function update($data = array(), $options = array())
+    {
+        $values = $fields = $set = array();
+        if (is_array($options)) {
+            $options = array_merge($options, $this->options);
+            $this->table($options['table']);
+        }
+        $this->parseBind($options['bind'] ?? array());
+
+        $this->parseData($data,$fields,$values);
+
+        for ($i = 0; $i < count($fields); $i++) {
+            $set[] = $fields[$i] . "=" . $values[$i];
+        }
+        $where = $this->parseWhere();
+        $sql = "UPDATE " . $this->options['table'] . " SET " . implode(',', $set) . $where;
+        return $this->execute($sql);
+    }
+
+    /**
+     * 解析数据，并且设置field和value
+     * @param $data
+     * @param $fields
+     * @param $values
+     */
+    private function parseData($data,&$fields,&$values)
+    {
         foreach ($data as $key => $val) {
             $fields[] = $key;
+
+            // 检测字段类型
             for ($i = 0; $i < count($this->options['fields']); $i++) {
                 if ($this->options['fields'][$i]['field'] == $key) {
                     if (preg_match('/\w*(int|INT)$/i', $this->options['fields'][$i]['type'])) {
@@ -248,11 +271,9 @@ class Mysql implements IMysql
                     break;
                 }
             }
-
+            //绑定参数
             $this->bindParams($key, $val);
         }
-        $sql = "INSERT INTO " . $this->options['table'] . "(" . implode(',', $fields) . ") VALUES (" . implode(',', $values) . ")";
-        return $this->execute($sql);
     }
 
     /**
@@ -433,45 +454,6 @@ class Mysql implements IMysql
     }
 
     /**
-     * 更新函数
-     * @param array $data
-     * @param array $options
-     * @return mixed
-     */
-    public function update($data = array(), $options = array())
-    {
-        $values = $fields = $set = array();
-        if (is_array($options)) {
-            $options = array_merge($options, $this->options);
-            $this->table($options['table']);
-        }
-        $this->parseBind($options['bind'] ?? array());
-        foreach ($data as $key => $val) {
-            $fields[] = $key;
-
-            // 检测字段类型
-            for ($i = 0; $i < count($this->options['fields']); $i++) {
-                if ($this->options['fields'][$i]['field'] == $key) {
-                    if (preg_match('/\w*(int|INT)$/i', $this->options['fields'][$i]['type'])) {
-                        $values[] = ":" . $key;
-                    } else {
-                        $values[] = "':" . $key . "'";
-                    }
-                    break;
-                }
-            }
-            //绑定参数
-            $this->bindParams($key, $val);
-        }
-        for ($i = 0; $i < count($fields); $i++) {
-            $set[] = $fields[$i] . "=" . $values[$i];
-        }
-        $where = $this->parseWhere();
-        $sql = "UPDATE " . $this->options['table'] . " SET " . implode(',', $set) . $where;
-        return $this->execute($sql);
-    }
-
-    /**
      * 删除数据函数
      * @param array $options
      * @return Ambigous <mixed, boolean, string, string>
@@ -525,7 +507,7 @@ class Mysql implements IMysql
     /**
      * 选择排列顺序
      * @param string $order
-     * @return Db
+     * @return Mysql
      */
     public function orderBy($order = '')
     {
@@ -536,16 +518,16 @@ class Mysql implements IMysql
     /**
      * limit设置函数
      * @param string $limit
-     * @return Db
+     * @return Mysql
      */
     public function limit($limit = '')
     {
         if (is_array($limit)) {
-            list($page, $listrows) = $limit;
+            list($page, $listRows) = $limit;
             $page = $page > 0 ? $page : 1;
-            $listrows = $listrows > 0 ? $listrows : 20;
-            $offset = $listrows * ($page - 1);
-            $this->options['limit'] = $offset . "," . $listrows;
+            $listRows = $listRows > 0 ? $listRows : 20;
+            $offset = $listRows * ($page - 1);
+            $this->options['limit'] = $offset . "," . $listRows;
         } elseif (is_string($limit)) {
             $this->options['limit'] = $limit;
         }
@@ -570,6 +552,7 @@ class Mysql implements IMysql
             }
             $this->options['fields'] = $fields;
         }
+        $f = [];
         foreach ($this->options['fields'] as $key => $val) {
             $f[] = $val['field'];
         }
@@ -626,10 +609,9 @@ class Mysql implements IMysql
         } else {
             $this->link = $this->connect();
         }
-        /*
-         * 如果开启了事务，那么将连接资源保存起来
-         */
-        if ($this->starttrans && $master) $this->translink = $this->link;
+
+        // 如果开启了事务，那么将连接资源保存起来
+        if ($this->startTrans && $master) $this->transLink = $this->link;
         return;
     }
 
@@ -699,9 +681,9 @@ class Mysql implements IMysql
              * 如果事务数量大于0 说明已经开启了事务，接下来的更新操作要在当前连接上进行
              * 如果重新连接可能会连接不同的服务器
              */
-            if ($this->transnum > 0) {
-                $this->link = $this->translink;
-                return $this->translink;
+            if ($this->transNum > 0) {
+                $this->link = $this->transLink;
+                return $this->transLink;
             }
             $db = array(
                 'host' => isset($config['host'][$m]) ? $config['host'][$m] : $config['host'][0],
@@ -811,12 +793,12 @@ class Mysql implements IMysql
      */
     public function startTransaction()
     {
-        $this->starttrans = true;
+        $this->startTrans = true;
         $this->parseConnect();
         if (empty($this->link)) return false;
-        if ($this->transnum == 0)
+        if ($this->transNum == 0)
             $this->link->beginTransaction();
-        $this->transnum++;
+        $this->transNum++;
         return;
     }
 
@@ -827,11 +809,11 @@ class Mysql implements IMysql
      */
     public function rollback()
     {
-        if ($this->transnum > 0) {
+        if ($this->transNum > 0) {
             //如果事务指令数大于0 则回滚事务 并且将事务指令数置为0
             $res = $this->link->rollBack();
-            $this->transnum = 0;
-            $this->starttrans = false;
+            $this->transNum = 0;
+            $this->startTrans = false;
             if (!$res) {
                 return false;
             }
@@ -846,11 +828,11 @@ class Mysql implements IMysql
      */
     public function commit()
     {
-        if ($this->transnum > 0) {
+        if ($this->transNum > 0) {
             //如果事务指令数大于0 则提交事务 并且将事务指令数置为0
             $res = $this->link->commit();
-            $this->transnum = 0;
-            $this->starttrans = false;
+            $this->transNum = 0;
+            $this->startTrans = false;
             if (!$res) {
                 return false;
             }
@@ -863,7 +845,7 @@ class Mysql implements IMysql
      */
     private function free()
     {
-        $this->PDOstatement = null;
+        $this->PDOStatement = null;
     }
 
     /**
