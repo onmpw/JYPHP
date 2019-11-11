@@ -21,11 +21,12 @@ interface IMysql{
      * @return boolean
     */
     public function addMore($data = array(),$options = array());
+
     /**
      * 更新函数
-     * @param unknown $data
-     * @param unknown $options
-    */
+     * @param array $data
+     * @param array $options
+     */
     public function update($data = array(),$options = array());
     /**
      * 删除数据函数
@@ -33,11 +34,12 @@ interface IMysql{
      * @return Ambigous <mixed, boolean, string, string>
     */
     public function delete($options = array());
+
     /**
      * 构建sql语句
-     * @param unknown $options
+     * @param array $options
      * @return string
-    */
+     */
     public function buildSql($options = array());
     /**
      * 选择排列顺序
@@ -81,11 +83,12 @@ interface IMysql{
      * @return boolean|unknown
     */
     public function find($options = array());
+
     /**
      * 查询多条数据函数
-     * @param unknown $options
-     * @return Ambigous <mixed, boolean, string, string, unknown>
-    */
+     * @param array $options
+     * @return array
+     */
     public function select($options = array());
     /**
      * where 条件设置

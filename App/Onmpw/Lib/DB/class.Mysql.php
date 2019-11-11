@@ -3,6 +3,8 @@
 namespace Lib\DB;
 
 use Inter\DB\IMysql;
+use PDOException;
+use PDO;
 
 class Mysql implements IMysql
 {
@@ -95,17 +97,17 @@ class Mysql implements IMysql
      *
      * @param string $sql
      * @param bool $getSql
-     * @return bool
+     * @return array
      */
     protected function query($sql, $getSql = false)
     {
         $result = $this->executeSql($sql,$getSql,false);
         if (false === $result){
-            return false;
+            return [];
         } else {
-            $result = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
-            $this->affectNum = count($result);
-            return $result;
+            $fetchResult = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
+            $this->affectNum = count($fetchResult);
+            return $fetchResult;
         }
     }
 
@@ -120,7 +122,7 @@ class Mysql implements IMysql
     {
         $result = $this->executeSql($sql,$getSql,true);
         if ($result === false) {
-            return false;
+            return 0;
         } else {
             $this->affectNum = $this->PDOStatement->rowCount();
             if (preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $sql)) {
@@ -156,22 +158,19 @@ class Mysql implements IMysql
             }, $this->bind));
         }
 //        if ($getSql) return $this->sql;
-        /*
-         * 释放上次执行的结果
-         */
+
+         // 释放上次执行的结果
         if (!empty($this->PDOStatement)){
             $this->free();
         }
-        /*
-         * 准备一条预处理语句
-         */
+
+         // 准备一条预处理语句
         $this->PDOStatement = $this->link->prepare($sql);
         if (false === $this->PDOStatement){
             return false;
         }
-        /*
-         * 绑定参数
-         */
+
+        // 绑定参数
         foreach ($this->bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
@@ -179,9 +178,8 @@ class Mysql implements IMysql
                 $this->PDOStatement->bindValue($key, $val);
             }
         }
-        /*
-         * 释放绑定的参数变量
-         */
+
+        // 释放绑定的参数变量
         $this->bind = array();
 
         return $this->PDOStatement->execute();
@@ -357,7 +355,7 @@ class Mysql implements IMysql
     /**
      * 查询多条数据函数
      * @param array $options
-     * @return bool <mixed, boolean, string, string, unknown>
+     * @return array <mixed, boolean, string, string, unknown>
      */
     public function select($options = array())
     {
@@ -389,7 +387,7 @@ class Mysql implements IMysql
         }
         $sql = $this->buildSql($options);
         $result = $this->query($sql);
-        if ($result === false || count($result) == 0) return false;
+        if (empty($result)) return false;
         $result = $result[0];
         return $result;
     }
@@ -544,7 +542,7 @@ class Mysql implements IMysql
         if (empty($table)) $table = $this->options['table'];
         $sql = 'SHOW COLUMNS FROM ' . $table;
         $res = $this->query($sql);
-        if (false === $res) return false;
+        if (empty($res)) return false;
         $fields = array();
         if (is_array($res)) {
             foreach ($res as $key => $val) {
@@ -632,8 +630,8 @@ class Mysql implements IMysql
             }
             if (empty($config['dsn'])) $config = $this->parseDsn($config);
             try {
-                $this->_links[$identify] = new \PDO($config['dsn'], $config['user'], $config['password']);
-            } catch (\PDOException $e) {
+                $this->_links[$identify] = new PDO($config['dsn'], $config['user'], $config['password']);
+            } catch (PDOException $e) {
                 if ($reconnect)
                     return "reconnect";
                 else
