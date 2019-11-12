@@ -9,30 +9,8 @@ use PDO;
 class Mysql extends BaseDB implements IMysql
 {
 
-    protected $config = array();
-
-    protected $dsn = '';  //数据库链接 dsn信息
-
-    protected $transNum = 0;  //事务指令数量
-
-    protected $lastInsId;  //记录插入数据时最后插入的一条记录的id
-
     //修改部分
     public static $_instance; //静态属性，存储实例对象
-
-    protected $_links = array();  //存储连接标识符
-
-    protected $link = '';
-
-    protected $ignore = array();
-
-    protected $sql;
-
-    protected $bind = array();  //绑定参数
-
-    protected $options = array();
-
-    protected $PDOStatement;
 
     private $startTrans = false; //是否开启事务处理
 
@@ -44,7 +22,7 @@ class Mysql extends BaseDB implements IMysql
      */
     private function __construct($config = '')
     {
-        $this->config = $this->parseConfig($config);
+        $this->config($config);
     }
 
     /**
@@ -572,14 +550,6 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * 得到最后插入的数据的id
-     */
-    public function lastInsId()
-    {
-        return $this->lastInsId;
-    }
-
-    /**
      * 解析order函数
      * @return string
      */
@@ -622,18 +592,32 @@ class Mysql extends BaseDB implements IMysql
      */
     protected function connect($config = '', $identify = 0, $reconnect = false)
     {
-        if (!isset($this->_links[$identify])) {
+        if(!isset($this->_links[$identify])) {
             if (empty($config)) {
                 $config = $this->config;
             }
-            if (empty($config['dsn'])) $config = $this->parseDsn($config);
-            try {
-                $this->_links[$identify] = new PDO($config['dsn'], $config['user'], $config['password']);
-            } catch (PDOException $e) {
-                if ($reconnect)
-                    return "reconnect";
-                else
-                    return false;
+
+            if ($config['use_pdo'] == 'yes') {
+                if (empty($config['dsn'])) {
+                    $config = $this->parseDsn($config);
+                }
+                try {
+                    $this->_links[$identify] = new \PDO($config['dsn'], $config['user'], $config['password'], $this->options);
+                } catch (\PDOException $e) {
+                    if ($reconnect)
+                        return "reconnect";
+                    else
+                        return false;
+                }
+            } elseif ($config['use_pdo'] == 'no') {
+                try {
+                    $this->_links[$identify] = new \mysqli($config['host'], $config['user'], $config['password'], $config['dbname'], $config['port']);
+                } catch (\Exception $e) {
+                    if ($reconnect)
+                        return "reconnect";
+                    else
+                        return false;
+                }
             }
         }
         return $this->_links[$identify];
@@ -714,11 +698,10 @@ class Mysql extends BaseDB implements IMysql
             }
             $db = $this->buildConnectDb($config,$s);
         }
-        /*
-         * 连接数据库
-         */
+
+         // 连接数据库
         $identify = $master === true ? $m : $s;
-        $res = $this->connect($db, $identify, true);
+        $res = parent::connect($db, $identify, true);
         if ($res === false) {
             return false;
         } elseif ($res == 'reconnect') {
@@ -747,21 +730,6 @@ class Mysql extends BaseDB implements IMysql
             'dsn' => isset($config['dsn'][$host]) ? $config['dsn'][$host] : $config['dsn'][0],
         );
         return $db;
-    }
-
-    /**
-     * 解析配置数据
-     * @param array $config
-     * @return array|string
-     */
-    protected function parseConfig($config = [])
-    {
-        if (empty($config)) {
-            $config = $this->config;
-        } else {
-            $config = array_merge($this->config, $config);
-        }
-        return $config;
     }
 
     /**

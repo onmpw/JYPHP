@@ -5,15 +5,15 @@ class Router{
     public static function router(){
         
         
-        $urlarr = self::parseUrl();
+        $urlArr = self::parseUrl();
         /*
          * 首先判断模块参数是否存在
          */
-        if(in_array(\Common::C('URL:M_NAME'),array_keys($urlarr))){
+        if(in_array(\Common::C('URL:M_NAME'),array_keys($urlArr))){
             //如果存在，则判断当前的模块是否存在
-            if(in_array(strtolower($urlarr[\Common::C('URL:M_NAME')]),array_map(function($v){ return strtolower($v);}, \Common::C('MODULE')))){
-                defined('MODULE_NAME') or define('MODULE_NAME',ucwords(strtolower($urlarr[\Common::C('URL:M_NAME')])));
-            }elseif(!empty($urlarr[\Common::C('URL:M_NAME')])){
+            if(in_array(strtolower($urlArr[\Common::C('URL:M_NAME')]),array_map(function($v){ return strtolower($v);}, \Common::C('MODULE')))){
+                defined('MODULE_NAME') or define('MODULE_NAME',ucwords(strtolower($urlArr[\Common::C('URL:M_NAME')])));
+            }elseif(!empty($urlArr[\Common::C('URL:M_NAME')])){
                 echo "Error!";
                 exit;
             }else{
@@ -26,10 +26,10 @@ class Router{
         /*
          * 然后判断控制器是否存在
          */
-        if (in_array(\Common::C('URL:A_NAME'), array_keys($urlarr)) && ! empty($urlarr[\Common::C('URL:A_NAME')])) {
+        if (in_array(\Common::C('URL:A_NAME'), array_keys($urlArr)) && ! empty($urlArr[\Common::C('URL:A_NAME')])) {
             // 控制器存在 并且不为空
-            $class = MODULE_NAME . '\\Action\\' . ucwords(strtolower($urlarr[\Common::C('URL:A_NAME')])) . 'Action';
-            defined('AC_NAME') or define('AC_NAME',ucwords(strtolower($urlarr[\Common::C('URL:A_NAME')])));
+            $class = MODULE_NAME . '\\Action\\' . ucwords(strtolower($urlArr[\Common::C('URL:A_NAME')])) . 'Action';
+            defined('AC_NAME') or define('AC_NAME',ucwords(strtolower($urlArr[\Common::C('URL:A_NAME')])));
             if (class_exists($class)) {
                 $class = new \ReflectionClass($class);
                 /*
@@ -44,13 +44,13 @@ class Router{
                 //去除空元素
                 /* $methods = array_filter($methods); */
                 $func = '';
-                if (in_array(\Common::C('URL:F_NAME'), array_keys($urlarr)) && ! empty($urlarr[\Common::C('URL:F_NAME')])) {
+                if (in_array(\Common::C('URL:F_NAME'), array_keys($urlArr)) && ! empty($urlArr[\Common::C('URL:F_NAME')])) {
                     // 存在 并且不为空那么检测当前控制器中是否存在此方法
-                    $func = $urlarr[\Common::C('URL:F_NAME')]; // 将 访问的方法赋值给变量
+                    $func = $urlArr[\Common::C('URL:F_NAME')]; // 将 访问的方法赋值给变量
                                                            // 首先判断方法名称是否符合规范
                     if (! preg_match('/^[A-Za-z](\w)*$/', $func)) // 不合乎规范 抛出异常
                         throw new \ReflectionException();
-                } elseif (empty($urlarr[\Common::C('URL:F_NAME')]) || ! in_array(\Common::C('URL:F_NAME'), array_keys($urlarr))) {
+                } elseif (empty($urlArr[\Common::C('URL:F_NAME')]) || ! in_array(\Common::C('URL:F_NAME'), array_keys($urlArr))) {
                     $func = 'index';
                 }
                 /*
@@ -77,14 +77,14 @@ class Router{
                     //得到方法参数的个数
                     $par = $method->getNumberOfParameters();
                     //得到必须参数的个数
-                    $rpar = $method->getNumberOfRequiredParameters();
-                    $pararr = array(); //定义存放参数名称的数组
+                    $rPar = $method->getNumberOfRequiredParameters();
+                    $parArr = array(); //定义存放参数名称的数组
                     if($par > 0){
-                        $pararr = array_map(function($val){return $val->name;},$method->getParameters());
+                        $parArr = array_map(function($val){return $val->name;},$method->getParameters());
                     }
-//                     $args = in_array(\Common::C('URL:P_NAME'),array_keys($urlarr)) ? self::parseParam($urlarr[\Common::C('URL:P_NAME')],$par,$pararr) : false;
-                    if(in_array(\Common::C('URL:P_NAME'),array_keys($urlarr))){
-                        $args = self::parseParam($urlarr[\Common::C('URL:P_NAME')],$par,$pararr);
+//                     $args = in_array(\Common::C('URL:P_NAME'),array_keys($urlArr)) ? self::parseParam($urlArr[\Common::C('URL:P_NAME')],$par,$pararr) : false;
+                    if(in_array(\Common::C('URL:P_NAME'),array_keys($urlArr))){
+                        $args = self::parseParam($urlArr[\Common::C('URL:P_NAME')],$par,$parArr);
                     }else{
                         $args = array();
                     }
@@ -94,8 +94,8 @@ class Router{
                         }elseif(is_array($args)){
                             //根据返回的参数数组的个数  和该方法必须的参数个数做比较
                             //如果前者小于后者 那么 参数个数错误 否则 则调用函数
-                            if(count($args) < $rpar){
-                                echo "Paramater Is Required!";
+                            if(count($args) < $rPar){
+                                echo "Parameter Is Required!";
                             }else{
                                 $method->invokeArgs($class->newInstance(), $args);
                             }
@@ -120,7 +120,7 @@ class Router{
      */
     private static function parseUrl(){
         $uri = $_SERVER['QUERY_STRING'];
-        $urlarr = array();
+        $urlArr = array();
         if (! empty($uri)) {
             /*
              * 解析uri
@@ -128,15 +128,15 @@ class Router{
             $url = parse_url($uri, PHP_URL_PATH);
             $url = explode('&', $url);
             // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
-//             $urlarr = array();
+//             $urlArr = array();
             /*
              * 遍历url数组 开始解析
             */
             foreach ($url as $val) {
                 $a = explode('=', $val);
                 //                 echo $a[0];echo "<br />";
-                $urlarr[$a[0]] = $a[1];
-                //                 print_r($urlarr);exit;
+                $urlArr[$a[0]] = $a[1];
+                //                 print_r($urlArr);exit;
             }
         }else{
             if(isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'],'/'))){
@@ -146,28 +146,28 @@ class Router{
                 $uri = explode('/', trim($uri,'/'));
                 //模块
                 if(($m = array_shift($uri)) != false){
-                    $urlarr[\Common::C("URL:M_NAME")] = $m;
+                    $urlArr[\Common::C("URL:M_NAME")] = $m;
                 }
                 //控制器
                 if(($a = array_shift($uri)) != false){
-                    $urlarr[\Common::C("URL:A_NAME")] = $a;
+                    $urlArr[\Common::C("URL:A_NAME")] = $a;
                 }
                 //方法
                 if(($f = array_shift($uri)) != false){
-                    $urlarr[\Common::C("URL:F_NAME")] = $f;
+                    $urlArr[\Common::C("URL:F_NAME")] = $f;
                 }
                 //参数
                 if(!empty($uri)){
-                    $urlarr[\Common::C("URL:P_NAME")] = implode('/', $uri);
+                    $urlArr[\Common::C("URL:P_NAME")] = implode('/', $uri);
                 }
                 
             }else{
-                $urlarr[\Common::C("URL:M_NAME")] = \Common::C('DEFAULT_MODULE');
-                $urlarr[\Common::C("URL:A_NAME")] = \Common::C('DEFAULT_ACTION');
-                $urlarr[\Common::C("URL:F_NAME")] = \Common::C('DEFAULT_FUNC');
+                $urlArr[\Common::C("URL:M_NAME")] = \Common::C('DEFAULT_MODULE');
+                $urlArr[\Common::C("URL:A_NAME")] = \Common::C('DEFAULT_ACTION');
+                $urlArr[\Common::C("URL:F_NAME")] = \Common::C('DEFAULT_FUNC');
             }
         }
-        return $urlarr;
+        return $urlArr;
     }
     
     private static function check($uri){
@@ -213,15 +213,16 @@ class Router{
         }
         return $uri;
     }
+
     /**
      * 解析url参数方法
-     * 
+     *
      * @param string $uri
-     * @param int $parnum
-     * @param array $parnames
+     * @param int $parNum
+     * @param array $parNames
      * @return mixed
      */
-    private static function parseParam($uri = '',$parnum = 0,$parnames = array()){
+    private static function parseParam($uri = '',$parNum = 0,$parNames = array()){
         //清除 GET 中的 模块、控制器、方法、参数等元素
         array_walk_recursive($_GET,'\\Common::Url_filter');
         //清除空元素
@@ -231,7 +232,7 @@ class Router{
          */
         $str = '';
         if(empty($uri)) 
-            if($parnum == 0)
+            if($parNum == 0)
                 return false;
             else return array();
         
@@ -241,8 +242,8 @@ class Router{
          */
         if(!strpos($uri,'/')){
             $_GET[$uri] = '';
-            if($parnum >=1)
-                return array($parnames[0]=>$uri);
+            if($parNum >=1)
+                return array($parNames[0]=>$uri);
             else return false;
         }
         $par = array();
@@ -254,13 +255,13 @@ class Router{
         \Common::parse_empty($uri);
 
         
-        //比较url中参数的个数和$parnum 的大小 根据两者的数量确定方法的参数
+        //比较url中参数的个数和$parNum 的大小 根据两者的数量确定方法的参数
         if(count($uri) <= 0){
             return false;   
         }elseif(count($uri) == 1){
             //如果url中参数的个数为1 
             $_GET[$uri[0]] = '';
-            if($parnum >= 0) return array($parnames[0] => $uri[0]);
+            if($parNum >= 0) return array($parNames[0] => $uri[0]);
             
             return false;
         }
@@ -269,12 +270,12 @@ class Router{
          * 如果前者大 则按照后者循环
          * 否则 按照前者循环
          */
-        if(count($uri) <= $parnum){
+        if(count($uri) <= $parNum){
             for($i = 0; $i<count($uri); $i++)
-                $par[$parnames[$i]] = $uri[$i];
+                $par[$parNames[$i]] = $uri[$i];
         }else{
-            for($i = 0; $i<$parnum; $i++)
-                $par[$parnames[$i]] = $uri[$i];
+            for($i = 0; $i<$parNum; $i++)
+                $par[$parNames[$i]] = $uri[$i];
         }
         while(count($uri) > 0){
             $k = $uri[0];

@@ -127,10 +127,7 @@ class Model{
         $op = 'S';
         return $this->db->sql($sql,$op);
     }
-    
-    public function test($type=''){
-        var_dump($this->options[$type]);
-    }
+
     /**
      * limitÌõ¼ş·ÖÎö
      * @access public
