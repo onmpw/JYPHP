@@ -6,7 +6,7 @@ use Inter\DB\IMysql;
 use PDOException;
 use PDO;
 
-class Mysql implements IMysql
+class Mysql extends BaseDB implements IMysql
 {
 
     protected $config = array();
@@ -16,8 +16,6 @@ class Mysql implements IMysql
     protected $transNum = 0;  //事务指令数量
 
     protected $lastInsId;  //记录插入数据时最后插入的一条记录的id
-
-    protected $affectNum; //记录影响的数据的条数
 
     //修改部分
     public static $_instance; //静态属性，存储实例对象
@@ -622,7 +620,7 @@ class Mysql implements IMysql
      *
      * @return string|boolean|multitype:
      */
-    private function connect($config = '', $identify = 0, $reconnect = false)
+    protected function connect($config = '', $identify = 0, $reconnect = false)
     {
         if (!isset($this->_links[$identify])) {
             if (empty($config)) {
