@@ -6,6 +6,7 @@ use Onlinebid\Model\BidsModel;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
+use Exceptions\ConnectException;
 
 class IndexAction extends CommonAction{
     public function index(){
@@ -15,6 +16,7 @@ class IndexAction extends CommonAction{
         var_dump($res);
         $logger = new Logger('my_logger');
         var_dump($logger);
+        throw new ConnectException("lianjiecuowu");
 
     }
     public function login(){

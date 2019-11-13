@@ -49,9 +49,9 @@ class Onmpw{
             //返回 \ 第一次出现的位置之前的字符串
             $name = strstr($class, '\\' ,true);
             /*
-             * 如果自动加载的类 是Lib、Ext、Inter 中的类文件或者接口文件那么向下执行
+             * 如果自动加载的类 是Lib、Ext、Inter Exceptions 中的类文件或者接口文件那么向下执行
              */
-            if(in_array($name,array('Lib','Ext','Inter'))){
+            if(in_array($name,array('Lib','Ext','Inter','Exceptions'))){
 //              $class = str_replace('\\','/',substr($class,strpos($class,'\\')));
                 $class_name = str_replace('\\','/',$class);
                 //Common::Import($class);
