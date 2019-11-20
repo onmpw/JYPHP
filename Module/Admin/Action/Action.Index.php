@@ -11,9 +11,9 @@ use Exceptions\ConnectException;
 class IndexAction extends CommonAction{
     public function index(){
         $sql = "select * from users";
-        $mod = new NewsModel();
+        $mod = new NewssModel();
         $res = $mod->select_sql($sql);
-        var_dump($res);
+        var_dump(10/0);
         $logger = new Logger('my_logger');
         var_dump($logger);
         throw new ConnectException("lianjiecuowu");

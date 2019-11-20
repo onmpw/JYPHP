@@ -2,7 +2,7 @@
 
 /**
  * 
- * @author Onmpw
+ * @author 刘汉增
  *
  */
 class Common{
@@ -195,8 +195,8 @@ class Common{
                     /*
                      * 缓存数组中不存在 那么首先检查当前模块的配置文件中是否存在
                      */
-                    if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/config.php')){
-                        $C = require(MODULE_PATH.MODULE_NAME.'/Common/config.php');
+                    if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/app.php')){
+                        $C = require(MODULE_PATH.MODULE_NAME.'/Common/app.php');
                         if(isset($C[$confs[0]][$confs[1]])){
                             self::$_confs[$confs[0]][$confs[1]] = $C[$confs[0]][$confs[1]];
                             return $C[$confs[0]][$confs[1]];
@@ -205,7 +205,7 @@ class Common{
                     /*
                      * 如果当前数组中不存在 则查找公共配置文件中是否存在
                      */
-                    $C = require(COMMON_PATH.'config.php');
+                    $C = require(COMMON_PATH . 'app.php');
                     if(isset($C[$confs[0]][$confs[1]])){
                         self::$_confs[$confs[0]][$confs[1]] = $C[$confs[0]][$confs[1]];
                         return $C[$confs[0]][$confs[1]];
@@ -219,8 +219,8 @@ class Common{
             /*
              * 缓存数组中不存在 那么首先检查当前模块的配置文件中是否存在
              */
-            if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/config.php')){
-                $C = require(MODULE_PATH.MODULE_NAME.'/Common/config.php');
+            if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/app.php')){
+                $C = require(MODULE_PATH.MODULE_NAME.'/Common/app.php');
                 if(isset($C[$confs])){
                     self::$_confs[$confs] = $C[$confs];
                     return $C[$confs];
@@ -229,7 +229,7 @@ class Common{
             /*
              * 如果当前数组中不存在 则查找公共配置文件中是否存在
              */
-            $C = require(COMMON_PATH.'config.php');
+            $C = require(COMMON_PATH . 'app.php');
             if(isset($C[$confs])){
                 self::$_confs[$confs] = $C[$confs];
                 return $C[$confs];
@@ -247,7 +247,7 @@ class Common{
      */
     public static function Load_conf($conf_file = ''){
         if(empty($conf_file)){
-            return require_once COMMON_PATH.'config.php';
+            return require_once COMMON_PATH . 'app.php';
         }
         if(file_exists($conf_file)){
             return require_once $conf_file;

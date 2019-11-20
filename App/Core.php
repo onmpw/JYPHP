@@ -31,7 +31,12 @@ defined('LIB_PATH') or define('LIB_PATH',APP_PATH.'Onmpw/Lib/');
  * 定义公共目录
  */
  defined('COMMON_PATH') or define('COMMON_PATH',APP_PATH ."Common/");
- 
+
+/**
+ * 定义配置文件目录
+ */
+ defined('CONFIG_PATH') or define('CONFIG_PATH',APP_PATH ."Config/");
+
  /**
   * 定义 data目录
   */
@@ -71,5 +76,16 @@ function _set_include_path($path = ''){
  * 导入 启动类文件 Onmpw
  */
 Common::Import("#/Onmpw/Onmpw");
-use Onmpw\Onmpw;
-class Core extends Onmpw{}
+use Onmpw\Onmpw as Kernel;
+class Core extends Kernel{
+    public static function _Init()
+    {
+        // 内核初始化
+        parent::_Init();
+
+        // 加载需要初始化的功能
+        foreach(self::$_inits as $class){
+            call_user_func([new $class,'_Init']);
+        }
+    }
+}
