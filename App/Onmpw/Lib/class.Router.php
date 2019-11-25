@@ -1,6 +1,11 @@
 <?php
 namespace Lib;
 
+//use Exceptions\RouterException;
+use ReflectionException;
+use ReflectionClass;
+use ReflectionMethod;
+
 class Router{
     public static function router(){
         
@@ -31,12 +36,17 @@ class Router{
             $class = MODULE_NAME . '\\Action\\' . ucwords(strtolower($urlArr[\Common::C('URL:A_NAME')])) . 'Action';
             defined('AC_NAME') or define('AC_NAME',ucwords(strtolower($urlArr[\Common::C('URL:A_NAME')])));
             if (class_exists($class)) {
-                $class = new \ReflectionClass($class);
+                try {
+                    $class = new ReflectionClass($class);
+                }catch(ReflectionException $e){
+                    var_dump($e->getMessage());
+//                    throw $e;
+                }
                 /*
                  * 检测方法参数是否存在
                  */
                 // 首先取出次控制器的所有方法 并且只过滤出 public 方法
-                $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+                $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
                 $methods = array_map(function ($val) { //利用回调函数 将非 static 函数的名称返回给数组
                     if(!$val->isStatic())
                         return $val->name;
@@ -48,8 +58,12 @@ class Router{
                     // 存在 并且不为空那么检测当前控制器中是否存在此方法
                     $func = $urlArr[\Common::C('URL:F_NAME')]; // 将 访问的方法赋值给变量
                                                            // 首先判断方法名称是否符合规范
-                    if (! preg_match('/^[A-Za-z](\w)*$/', $func)) // 不合乎规范 抛出异常
-                        throw new \ReflectionException();
+                    if (!preg_match('/^[A-Za-z](\w)*$/', $func)){
+                        // 不合乎规范 抛出异常
+                        $e = new RouterException("不合乎规范");
+                        $e->setRouter("router");
+                        throw $e;
+                    }
                 } elseif (empty($urlArr[\Common::C('URL:F_NAME')]) || ! in_array(\Common::C('URL:F_NAME'), array_keys($urlArr))) {
                     $func = 'index';
                 }
@@ -88,27 +102,25 @@ class Router{
                     }else{
                         $args = array();
                     }
-                    try {
-                        if(false === $args){
-                            $method->invoke($class->newInstance());
-                        }elseif(is_array($args)){
-                            //根据返回的参数数组的个数  和该方法必须的参数个数做比较
-                            //如果前者小于后者 那么 参数个数错误 否则 则调用函数
-                            if(count($args) < $rPar){
-                                echo "Parameter Is Required!";
-                            }else{
-                                $method->invokeArgs($class->newInstance(), $args);
-                            }
+
+                    if(false === $args){
+                        $method->invoke($class->newInstance());
+                    }elseif(is_array($args)){
+                        //根据返回的参数数组的个数  和该方法必须的参数个数做比较
+                        //如果前者小于后者 那么 参数个数错误 否则 则调用函数
+                        if(count($args) < $rPar){
+                            echo "Parameter Is Required!";
+                        }else{
+                            $method->invokeArgs($class->newInstance(), $args);
                         }
-                    } catch (\ReflectionException $e) {
-                        echo $e->getMessage();
                     }
+
                 }
             } else {
-                echo 'Can not found Action!';
+                throw new RouterException('Can not found Action!');
             }
         }else{
-            echo 'Lack of Action';
+            throw new RouterException('Lack of Action');
         }
         
     }

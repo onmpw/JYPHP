@@ -28,7 +28,7 @@ class Onmpw{
         HandlerExceptions::class
     ];
     
-    public static function _Init(){
+    protected static function _Init(){
         /*
          * 设置引入文件的路径
          */
@@ -48,6 +48,7 @@ class Onmpw{
      * @param string $class
      *
      * @return bool
+     * @throws FileNotFoundException
      */
     public static function autoload($class){
         $after_ext = '.php';
