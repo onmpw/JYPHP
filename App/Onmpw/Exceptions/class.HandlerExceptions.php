@@ -41,5 +41,6 @@ class HandlerExceptions
     public function handleException(Exception $e)
     {
         var_dump($e->getCode());
+        var_dump($e->getMessage());
     }
 }

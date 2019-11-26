@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Lib;
+namespace Exceptions;
 
 use Exception;
 use Throwable;

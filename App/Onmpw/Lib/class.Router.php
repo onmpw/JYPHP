@@ -1,26 +1,31 @@
 <?php
 namespace Lib;
 
-//use Exceptions\RouterException;
+use Exceptions\RouterException;
 use ReflectionException;
 use ReflectionClass;
 use ReflectionMethod;
 
 class Router{
+
+    /**
+     * 开始路由
+     *
+     * @throws ReflectionException
+     * @throws RouterException
+     */
     public static function router(){
         
         
         $urlArr = self::parseUrl();
-        /*
-         * 首先判断模块参数是否存在
-         */
+
+        // 首先判断模块参数是否存在
         if(in_array(\Common::C('URL:M_NAME'),array_keys($urlArr))){
             //如果存在，则判断当前的模块是否存在
             if(in_array(strtolower($urlArr[\Common::C('URL:M_NAME')]),array_map(function($v){ return strtolower($v);}, \Common::C('MODULE')))){
                 defined('MODULE_NAME') or define('MODULE_NAME',ucwords(strtolower($urlArr[\Common::C('URL:M_NAME')])));
             }elseif(!empty($urlArr[\Common::C('URL:M_NAME')])){
-                echo "Error!";
-                exit;
+                throw new RouterException('Error!');
             }else{
                 defined('MODULE_NAME') or define('MODULE_NAME',\Common::C('DEFAULT_MODULE'));
             }
@@ -39,20 +44,18 @@ class Router{
                 try {
                     $class = new ReflectionClass($class);
                 }catch(ReflectionException $e){
-                    var_dump($e->getMessage());
-//                    throw $e;
+                    throw new RouterException($e->getMessage());
                 }
-                /*
-                 * 检测方法参数是否存在
-                 */
+
+                // 检测方法参数是否存在
                 // 首先取出次控制器的所有方法 并且只过滤出 public 方法
                 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
                 $methods = array_map(function ($val) { //利用回调函数 将非 static 函数的名称返回给数组
                     if(!$val->isStatic())
                         return $val->name;
                 }, $methods);
+
                 //去除空元素
-                /* $methods = array_filter($methods); */
                 $func = '';
                 if (in_array(\Common::C('URL:F_NAME'), array_keys($urlArr)) && ! empty($urlArr[\Common::C('URL:F_NAME')])) {
                     // 存在 并且不为空那么检测当前控制器中是否存在此方法
@@ -67,10 +70,9 @@ class Router{
                 } elseif (empty($urlArr[\Common::C('URL:F_NAME')]) || ! in_array(\Common::C('URL:F_NAME'), array_keys($urlArr))) {
                     $func = 'index';
                 }
-                /*
-                 * 此判断是为了使方法名称不区分大小写
-                 * 判断当前方法是否在控制器中存在
-                 */
+
+                // 此判断是为了使方法名称不区分大小写
+                // 判断当前方法是否在控制器中存在
                 $if = false;
                 for ($i = 0; $i < count($methods); $i++) {
                     if (strtolower($func) == strtolower($methods[$i])) {
@@ -80,11 +82,10 @@ class Router{
                     }
                 }
                 
-                /*
-                 *如果没有找到方法 或者该方法为静态static 方法 那么输出错误  否则
-                 */
+
+                // 如果没有找到方法 或者该方法为静态static 方法 那么输出错误  否则
                 if (!$if || $class->getMethod($func)->isStatic()) {
-                    echo 'Func not found!';
+                    throw new RouterException('Can not find Action!');
                 } else {
                     defined('FC_NAME') or define('FC_NAME',$func);
                     $method = $class->getMethod($func);
@@ -96,7 +97,7 @@ class Router{
                     if($par > 0){
                         $parArr = array_map(function($val){return $val->name;},$method->getParameters());
                     }
-//                     $args = in_array(\Common::C('URL:P_NAME'),array_keys($urlArr)) ? self::parseParam($urlArr[\Common::C('URL:P_NAME')],$par,$pararr) : false;
+
                     if(in_array(\Common::C('URL:P_NAME'),array_keys($urlArr))){
                         $args = self::parseParam($urlArr[\Common::C('URL:P_NAME')],$par,$parArr);
                     }else{
@@ -109,7 +110,7 @@ class Router{
                         //根据返回的参数数组的个数  和该方法必须的参数个数做比较
                         //如果前者小于后者 那么 参数个数错误 否则 则调用函数
                         if(count($args) < $rPar){
-                            echo "Parameter Is Required!";
+                            throw new RouterException("Parameter Is Required!");
                         }else{
                             $method->invokeArgs($class->newInstance(), $args);
                         }
@@ -117,7 +118,7 @@ class Router{
 
                 }
             } else {
-                throw new RouterException('Can not found Action!');
+                throw new RouterException('Can not find Action!');
             }
         }else{
             throw new RouterException('Lack of Action');
@@ -132,23 +133,20 @@ class Router{
      */
     private static function parseUrl(){
         $uri = $_SERVER['QUERY_STRING'];
+
+        // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
         $urlArr = array();
         if (! empty($uri)) {
-            /*
-             * 解析uri
-             */
+
+            // 解析uri
+
             $url = parse_url($uri, PHP_URL_PATH);
             $url = explode('&', $url);
-            // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
-//             $urlArr = array();
-            /*
-             * 遍历url数组 开始解析
-            */
+
+            // 遍历url数组 开始解析
             foreach ($url as $val) {
                 $a = explode('=', $val);
-                //                 echo $a[0];echo "<br />";
                 $urlArr[$a[0]] = $a[1];
-                //                 print_r($urlArr);exit;
             }
         }else{
             if(isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'],'/'))){
@@ -183,9 +181,9 @@ class Router{
     }
     
     private static function check($uri){
-        /*
-         * 检测是否开启了路由功能
-         */
+
+        // 检测是否开启了路由功能
+
         if(!\Common::C("ROUTER:START")){
             return $uri;
         }
@@ -239,19 +237,18 @@ class Router{
         array_walk_recursive($_GET,'\\Common::Url_filter');
         //清除空元素
         \Common::parse_empty($_GET);
-        /*
-         * 如果没有参数传进来 那么解析失败 返回false
-         */
-        $str = '';
-        if(empty($uri)) 
-            if($parNum == 0)
+
+        // 如果没有参数传进来 那么解析失败 返回false
+        if(empty($uri)) {
+            if ($parNum == 0) {
                 return false;
-            else return array();
+            }
+            return array();
+        }
         
-        /*
-         * 如果url参数中没有找到 / 说明只有一条数据
-         * 然后判断参数个数是否为1
-         */
+
+         // 如果url参数中没有找到 / 说明只有一条数据
+         // 然后判断参数个数是否为1
         if(!strpos($uri,'/')){
             $_GET[$uri] = '';
             if($parNum >=1)
@@ -261,9 +258,9 @@ class Router{
         $par = array();
         $uri = explode('/',$uri);
         
-        /*
-         * 去除 数组中的空的变量
-         */
+
+        // 去除 数组中的空的变量
+
         \Common::parse_empty($uri);
 
         
@@ -277,11 +274,10 @@ class Router{
             
             return false;
         }
-        /*
-         * 判断url传递的参数个数 和 方法参数个数比较
-         * 如果前者大 则按照后者循环
-         * 否则 按照前者循环
-         */
+
+        // 判断url传递的参数个数 和 方法参数个数比较
+        // 如果前者大 则按照后者循环
+        // 否则 按照前者循环
         if(count($uri) <= $parNum){
             for($i = 0; $i<count($uri); $i++)
                 $par[$parNames[$i]] = $uri[$i];
