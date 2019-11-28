@@ -11,15 +11,13 @@ class Common{
      * 类库的缓存
      */
     private static $_class = array();
-    
-    private static $_interface = array();
-    
+
     private static $_files = array();
     
     /*
      * 配置文件中的缓存
      */
-    private static $_confs = array();
+    private static $_conf = array();
     
     /*
      * 第三方类库的缓存
@@ -157,85 +155,86 @@ class Common{
         }
         return self::$_files[$file];
     }
-    
+
     /**
      * 带缓存的载入配置函数
-     * 首先判断如果是数组的话，则将其加入$_confs 中
-     * 如果是字符串，说明是取配置值 如果存在 则直接返回，如果缓存中不存在 那么在配置文件中查找 
+     * 首先判断如果是数组的话，则将其加入$_conf 中
+     * 如果是字符串，说明是取配置值 如果存在 则直接返回，如果缓存中不存在 那么在配置文件中查找
      * 二维关联数组查找方式
      * C(name:name-key)
-     * @param mixed $confs
+     * @param $conf
      * @return mixed
      */
-    public static function C($confs){
+    public static function C($conf){
         /*
          * 首先判断参数的类型
          */
-        if(is_array($confs)){
+        if(is_array($conf)){
             //参数类型是数组 加入缓存数组
-            foreach($confs as $key=>$val){
-                self::$_confs[$key] = $val;
+            foreach($conf as $key=>$val){
+                self::$_conf[$key] = $val;
             }
             return '';
         }
-        if(is_string($confs)){
+        if(is_string($conf)){
             //参数类型是字符串 开始进行查找操作
-            if(strpos($confs,':')){
+            if(strpos($conf,':')){
                 //查找二维关联数组的配置
-                $confs = explode(':', $confs);
-                if (count($confs) == 2) {
+                $conf = explode(':', $conf);
+                if (count($conf) == 2) {
                     /*
                      * 如果 解析后的数组大小是2 说明是二维关联数组
                      * 如果缓存中存在 直接返回
                      */
-                    if (isset(self::$_confs[$confs[0]]) && is_array(self::$_confs[$confs[0]])) {
-                        if (isset(self::$_confs[$confs[0]][$confs[1]]))
-                            return self::$_confs[$confs[0]][$confs[1]];
+                    if (isset(self::$_conf[$conf[0]]) && is_array(self::$_conf[$conf[0]])) {
+                        if (isset(self::$_conf[$conf[0]][$conf[1]]))
+                            return self::$_conf[$conf[0]][$conf[1]];
                     }
                     /*
                      * 缓存数组中不存在 那么首先检查当前模块的配置文件中是否存在
                      */
-                    if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/app.php')){
-                        $C = require(MODULE_PATH.MODULE_NAME.'/Common/app.php');
-                        if(isset($C[$confs[0]][$confs[1]])){
-                            self::$_confs[$confs[0]][$confs[1]] = $C[$confs[0]][$confs[1]];
-                            return $C[$confs[0]][$confs[1]];
+                    if(file_exists(MODULE_PATH.MODULE_NAME.'/Config/app.php')){
+                        $C = require(MODULE_PATH.MODULE_NAME.'/Config/app.php');
+                        if(isset($C[$conf[0]][$conf[1]])){
+                            self::$_conf[$conf[0]][$conf[1]] = $C[$conf[0]][$conf[1]];
+                            return $C[$conf[0]][$conf[1]];
                         }
                     }
                     /*
                      * 如果当前数组中不存在 则查找公共配置文件中是否存在
                      */
-                    $C = require(COMMON_PATH . 'app.php');
-                    if(isset($C[$confs[0]][$confs[1]])){
-                        self::$_confs[$confs[0]][$confs[1]] = $C[$confs[0]][$confs[1]];
-                        return $C[$confs[0]][$confs[1]];
+                    $C = require(CONFIG_PATH . 'app.php');
+                    if(isset($C[$conf[0]][$conf[1]])){
+                        self::$_conf[$conf[0]][$conf[1]] = $C[$conf[0]][$conf[1]];
+                        return $C[$conf[0]][$conf[1]];
                     };
                     return '';
                 }
                 return '';
             }
             
-            if(isset(self::$_confs[$confs])) return self::$_confs[$confs];
+            if(isset(self::$_conf[$conf])) return self::$_conf[$conf];
             /*
              * 缓存数组中不存在 那么首先检查当前模块的配置文件中是否存在
              */
-            if(file_exists(MODULE_PATH.MODULE_NAME.'/Common/app.php')){
-                $C = require(MODULE_PATH.MODULE_NAME.'/Common/app.php');
-                if(isset($C[$confs])){
-                    self::$_confs[$confs] = $C[$confs];
-                    return $C[$confs];
+            if(file_exists(MODULE_PATH.MODULE_NAME.'/Config/app.php')){
+                $C = require(MODULE_PATH.MODULE_NAME.'/Config/app.php');
+                if(isset($C[$conf])){
+                    self::$_conf[$conf] = $C[$conf];
+                    return $C[$conf];
                 };
             }
             /*
              * 如果当前数组中不存在 则查找公共配置文件中是否存在
              */
-            $C = require(COMMON_PATH . 'app.php');
-            if(isset($C[$confs])){
-                self::$_confs[$confs] = $C[$confs];
-                return $C[$confs];
+            $C = require(CONFIG_PATH . 'app.php');
+            if(isset($C[$conf])){
+                self::$_conf[$conf] = $C[$conf];
+                return $C[$conf];
             }
             return '';
         }
+        return '';
     }
     
     /**
@@ -247,7 +246,7 @@ class Common{
      */
     public static function Load_conf($conf_file = ''){
         if(empty($conf_file)){
-            return require_once COMMON_PATH . 'app.php';
+            return require_once CONFIG_PATH . 'app.php';
         }
         if(file_exists($conf_file)){
             return require_once $conf_file;
@@ -286,21 +285,22 @@ class Common{
     public static function escapeString($val){
         return addslashes($val);
     }
-    
+
     /**
      * 过滤smarty 常量的格式
-     * 
-     * @param object $tplname
+     *
+     * @param $tplName
+     * @return string|string[]|null
      */
-    public static function smarty_constant_filter($tplname){
-        $str = preg_replace('/__([a-zA-Z]*)__/', '{$smarty.const.\\1}', $tplname);
+    public static function smarty_constant_filter($tplName){
+        $str = preg_replace('/__([a-zA-Z]*)__/', '{$smarty.const.\\1}', $tplName);
         return $str;
     }
     
     /**
      * 重写 $_GET
      * @param string $key
-     * @return boolean|Ambigous <>
+     * @return boolean|string<>
      */
     public static function get($key = ''){
         static $data = array();
@@ -311,7 +311,7 @@ class Common{
             unset($_GET);
         }
         foreach($data as $k=>$v){
-            $data[$k] = addslashes($v);
+            $data[$k] = addslashes(trim($v));
         }
         if(!isset($data[$key])) return false;
         return $data[$key];
@@ -320,7 +320,7 @@ class Common{
     /**
      * 重写 $_POST
      * @param string $key
-     * @return boolean|Ambigous <>
+     * @return boolean|string <>
      */
     public static function post($key = ''){
         static $data = array();
@@ -346,7 +346,7 @@ class Common{
     public static function session($name='',$value='') {
         $prefix   =  self::C('SESSION_PREFIX');
         if(is_array($name)) { // session初始化 在session_start 之前调用
-            if(isset($name['prefix'])) self::C('SESSION_PREFIX',$name['prefix']);
+            if(isset($name['prefix'])) self::C(['SESSION_PREFIX',$name['prefix']]);
             if(self::C('VAR_SESSION_ID') && isset($_REQUEST[self::C('VAR_SESSION_ID')])){
                 session_id($_REQUEST[self::C('VAR_SESSION_ID')]);
             }elseif(isset($name['id'])) {
@@ -366,7 +366,7 @@ class Common{
             if(isset($name['use_cookies']))     ini_set('session.use_cookies', $name['use_cookies']?1:0);
             if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);
             if(isset($name['cache_expire']))    session_cache_expire($name['cache_expire']);
-            if(isset($name['type']))            self::C('SESSION_TYPE',$name['type']);
+            if(isset($name['type']))            self::C(['SESSION_TYPE',$name['type']]);
             if(self::C('SESSION_TYPE')) { // 读取session驱动
                 $type   =   self::C('SESSION_TYPE');
                 $class  =   strpos($type,'\\')? $type : 'Think\\Session\\Driver\\'. ucwords(strtolower($type));
@@ -464,7 +464,7 @@ class Common{
      * 
      * 产生随机字符串
      * @access public static
-     * @return number
+     * @return string
      */
     public static function make_rand_str(){
         list( $usec ,  $sec ) =  explode ( ' ' ,  microtime ());
@@ -477,19 +477,19 @@ class Common{
         $rpd .= mt_rand();
         return $rpd;
     }
-    
+
     /**
      * 产生hash字符串
-     * @param string $algoithm
+     * @param $algorithm
      * @param string $str
-     * @param string $extr_str
+     * @param string $ext_str
      * @return string
      */
-    public static function make_hash($algorithm,$str,$extr_str = ''){
+    public static function make_hash($algorithm,$str,$ext_str = ''){
         $ctx = hash_init($algorithm);
         hash_update($ctx, $str);
-        if(!empty($extr_str)){
-            hash_update($ctx, $extr_str);
+        if(!empty($ext_str)){
+            hash_update($ctx, $ext_str);
         }
         return hash_final($ctx);
     }
