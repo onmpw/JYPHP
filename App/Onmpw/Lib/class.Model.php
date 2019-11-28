@@ -304,8 +304,9 @@ class Model
      */
     private function db() : void
     {
-        if (!empty($this->db)) return $this->db;
-        $this->db = DB::getInstance();
+        if (empty($this->db)){
+            $this->db = DB::getInstance();
+        }
         if (!empty($this->name)) $this->getTableName();
     }
 

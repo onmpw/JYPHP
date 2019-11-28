@@ -14,6 +14,11 @@ class HandlerExceptions
         set_error_handler([$this,'handleError']);
 
         set_exception_handler([$this,"handleException"]);
+
+        register_shutdown_function([$this,"handleShutdown"]);
+
+        // 关闭配置文件中的错误显示配置项
+        ini_set('display_errors', 'Off');
     }
 
     /**
@@ -31,6 +36,8 @@ class HandlerExceptions
         if(error_reporting() & $level){
             throw new ErrorException($message,0,$level,$file,$line);
         }
+
+        var_dump($message);exit;
     }
 
     /**
@@ -42,5 +49,11 @@ class HandlerExceptions
     {
         var_dump($e->getCode());
         var_dump($e->getMessage());
+    }
+
+    public function handleShutdown()
+    {
+        $error = error_get_last();
+        var_dump($error);
     }
 }
