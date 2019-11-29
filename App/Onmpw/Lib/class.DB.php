@@ -11,7 +11,7 @@ class DB{
 
     /**
      *
-     * @param array $config Êı¾İ¿âÅäÖÃĞÅÏ¢
+     * @param array $config æ•°æ®åº“é…ç½®ä¿¡æ¯
      * @return mixed|null
      */
     public static function getInstance($config = array()){
@@ -19,7 +19,7 @@ class DB{
         if(!isset(self::$instance[$md5])){
             $options = self::parseConfig($config);
             /*
-             * ¼æÈİ mysqli  Èç¹ûÅäÖÃÀàĞÍÎªmysqli ×ª»»Îªmysql
+             * å…¼å®¹ mysqli  å¦‚æœé…ç½®ç±»å‹ä¸ºmysqli è½¬æ¢ä¸ºmysql
              */
             if('mysqli' == $options['type']) $options['type']   =   'mysql';
             
@@ -47,10 +47,10 @@ class DB{
                 'port'  => $config['db_port'],
                 'charset'       =>  isset($config['db_charset'])?$config['db_charset']:'utf8',
                 'use_pdo'   =>$config['use_pdo'],
-                'slave_no'=>$config['slave_no'],    //Ö¸¶¨´Ó·şÎñÆ÷À´½øĞĞ¶Á²Ù×÷
-                'master_num'=>$config['master_num'],    //Ö÷·şÎñÆ÷µÄÊıÁ¿
-                'deploy_type'=>$config['deploy_type'],   //Êı¾İ¿â²¿Êğ·½Ê½£¬1 ±íÊ¾Ö÷´Ó·ÖÀë   0 ±íÊ¾µ¥Ò»·şÎñÆ÷
-                'rw_separate'=>$config['rw_separate'],    //¶ÁĞ´ÊÇ·ñ·ÖÀë
+                'slave_no'=>$config['slave_no'],    //æŒ‡å®šä»æœåŠ¡å™¨æ¥è¿›è¡Œè¯»æ“ä½œ
+                'master_num'=>$config['master_num'],    //ä¸»æœåŠ¡å™¨çš„æ•°é‡
+                'deploy_type'=>$config['deploy_type'],   //æ•°æ®åº“éƒ¨ç½²æ–¹å¼ï¼Œ1 è¡¨ç¤ºä¸»ä»åˆ†ç¦»   0 è¡¨ç¤ºå•ä¸€æœåŠ¡å™¨
+                'rw_separate'=>$config['rw_separate'],    //è¯»å†™æ˜¯å¦åˆ†ç¦»
             );
         }else{
             $config = array(
@@ -62,10 +62,10 @@ class DB{
                 'port'  => Common::C('DB_PORT'),
                 'charset' => Common::C('DB_CHARSET') ,
                 'use_pdo' => Common::C('USE_PDO'),
-                'slave_no'=> Common::C('SLAVE_NO'),    //Ö¸¶¨´Ó·şÎñÆ÷À´½øĞĞ¶Á²Ù×÷
-                'master_num'=>Common::C('MASTER_NUM'),    //Ö÷·şÎñÆ÷µÄÊıÁ¿
-                'deploy_type'=>Common::C('DEPLOY_TYPE'),   //Êı¾İ¿â²¿Êğ·½Ê½£¬1 ±íÊ¾Ö÷´Ó·ÖÀë   0 ±íÊ¾µ¥Ò»·şÎñÆ÷
-                'rw_separate'=>Common::C('RW_SEPARATE'),    //¶ÁĞ´ÊÇ·ñ·ÖÀë
+                'slave_no'=> Common::C('SLAVE_NO'),    //æŒ‡å®šä»æœåŠ¡å™¨æ¥è¿›è¡Œè¯»æ“ä½œ
+                'master_num'=>Common::C('MASTER_NUM'),    //ä¸»æœåŠ¡å™¨çš„æ•°é‡
+                'deploy_type'=>Common::C('DEPLOY_TYPE'),   //æ•°æ®åº“éƒ¨ç½²æ–¹å¼ï¼Œ1 è¡¨ç¤ºä¸»ä»åˆ†ç¦»   0 è¡¨ç¤ºå•ä¸€æœåŠ¡å™¨
+                'rw_separate'=>Common::C('RW_SEPARATE'),    //è¯»å†™æ˜¯å¦åˆ†ç¦»
             );
         }
         return $config;

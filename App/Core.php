@@ -1,65 +1,65 @@
 <?php
 /**
- * ¶¨ÒåÓ¦ÓÃ¸ùÄ¿Â¼³£Á¿
+ * å®šä¹‰åº”ç”¨æ ¹ç›®å½•å¸¸é‡
  * @var APP_PATH
  */
 defined('DOC_ROOT') or define('DOC_ROOT',$_SERVER['DOCUMENT_ROOT'].'/');
 
 /**
- * ¶¨Òå·þÎñÄ¿Â¼
+ * å®šä¹‰æœåŠ¡ç›®å½•
  */
 defined('SERVICE_PATH') or define('SERVICE_PATH',DOC_ROOT.'Service/');
 /**
- * ¶¨ÒåÓ¦ÓÃÖ÷³ÌÐòÄ¿Â¼
+ * å®šä¹‰åº”ç”¨ä¸»ç¨‹åºç›®å½•
  */
 defined('APP_PATH') or define('APP_PATH',DOC_ROOT.'App/');
 /**
- * ¶¨Òå½Ó¿ÚÂ·¾¶
+ * å®šä¹‰æŽ¥å£è·¯å¾„
  */
 defined('INTERFACE_PATH') or define('INTERFACE_PATH',APP_PATH.'Onmpw/Interface/');
 /**
- * ¶¨ÒåÀà¿âÄ¿Â¼
+ * å®šä¹‰ç±»åº“ç›®å½•
  */
 defined('LIB_PATH') or define('LIB_PATH',APP_PATH.'Onmpw/Lib/');
 
 /**
- * ¶¨ÒåµÚÈý·½À©Õ¹Ä¿Â¼
+ * å®šä¹‰ç¬¬ä¸‰æ–¹æ‰©å±•ç›®å½•
  */
  defined('EXT_PATH') or define('EXT_PATH',APP_PATH."Onmpw/Ext/");
 
 /**
- * ¶¨Òå¹«¹²Ä¿Â¼
+ * å®šä¹‰å…¬å…±ç›®å½•
  */
  defined('COMMON_PATH') or define('COMMON_PATH',APP_PATH ."Common/");
 
 /**
- * ¶¨ÒåÅäÖÃÎÄ¼þÄ¿Â¼
+ * å®šä¹‰é…ç½®æ–‡ä»¶ç›®å½•
  */
  defined('CONFIG_PATH') or define('CONFIG_PATH',APP_PATH ."Config/");
 
  /**
-  * ¶¨Òå dataÄ¿Â¼
+  * å®šä¹‰ dataç›®å½•
   */
  defined('DATA_PATH') or define('DATA_PATH',DOC_ROOT.'Data/');
  
  /**
-  * ¶¨ÒåÄ£¿éÄ¿Â¼
+  * å®šä¹‰æ¨¡å—ç›®å½•
   */
  defined('MODULE_PATH') or define('MODULE_PATH',DOC_ROOT.'Module/');
  
  /**
-  * ¶¨Òåµ±Ç°Ê±¼ä
+  * å®šä¹‰å½“å‰æ—¶é—´
   * @var unknown
   */
  define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
  
 
  /**
-  * ÒýÈë¹«¹²Àà(Common) ÎÄ¼þ ºÍ¹«¹²º¯Êý¿âÎÄ¼þ
+  * å¼•å…¥å…¬å…±ç±»(Common) æ–‡ä»¶ å’Œå…¬å…±å‡½æ•°åº“æ–‡ä»¶
   */
  include COMMON_PATH."Common.php";
 /**
- * ¶¨ÒåÉèÖÃÔØÈëÎÄ¼þµÄÂ·¾¶º¯Êý
+ * å®šä¹‰è®¾ç½®è½½å…¥æ–‡ä»¶çš„è·¯å¾„å‡½æ•°
  * @param string $path
  */
 function _set_include_path($path = ''){
@@ -73,17 +73,17 @@ function _set_include_path($path = ''){
 }
 
 /**
- * µ¼Èë Æô¶¯ÀàÎÄ¼þ Onmpw
+ * å¯¼å…¥ å¯åŠ¨ç±»æ–‡ä»¶ Onmpw
  */
 Common::Import("#/Onmpw/Onmpw");
 use Onmpw\Onmpw as Kernel;
 class Core extends Kernel{
     public static function _Init()
     {
-        // ÄÚºË³õÊ¼»¯
+        // å†…æ ¸åˆå§‹åŒ–
         parent::_Init();
 
-        // ¼ÓÔØÐèÒª³õÊ¼»¯µÄ¹¦ÄÜ
+        // åŠ è½½éœ€è¦åˆå§‹åŒ–çš„åŠŸèƒ½
         foreach(self::$_inits as $class){
             call_user_func([new $class,'_Init']);
         }

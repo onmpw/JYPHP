@@ -5,7 +5,7 @@ use Onlinebid\Model\CompanyModel;
 use Onlinebid\Model\UserModel;
 class WS_User implements I_WS_User{
     /**
-     * ¿ªÍ¨ÊÖ»úÕË»§
+     * å¼€é€šæ‰‹æœºè´¦æˆ·
      * @see \Inter\Webservice\I_WS_User::open_account()
      */
     public function open_account($info = ''){
@@ -14,10 +14,10 @@ class WS_User implements I_WS_User{
         $infos = array();
         $infos = json_decode($info,true);
         $mod = new CompanyModel();
-        //Ê×ÏÈ²éÕÒ´ËÓÃ»§ÊÇ·ñÒÑ¾­ÔÚcompany±íÖÐ´æÔÚ
+        //é¦–å…ˆæŸ¥æ‰¾æ­¤ç”¨æˆ·æ˜¯å¦å·²ç»åœ¨companyè¡¨ä¸­å­˜åœ¨
         $sql = "select id from company where mbsuserid=".$infos['mbsuserid']." and usertype='".$infos['usertype']."'";
         $res = $mod->select_sql($sql);
-        //Èç¹ûÒÑ¾­´æÔÚÔò³ÌÐòÍ£Ö¹ÏòÏÂÖ´ÐÐ
+        //å¦‚æžœå·²ç»å­˜åœ¨åˆ™ç¨‹åºåœæ­¢å‘ä¸‹æ‰§è¡Œ
         if(count($res) == 1) return false;
         $res = $mod->add($infos);
         

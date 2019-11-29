@@ -1,19 +1,19 @@
 <?php
 /**
- * ×÷Õß£º¼£Òä
- * ¸öÈË²©¿Í£º¼£Òä²©¿Í
- * ²©¿Íurl£ºwww.onmpw.com
+ * ä½œè€…ï¼šè¿¹å¿†
+ * ä¸ªäººåšå®¢ï¼šè¿¹å¿†åšå®¢
+ * åšå®¢urlï¼šwww.onmpw.com
  * ************
- * RedisÀà PHP·â×°µÄ²Ù×÷RedisÀà 
+ * Redisç±» PHPå°è£…çš„æ“ä½œRedisç±» 
  * ************
  */
 class Redis{
     
-    const Arrays = '*';   //RESP ArraysÀàĞÍ
-    const Bulk = '$';     //RESP Bulk Strings ÀàĞÍ
-    const Integer = ':';  //RESP ÕûĞÍÊı¾İ
-    const Simple = '+';   //RESP Simple StringsÀàĞÍ
-    const Errors = '-';   //RESP Errors ´íÎóÀàĞÍ
+    const Arrays = '*';   //RESP Arraysç±»å‹
+    const Bulk = '$';     //RESP Bulk Strings ç±»å‹
+    const Integer = ':';  //RESP æ•´å‹æ•°æ®
+    const Simple = '+';   //RESP Simple Stringsç±»å‹
+    const Errors = '-';   //RESP Errors é”™è¯¯ç±»å‹
     
     const crlf = "\r\n";
     
@@ -24,10 +24,10 @@ class Redis{
     private $quiet_fail;
     private $timeout;
     private $commands = array();
-    private $result = true; //Ä¬ÈÏÖ´ĞĞ½á¹ûÊÇÕıÈ·µÄ
-    private $setError_func = false; //ÊÇ·ñÊ¹ÓÃ×Ô¶¨Òå´íÎó´¦Àíº¯Êı´¦Àí´íÎóĞÅÏ¢
+    private $result = true; //é»˜è®¤æ‰§è¡Œç»“æœæ˜¯æ­£ç¡®çš„
+    private $setError_func = false; //æ˜¯å¦ä½¿ç”¨è‡ªå®šä¹‰é”™è¯¯å¤„ç†å‡½æ•°å¤„ç†é”™è¯¯ä¿¡æ¯
     private $used_command = null;
-    private $errinfo = ''; //´íÎóĞÅÏ¢
+    private $errinfo = ''; //é”™è¯¯ä¿¡æ¯
     
     private $connect_timeout = 3;
     
@@ -37,12 +37,12 @@ class Redis{
         }
     }
     /**
-     * Á¬½ÓRedisº¯Êı
+     * è¿æ¥Rediså‡½æ•°
      * 
-     * @param string $host  Ö÷»úµØÖ·
-     * @param number $port  ·şÎñ¶Ë¿Ú
-     * @param string $quiet_fail   ÊÇ·ñÆÁ±ÎÁ¬½ÓÒì³£ĞÅÏ¢
-     * @param number $timeout  ÉèÖÃ¶ÁÈ¡×ÊÔ´³¬Ê±Ê±¼ä
+     * @param string $host  ä¸»æœºåœ°å€
+     * @param number $port  æœåŠ¡ç«¯å£
+     * @param string $quiet_fail   æ˜¯å¦å±è”½è¿æ¥å¼‚å¸¸ä¿¡æ¯
+     * @param number $timeout  è®¾ç½®è¯»å–èµ„æºè¶…æ—¶æ—¶é—´
      */
     private function connect($host = '127.0.0.1',$port = 6379,$quiet_fail = false,$timeout = 60){
         $this->host = $host;
@@ -64,7 +64,7 @@ class Redis{
     }
     
     /**
-     * ÖØĞÂÁ¬½Ó·şÎñÆ÷º¯Êı
+     * é‡æ–°è¿æ¥æœåŠ¡å™¨å‡½æ•°
      */
     public function reconnect(){
         $this->__destruct();
@@ -72,7 +72,7 @@ class Redis{
     }
    
     /**
-     * ¹¹Ôì·¢ËÍÃüÁîº¯Êı
+     * æ„é€ å‘é€å‘½ä»¤å‡½æ•°
      * @return Redis
      */
     public function command(){
@@ -91,7 +91,7 @@ class Redis{
     }
     
     /**
-     * Ö´ĞĞÃüÁîº¯Êı
+     * æ‰§è¡Œå‘½ä»¤å‡½æ•°
      * 
      * @return int
      */
@@ -111,7 +111,7 @@ class Redis{
     }
     
     /**
-     * µÃµ½½á¹ûº¯Êı
+     * å¾—åˆ°ç»“æœå‡½æ•°
      * @return boolean
      */
     public function result(){
@@ -139,7 +139,7 @@ class Redis{
     }
     
     /**
-     * ´¦ÀíSimple Strings ÀàĞÍÏìÓ¦µÄÊı¾İ
+     * å¤„ç†Simple Strings ç±»å‹å“åº”çš„æ•°æ®
      * 
      * @return string
      */
@@ -150,7 +150,7 @@ class Redis{
     }
     
     /**
-     * ´¦Àí Bulk Strings ÀàĞÍµÄÊı¾İ
+     * å¤„ç† Bulk Strings ç±»å‹çš„æ•°æ®
      * @return boolean|unknown
      */
     private function Bulk_result(){
@@ -169,7 +169,7 @@ class Redis{
     }
     
     /**
-     * ´¦Àí Arrays ÀàĞÍµÄÊı¾İ
+     * å¤„ç† Arrays ç±»å‹çš„æ•°æ®
      * @return boolean|multitype:NULL
      */
     private function Arrays_result(){
@@ -192,7 +192,7 @@ class Redis{
     
     
     /**
-     * ´¦ÀíRESP Integer ÀàĞÍÊı¾İ
+     * å¤„ç†RESP Integer ç±»å‹æ•°æ®
      * 
      * @return string
      */
@@ -201,7 +201,7 @@ class Redis{
     }
     
     /**
-     * ´íÎó´¦Àíº¯Êı
+     * é”™è¯¯å¤„ç†å‡½æ•°
      * @return boolean
      */
     private function Errors_result(){
@@ -231,7 +231,7 @@ class Redis{
     }
     
     /**
-     * Îö¹¹º¯Êı
+     * ææ„å‡½æ•°
      */
     public function __destruct(){
         if(is_resource($this->handle)){
@@ -239,7 +239,7 @@ class Redis{
         }
     }
     /**
-     * ÉèÖÃ´íÎó´¦Àíº¯Êı
+     * è®¾ç½®é”™è¯¯å¤„ç†å‡½æ•°
      * @param unknown $function
      */
     public function setError_func($function){

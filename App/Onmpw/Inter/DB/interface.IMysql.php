@@ -2,19 +2,19 @@
 namespace Inter\DB;
 interface IMysql{
     /**
-     * ĞÂÔöÊı¾İ
+     * æ–°å¢æ•°æ®
      * @param array $data
      * @param array $options
      * @return boolean|Ambigous <mixed, boolean, string, string>
      */
     public function add($data = array(),$options = array());
     /**
-     * Ò»´ÎĞÔ²åÈë¶àÌõÊı¾İ£¬Ö§³Ö²»Í¬±íµÄ²åÈë
-     * µ±Ê¹ÓÃ¶à±í²åÈë¹¦ÄÜÊ±ĞèÒªÔÚµÚ¶ş¸ö²ÎÊıÖĞÖ¸¶¨ $options['multitable'] = true
-     * ²¢ÇÒ$dataµÄ¸ñÊ½Îª
+     * ä¸€æ¬¡æ€§æ’å…¥å¤šæ¡æ•°æ®ï¼Œæ”¯æŒä¸åŒè¡¨çš„æ’å…¥
+     * å½“ä½¿ç”¨å¤šè¡¨æ’å…¥åŠŸèƒ½æ—¶éœ€è¦åœ¨ç¬¬äºŒä¸ªå‚æ•°ä¸­æŒ‡å®š $options['multitable'] = true
+     * å¹¶ä¸”$dataçš„æ ¼å¼ä¸º
      * array(
-     *  '±íÃû1'=>array(array(),array()),
-     *  '±íÃû2'=>array(array(),array())
+     *  'è¡¨å1'=>array(array(),array()),
+     *  'è¡¨å2'=>array(array(),array())
      * )
      * @param array $data
      * @param array $options
@@ -23,106 +23,106 @@ interface IMysql{
     public function addMore($data = array(),$options = array());
 
     /**
-     * ¸üĞÂº¯Êı
+     * æ›´æ–°å‡½æ•°
      * @param array $data
      * @param array $options
      */
     public function update($data = array(),$options = array());
     /**
-     * É¾³ıÊı¾İº¯Êı
+     * åˆ é™¤æ•°æ®å‡½æ•°
      * @param array $options
      * @return Ambigous <mixed, boolean, string, string>
     */
     public function delete($options = array());
 
     /**
-     * ¹¹½¨sqlÓï¾ä
+     * æ„å»ºsqlè¯­å¥
      * @param array $options
      * @return string
      */
     public function buildSql($options = array());
     /**
-     * Ñ¡ÔñÅÅÁĞË³Ğò
+     * é€‰æ‹©æ’åˆ—é¡ºåº
      * @param string $order
      * @return Db
     */
     public function orderBy($order = '');
     /**
-     * limitÉèÖÃº¯Êı
+     * limitè®¾ç½®å‡½æ•°
      * @param string $limit
      * @return Db
     */
     public function limit($limit = '');
     /**
-     * µÃµ½×îºó²åÈëµÄÊı¾İµÄid
+     * å¾—åˆ°æœ€åæ’å…¥çš„æ•°æ®çš„id
      * @access public
      * @return int
     */
     public function lastInsId();
     /**
-     * ¿ªÆôÊÂÎñ
+     * å¼€å¯äº‹åŠ¡
      * @access public
      * @return void|boolean
     */
     public function startTransaction();
     /**
-     * »Ø¹öÊÂÎñ
+     * å›æ»šäº‹åŠ¡
      * @access public
      * @return boolean
     */
     public function rollback();
     /**
-     * Ìá½»ÊÂÎñ
+     * æäº¤äº‹åŠ¡
      * @access public
      * @return boolean
     */
     public function commit();
     /**
-     * ²éÕÒµ¥ÌõÊı¾İ
+     * æŸ¥æ‰¾å•æ¡æ•°æ®
      * @param array $options
      * @return boolean|unknown
     */
     public function find($options = array());
 
     /**
-     * ²éÑ¯¶àÌõÊı¾İº¯Êı
+     * æŸ¥è¯¢å¤šæ¡æ•°æ®å‡½æ•°
      * @param array $options
      * @return array
      */
     public function select($options = array());
     /**
-     * where Ìõ¼şÉèÖÃ
+     * where æ¡ä»¶è®¾ç½®
      * @param string $where
      * @return Db
     */
     public function where($where = '');
     /**
-     * ÉèÖÃÒª²éÑ¯µÄ±í×Ö¶Î£¬Èç¹ûÃ»ÓĞÉèÖÃ£¬ÔòÄ¬ÈÏ²éÑ¯±íµÄËùÓĞ×Ö¶Î
+     * è®¾ç½®è¦æŸ¥è¯¢çš„è¡¨å­—æ®µï¼Œå¦‚æœæ²¡æœ‰è®¾ç½®ï¼Œåˆ™é»˜è®¤æŸ¥è¯¢è¡¨çš„æ‰€æœ‰å­—æ®µ
      * @param string $field
-     * @return Db   ·µ»Øµ±Ç°¶ÔÏó
+     * @return Db   è¿”å›å½“å‰å¯¹è±¡
     */
     public function field($field = '');
     /**
-     * µÃµ½Êı¾İ¿âÊÜÓ°ÏìµÄĞĞÊı
+     * å¾—åˆ°æ•°æ®åº“å—å½±å“çš„è¡Œæ•°
      * @access public
      * @return int
     */
     public function getRowNum();
     /**
-     * µÃµ½Êı¾İ¿âÖĞµÄÊı¾İ±í
+     * å¾—åˆ°æ•°æ®åº“ä¸­çš„æ•°æ®è¡¨
      * @access public
-     * @param string $dbname Ö¸¶¨Êı¾İ¿â
+     * @param string $dbname æŒ‡å®šæ•°æ®åº“
      * @return Ambigous <boolean, string, unknown>
     */
     public function getTables($dbname = '');
     /**
-     * ÉèÖÃ±íÃû
+     * è®¾ç½®è¡¨å
      * @param string $table
-     * @return Db   ·µ»Øµ±Ç°¶ÔÏó
+     * @return Db   è¿”å›å½“å‰å¯¹è±¡
     */
     public function table($table='');
     /**
-     * Ö´ĞĞsqlÓï¾ä
+     * æ‰§è¡Œsqlè¯­å¥
      * @param string $sql
      * @access public
     */

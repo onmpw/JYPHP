@@ -1,30 +1,30 @@
 <?php
 /**
- * ×÷Õß£º¼£Òä
- * ¸öÈË²©¿Í£º¼£Òä²©¿Í
- * ²©¿Íurl£ºwww.onmpw.com
+ * ä½œè€…ï¼šè¿¹å¿†
+ * ä¸ªäººåšå®¢ï¼šè¿¹å¿†åšå®¢
+ * åšå®¢urlï¼šwww.onmpw.com
  * ************
- * onmpwSessionHandlerÀà  ÖØĞ´session»úÖÆ
- * ½«session´æµ½redisÊı¾İ¿âÖĞ
+ * onmpwSessionHandlerç±»  é‡å†™sessionæœºåˆ¶
+ * å°†sessionå­˜åˆ°redisæ•°æ®åº“ä¸­
  * ************
  */
 namespace Lib\Session;
 class onmpwSessionHandler implements \SessionHandlerInterface{
     
     private $save_handle = '';
-    private $reconnect = false;  //ÊÇ·ñÖØĞÂÁ¬½Ó  Ä¬ÈÏ²»ÖØĞÂÁ¬½Ó
+    private $reconnect = false;  //æ˜¯å¦é‡æ–°è¿æ¥  é»˜è®¤ä¸é‡æ–°è¿æ¥
     private $handle = '';
-    private $auth = null;   //ÊÇ·ñÓĞÓÃ»§ÑéÖ¤£¬Ä¬ÈÏÎŞÃÜÂëÑéÖ¤¡£Èç¹û²»ÊÇÎªnull£¬ÔòÎªÑéÖ¤ÃÜÂë
+    private $auth = null;   //æ˜¯å¦æœ‰ç”¨æˆ·éªŒè¯ï¼Œé»˜è®¤æ— å¯†ç éªŒè¯ã€‚å¦‚æœä¸æ˜¯ä¸ºnullï¼Œåˆ™ä¸ºéªŒè¯å¯†ç 
     private $prefix = 'onmpw_PHPSESSION';
     private $config = array(
         'SAVE_HANDLE'=>'Redis',
         'HOST'=>'127.0.0.1',
         'PORT'=>6379,
-        'AUTH'=>null,    //ÊÇ·ñÓĞÓÃ»§ÑéÖ¤£¬Ä¬ÈÏÎŞÃÜÂëÑéÖ¤¡£Èç¹û²»ÊÇÎªnull£¬ÔòÎªÑéÖ¤ÃÜÂë
-        'TIMEOUT'=>0,   //Á¬½Ó³¬Ê±
+        'AUTH'=>null,    //æ˜¯å¦æœ‰ç”¨æˆ·éªŒè¯ï¼Œé»˜è®¤æ— å¯†ç éªŒè¯ã€‚å¦‚æœä¸æ˜¯ä¸ºnullï¼Œåˆ™ä¸ºéªŒè¯å¯†ç 
+        'TIMEOUT'=>0,   //è¿æ¥è¶…æ—¶
         'RESERVED'=>null,
-        'RETRY_INTERVAL'=>100,  //µ¥Î»ÊÇ ms ºÁÃë
-        'RECONNECT'=>false, //Á¬½Ó³¬Ê±ÊÇ·ñÖØÁ¬  Ä¬ÈÏ²»ÖØÁ¬
+        'RETRY_INTERVAL'=>100,  //å•ä½æ˜¯ ms æ¯«ç§’
+        'RECONNECT'=>false, //è¿æ¥è¶…æ—¶æ˜¯å¦é‡è¿  é»˜è®¤ä¸é‡è¿
     );
     
     public function __construct($config = array()){
@@ -43,10 +43,10 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
 
     /**
-     * Redis·şÎñÆ÷Á¬½Ó
-     * @param string $host Ö÷»úµØÖ·
-     * @param int $port Á¬½Ó¶Ë¿Ú
-     * @param int $timeout Á¬½Ó³¬Ê±Ê±¼ä
+     * RedisæœåŠ¡å™¨è¿æ¥
+     * @param string $host ä¸»æœºåœ°å€
+     * @param int $port è¿æ¥ç«¯å£
+     * @param int $timeout è¿æ¥è¶…æ—¶æ—¶é—´
      * @param string $reserved
      * @param int $retry_interval
      *
@@ -54,7 +54,7 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
      * @throws \RedisException
      */
     public function redisConnect($host = '127.0.0.1',$port = 6379,$timeout = 0,$reserved = null,$retry_interval = 100){
-        //ÊµÀı»¯Redis¶ÔÏó
+        //å®ä¾‹åŒ–Rediså¯¹è±¡
         try{
             
             $this->handle = new \Redis();
@@ -67,7 +67,7 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
         
         
         /*
-         * ÅĞ¶ÏÊÇ·ñÖØĞÂÁ¬½Ó 
+         * åˆ¤æ–­æ˜¯å¦é‡æ–°è¿æ¥ 
          */
         if(!$this->reconnect){
             
@@ -79,8 +79,8 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
             
         }
         /*
-         * ÅĞ¶ÏÊÇ·ñÓĞÃÜÂëÑéÖ¤
-         * ÓĞÃÜÂëÑéÖ¤Ôò½øĞĞÑéÖ¤²Å¿É¼ÌĞøºóĞøµÄ²Ù×÷
+         * åˆ¤æ–­æ˜¯å¦æœ‰å¯†ç éªŒè¯
+         * æœ‰å¯†ç éªŒè¯åˆ™è¿›è¡ŒéªŒè¯æ‰å¯ç»§ç»­åç»­çš„æ“ä½œ
          */
         if(!is_null($this->auth)){
             
@@ -91,7 +91,7 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
     
     /**
-     * ½âÎöÁ¬½Ó
+     * è§£æè¿æ¥
      */
     private function parseConnect(){
         
@@ -104,13 +104,13 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
     
     /**
-     * µ±session_start()º¯Êı±»µ÷ÓÃµÄÊ±ºò¸Ãº¯Êı±»´¥·¢
+     * å½“session_start()å‡½æ•°è¢«è°ƒç”¨çš„æ—¶å€™è¯¥å‡½æ•°è¢«è§¦å‘
      * 
      * @see SessionHandlerInterface::open()
      */
     public function open($save_path, $name){
         /*
-         * Ê×ÏÈÁ¬½Ó·şÎñÆ÷
+         * é¦–å…ˆè¿æ¥æœåŠ¡å™¨
          */
         $this->parseConnect();
         return true;
@@ -118,8 +118,8 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
     
     /**
-     * ¹Ø±Õµ±Ç°session
-     * µ±session¹Ø±ÕµÄÊ±ºò¸Ãº¯Êı×Ô¶¯±»´¥·¢
+     * å…³é—­å½“å‰session
+     * å½“sessionå…³é—­çš„æ—¶å€™è¯¥å‡½æ•°è‡ªåŠ¨è¢«è§¦å‘
      * 
      * @see SessionHandlerInterface::close()
      */
@@ -128,28 +128,28 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
     
     /**
-     * ´Ósession´æ´¢¿Õ¼ä¶ÁÈ¡sessionµÄÊı¾İ¡£
-     * µ±µ÷ÓÃsession_start()º¯ÊıµÄÊ±ºò¸Ãº¯Êı»á±»´¥·¢
-     * µ«ÊÇÔÚsession_start()º¯Êıµ÷ÓÃµÄÊ±ºòÏÈ´¥·¢openº¯Êı£¬ÔÙ´¥·¢¸Ãº¯Êı
+     * ä»sessionå­˜å‚¨ç©ºé—´è¯»å–sessionçš„æ•°æ®ã€‚
+     * å½“è°ƒç”¨session_start()å‡½æ•°çš„æ—¶å€™è¯¥å‡½æ•°ä¼šè¢«è§¦å‘
+     * ä½†æ˜¯åœ¨session_start()å‡½æ•°è°ƒç”¨çš„æ—¶å€™å…ˆè§¦å‘openå‡½æ•°ï¼Œå†è§¦å‘è¯¥å‡½æ•°
      * 
      * @see SessionHandlerInterface::read()
      */
     public function read($session_id){
         /*
-         * ¸ù¾İsessionId ¹¹Ôì¼üÃû
+         * æ ¹æ®sessionId æ„é€ é”®å
          */
         $key = $this->prefix.':'.$session_id;
-        //¶ÁÈ¡µ±Ç°sessionidÏÂµÄdataÊı¾İ
+        //è¯»å–å½“å‰sessionidä¸‹çš„dataæ•°æ®
         $res = $this->handle->hGet($key,'data');
-        //¶ÁÈ¡Íê³ÉÒÔºó ¸üĞÂÊ±¼ä£¬ËµÃ÷ÒÑ¾­²Ù×÷¹ısession
+        //è¯»å–å®Œæˆä»¥å æ›´æ–°æ—¶é—´ï¼Œè¯´æ˜å·²ç»æ“ä½œè¿‡session
         $this->handle->hSet($key,'last_time',time());
         return $res;
         
     }
 
     /**
-     * ½«sessionµÄÊı¾İĞ´Èëµ½sessionµÄ´æ´¢¿Õ¼äÄÚ¡£
-     * µ±session×¼±¸ºÃ´æ´¢ºÍ¹Ø±ÕµÄÊ±ºòµ÷ÓÃ¸Ãº¯Êı
+     * å°†sessionçš„æ•°æ®å†™å…¥åˆ°sessionçš„å­˜å‚¨ç©ºé—´å†…ã€‚
+     * å½“sessionå‡†å¤‡å¥½å­˜å‚¨å’Œå…³é—­çš„æ—¶å€™è°ƒç”¨è¯¥å‡½æ•°
      *
      * @param $session_id
      * @param $session_data
@@ -158,19 +158,19 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
      */
     public function write($session_id, $session_data){
         /*
-         * ¸ù¾İsessionId ¹¹Ôì¼üÃû
+         * æ ¹æ®sessionId æ„é€ é”®å
          */
         $key = $this->prefix.':'.$session_id;
-        //²é¿´¸Ã¼üÄÚÈİÊÇ·ñ´æÔÚ
+        //æŸ¥çœ‹è¯¥é”®å†…å®¹æ˜¯å¦å­˜åœ¨
         if(!$this->handle->exists($key)){
             /*
-             * ²»´æÔÚÔò²åÈëĞÂµÄÄÚÈİ
-             * ²åÈë×îºó¸üĞÂÊ±¼ä
+             * ä¸å­˜åœ¨åˆ™æ’å…¥æ–°çš„å†…å®¹
+             * æ’å…¥æœ€åæ›´æ–°æ—¶é—´
              */
             $this->handle->hset($key,'last_time',time());
         }else{
             /*
-             * ´æÔÚ£¬Ôò¸üĞÂ¸Ã¼üÖµ
+             * å­˜åœ¨ï¼Œåˆ™æ›´æ–°è¯¥é”®å€¼
              */
             $this->handle->hMset($key,array('last_time'=>time(),'data'=>$session_data));
         }
@@ -179,42 +179,42 @@ class onmpwSessionHandler implements \SessionHandlerInterface{
     }
 
     /**
-     * Ïú»Ùsession
+     * é”€æ¯session
      *
      * @param $session_id
      * @see SessionHandlerInterface::destroy()
      */
     public function destroy($session_id){
         /*
-         * ¸ù¾İsessionId ¹¹Ôì¼üÃû
+         * æ ¹æ®sessionId æ„é€ é”®å
          */
         $key = $this->prefix.':'.$session_id;
         $this->handle->hDel($key,'data');
     }
 
     /**
-     * Çå³ıÀ¬»øsession£¬Ò²¾ÍÊÇÇå³ı¹ıÆÚµÄsession¡£
-     * ¸Ãº¯ÊıÊÇ»ùÓÚphp.iniÖĞµÄÅäÖÃÑ¡Ïî
-     * session.gc_divisor, session.gc_probability ºÍ session.gc_lifetimeËùÉèÖÃµÄÖµµÄ
+     * æ¸…é™¤åƒåœ¾sessionï¼Œä¹Ÿå°±æ˜¯æ¸…é™¤è¿‡æœŸçš„sessionã€‚
+     * è¯¥å‡½æ•°æ˜¯åŸºäºphp.iniä¸­çš„é…ç½®é€‰é¡¹
+     * session.gc_divisor, session.gc_probability å’Œ session.gc_lifetimeæ‰€è®¾ç½®çš„å€¼çš„
      *
      * @param $maxlifetime
      * @see SessionHandlerInterface::gc()
      */
     public function gc($maxlifetime){
         /*
-         * È¡³öËùÓĞµÄ ´øÓĞÖ¸¶¨Ç°×ºµÄ¼ü
+         * å–å‡ºæ‰€æœ‰çš„ å¸¦æœ‰æŒ‡å®šå‰ç¼€çš„é”®
          */
         $keys = $this->handle->keys($this->prefix.'*');
         
-        $now =time(); //È¡µÃÏÖÔÚµÄÊ±¼ä
+        $now =time(); //å–å¾—ç°åœ¨çš„æ—¶é—´
         foreach($keys as $key){
-            //È¡µÃµ±Ç°keyµÄ×îºó¸üĞÂÊ±¼ä
+            //å–å¾—å½“å‰keyçš„æœ€åæ›´æ–°æ—¶é—´
             $last_time = $this->handle->hGet($key,'last_time');
             /*
-             * ²é¿´µ±Ç°Ê±¼äºÍ×îºóµÄ¸üĞÂÊ±¼äµÄÊ±¼ä²îÊÇ·ñ³¬¹ı×î´óÉúÃüÖÜÆÚ
+             * æŸ¥çœ‹å½“å‰æ—¶é—´å’Œæœ€åçš„æ›´æ–°æ—¶é—´çš„æ—¶é—´å·®æ˜¯å¦è¶…è¿‡æœ€å¤§ç”Ÿå‘½å‘¨æœŸ
              */
             if(($now - $last_time) > $maxlifetime){
-                //³¬¹ıÁË×î´óÉúÃüÖÜÆÚÊ±¼ä ÔòÉ¾³ı¸Ãkey
+                //è¶…è¿‡äº†æœ€å¤§ç”Ÿå‘½å‘¨æœŸæ—¶é—´ åˆ™åˆ é™¤è¯¥key
                 $this->handle->del($key);
             }
             

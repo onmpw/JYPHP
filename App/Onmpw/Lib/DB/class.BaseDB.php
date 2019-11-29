@@ -1,6 +1,6 @@
 <?php
 /**
- * ¸ÃÀàÔİÊ±Î´ÓÃµ½
+ * è¯¥ç±»æš‚æ—¶æœªç”¨åˆ°
  */
 namespace Lib\DB;
 
@@ -8,13 +8,13 @@ abstract class BaseDB{
 
     protected $config = array();
 
-    protected  $link = null;   //Á´½Ó
+    protected  $link = null;   //é“¾æ¥
 
-    protected $_links = array();  //´æ´¢Á¬½Ó±êÊ¶·û
+    protected $_links = array();  //å­˜å‚¨è¿æ¥æ ‡è¯†ç¬¦
 
     protected $ignore = array();
 
-    protected $bind = array();  //°ó¶¨²ÎÊı
+    protected $bind = array();  //ç»‘å®šå‚æ•°
 
     protected $dsn;
 
@@ -24,25 +24,25 @@ abstract class BaseDB{
 
     protected $sql = '';
 
-    protected $transNum = 0;  //ÊÂÎñÖ¸ÁîÊıÁ¿
+    protected $transNum = 0;  //äº‹åŠ¡æŒ‡ä»¤æ•°é‡
 
-    protected $lastInsId;  //¼ÇÂ¼²åÈëÊı¾İÊ±×îºó²åÈëµÄÒ»Ìõ¼ÇÂ¼µÄid
+    protected $lastInsId;  //è®°å½•æ’å…¥æ•°æ®æ—¶æœ€åæ’å…¥çš„ä¸€æ¡è®°å½•çš„id
 
-    protected $affectNum; //¼ÇÂ¼Ó°ÏìµÄÊı¾İµÄÌõÊı
+    protected $affectNum; //è®°å½•å½±å“çš„æ•°æ®çš„æ¡æ•°
     
     private function __construct($config = ''){
         $this->config($config);
     }
     
     /**
-     * ½âÎöÊı¾İ¿âÁ´½Ódsn
+     * è§£ææ•°æ®åº“é“¾æ¥dsn
      * 
      * @param unknown $config
      */
     abstract protected function parseDsn($config);
 
     /**
-     * Êı¾İ¿âÁ´½Óº¯Êı
+     * æ•°æ®åº“é“¾æ¥å‡½æ•°
      *
      * @param string $config
      *
@@ -53,7 +53,7 @@ abstract class BaseDB{
     abstract protected function connect($config = '', $identify = 0, $reconnect = false);
     
     /**
-     * Êı¾İ¿âÅäÖÃ
+     * æ•°æ®åº“é…ç½®
      * 
      * @param string $config
      */
@@ -78,7 +78,7 @@ abstract class BaseDB{
     }
 
     /**
-     * µÃµ½×îºó²åÈëµÄÊı¾İµÄid
+     * å¾—åˆ°æœ€åæ’å…¥çš„æ•°æ®çš„id
      */
     public function lastInsId()
     {
@@ -86,7 +86,7 @@ abstract class BaseDB{
     }
     
     /**
-     * Îö¹¹º¯Êı ¹Ø±ÕÊÍ·Å²éÑ¯²¢ÇÒ¹Ø±ÕÁ´½Ó
+     * ææ„å‡½æ•° å…³é—­é‡Šæ”¾æŸ¥è¯¢å¹¶ä¸”å…³é—­é“¾æ¥
      */
     public function __destruct(){
 

@@ -8,7 +8,7 @@ use Onlinebid\Model\ContractsModel;
 use Onlinebid\Model\ContracttouserModel;
 class WS_Bids implements I_WS_Bids{
     /**
-     * Ìí¼ÓÕĞ±êÏî
+     * æ·»åŠ æ‹›æ ‡é¡¹
      * @see \Inter\Webservice\I_WS_Bids::bids()
      */
     public function bids($bids = ''){
@@ -16,33 +16,33 @@ class WS_Bids implements I_WS_Bids{
     }
     
     /**
-     * Ìí¼ÓÕĞ±ê¹«¸æ
+     * æ·»åŠ æ‹›æ ‡å…¬å‘Š
      * @see \Inter\Webservice\I_WS_Bids::bidnotice()
      */
     public function bidnotice($notice = ''){
         $info = array();
-        //ÊµÀı»¯Ä£ĞÍ
+        //å®ä¾‹åŒ–æ¨¡å‹
         $bidmod = new BidsModel();
         $bidnoticemod = new BidnoticeModel();
         
         if(empty($notice)){
             $info['code'] = 1;
-//             $info['con'] = 'ÕĞ±ê¹«¸æÎª¿Õ';
+//             $info['con'] = 'æ‹›æ ‡å…¬å‘Šä¸ºç©º';
             return json_encode($info);
         }
-        //½âÎönoticeÎªÊı×é
+        //è§£ænoticeä¸ºæ•°ç»„
         $notice = json_decode($notice,true);
-        //È¡³ömbsÖĞµÄÕĞ±êÏîid
+        //å–å‡ºmbsä¸­çš„æ‹›æ ‡é¡¹id
         if(!isset($notice['mbsbidid'])){
             $info['code'] = 2;
-//             $info['con'] = 'ÕĞ±êÏîidÎª¿Õ';
+//             $info['con'] = 'æ‹›æ ‡é¡¹idä¸ºç©º';
             return json_encode($info);
         }
         $mbid = $notice['mbsbidid'];
         /*
-         * Ê×ÏÈ²éÕÒµ±Ç°µÄÕĞ±êÏîÊÇ·ñ´æÔÚ
-         * Èç¹û´æÔÚ£¬ÔòÊÇ¸üĞÂÕĞ±ê¹«¸æ£¬Ö»Ìí¼ÓÕĞ±ê¹«¸æ£¬²»¶ÔÕĞ±êÏîµÄ±í½øĞĞ²Ù×÷¡£
-         * Èç¹û²»´æÔÚÔòÊÇÒ»¸öĞÂµÄÕĞ±êÏî
+         * é¦–å…ˆæŸ¥æ‰¾å½“å‰çš„æ‹›æ ‡é¡¹æ˜¯å¦å­˜åœ¨
+         * å¦‚æœå­˜åœ¨ï¼Œåˆ™æ˜¯æ›´æ–°æ‹›æ ‡å…¬å‘Šï¼Œåªæ·»åŠ æ‹›æ ‡å…¬å‘Šï¼Œä¸å¯¹æ‹›æ ‡é¡¹çš„è¡¨è¿›è¡Œæ“ä½œã€‚
+         * å¦‚æœä¸å­˜åœ¨åˆ™æ˜¯ä¸€ä¸ªæ–°çš„æ‹›æ ‡é¡¹
          */
         $up = false;
         $sql = "select id from bids where mbsbidid=".$mbid;
@@ -50,7 +50,7 @@ class WS_Bids implements I_WS_Bids{
         if(count($res) === 0){
             if(!isset($notice['bidname'])){
                 $info['code'] = 3;
-//                 $info['con'] = 'ÕĞ±êÏîÃû³ÆÎª¿Õ';
+//                 $info['con'] = 'æ‹›æ ‡é¡¹åç§°ä¸ºç©º';
                 return json_encode($info);
             }
             $result = $bidmod->add(array('mbsbidid'=>$mbid,'bidname'=>$notice['bidname']));
@@ -59,23 +59,23 @@ class WS_Bids implements I_WS_Bids{
             }
         }elseif(count($res)>0){
             $lastinsid = $res[0]['id'];
-            //ÕĞ±êÏî´æÔÚ£¬Ôò¸ù¾İÕĞ±ê¹«¸æid²éÕÒbidnotice±íÖĞÊÇ·ñ´æÔÚ´ËÕĞ±ê¹«¸æ
+            //æ‹›æ ‡é¡¹å­˜åœ¨ï¼Œåˆ™æ ¹æ®æ‹›æ ‡å…¬å‘ŠidæŸ¥æ‰¾bidnoticeè¡¨ä¸­æ˜¯å¦å­˜åœ¨æ­¤æ‹›æ ‡å…¬å‘Š
             $sql = "select id from bidnotice where mbsnoticeid=".$notice['mbsnoticeid'];
             $res = $bidnoticemod->select_sql($sql);
             if(count($res) == 1){
-                //Èç¹ûÕĞ±ê¹«¸æ´æÔÚ Ôò²»½øĞĞÈÎºÎ²Ù×÷ ³ÌĞòÍ£Ö¹ÏòÏÂÖ´ĞĞ
+                //å¦‚æœæ‹›æ ‡å…¬å‘Šå­˜åœ¨ åˆ™ä¸è¿›è¡Œä»»ä½•æ“ä½œ ç¨‹åºåœæ­¢å‘ä¸‹æ‰§è¡Œ
                 $info['code'] = 5;
                 return json_encode($info);
             }
-            //ÕĞ±êÏî´æÔÚ£¬Ôò¸üĞÂ¸ÃÕĞ±êÏîµÄÕĞ±ê¹«¸æÎªÎŞĞ§
-            //Ñ¡Ôñ¸ÃÕĞ±êÏîÏÂÃæµÄÓĞĞ§µÄ¹«¸æid
+            //æ‹›æ ‡é¡¹å­˜åœ¨ï¼Œåˆ™æ›´æ–°è¯¥æ‹›æ ‡é¡¹çš„æ‹›æ ‡å…¬å‘Šä¸ºæ— æ•ˆ
+            //é€‰æ‹©è¯¥æ‹›æ ‡é¡¹ä¸‹é¢çš„æœ‰æ•ˆçš„å…¬å‘Šid
             $sql = "select id from bidnotice where bidid=".$lastinsid." and iseffective='Y'";
             $res = $bidnoticemod->select_sql($sql);
             $noticeid = $res[0]['id'];
-            //½Ó×Å²éÕÒsup_bid ±íÖĞ´ËÕĞ±êÏî¶ÔÓ¦µÄÕĞ±ê¹«¸æÊÇ·ñÓĞ±¨ÃûµÄ¹©Ó¦ÉÌ Èç¹ûÓĞ±¨ÃûµÄ£¬Ôò¶ÔÓ¦ÓÚ´ËÕĞ±ê¹«¸æµÄ±¨ÃûÖÃÎªÎŞĞ§
+            //æ¥ç€æŸ¥æ‰¾sup_bid è¡¨ä¸­æ­¤æ‹›æ ‡é¡¹å¯¹åº”çš„æ‹›æ ‡å…¬å‘Šæ˜¯å¦æœ‰æŠ¥åçš„ä¾›åº”å•† å¦‚æœæœ‰æŠ¥åçš„ï¼Œåˆ™å¯¹åº”äºæ­¤æ‹›æ ‡å…¬å‘Šçš„æŠ¥åç½®ä¸ºæ— æ•ˆ
             $sql = "select id from sup_bid where noticeid=".$noticeid;
             $res = $bidnoticemod->select_sql($sql);
-            //Ê×ÏÈ¿ªÆôÊÂÎñ´¦Àí
+            //é¦–å…ˆå¼€å¯äº‹åŠ¡å¤„ç†
             $bidnoticemod->startTransaction();
             if(count($res) >0){
                 $sql = "update sup_bid set signiseffective='N' where noticeid=".$noticeid;
@@ -85,25 +85,25 @@ class WS_Bids implements I_WS_Bids{
             $r = $bidnoticemod->sql($sql);
             $up = true;
         }
-        //È¥³ınoticeÊı×éÖĞ¶àÓàµÄÏî  ÕâĞ©Ïîbidnotice±í²¢²»ĞèÒª
-        unset($notice['bidname']);  //ÕĞ±êÏîÃû³Æ
-        unset($notice['mbsbidid']); //ÕĞ±êÏîÔÚmbsÖĞµÄid
+        //å»é™¤noticeæ•°ç»„ä¸­å¤šä½™çš„é¡¹  è¿™äº›é¡¹bidnoticeè¡¨å¹¶ä¸éœ€è¦
+        unset($notice['bidname']);  //æ‹›æ ‡é¡¹åç§°
+        unset($notice['mbsbidid']); //æ‹›æ ‡é¡¹åœ¨mbsä¸­çš„id
         $typecontent = $notice['typecontent'];
         unset($notice['typecontent']);
         /*
-         * ½«´ËÕĞ±ê¹«¸æ¼ÓÈëbidnotice±íÖĞ
+         * å°†æ­¤æ‹›æ ‡å…¬å‘ŠåŠ å…¥bidnoticeè¡¨ä¸­
          */
         $notice['bidid'] = $lastinsid;
         $res = $bidnoticemod->add($notice);
         if($res){
-            //Èç¹ûÌí¼Ó³É¹¦ Ôò½« typecontent Á¬Í¬bidnotice²åÈëidÒ»Í¬´æÈëbidtypecon±íÖĞ
-            //µÃµ½²åÈëid 
+            //å¦‚æœæ·»åŠ æˆåŠŸ åˆ™å°† typecontent è¿åŒbidnoticeæ’å…¥idä¸€åŒå­˜å…¥bidtypeconè¡¨ä¸­
+            //å¾—åˆ°æ’å…¥id 
             $noticeid = $bidnoticemod->lastInsId();
             $typemod = new BidtypeconModel();
             $result = $typemod->add(array('bidid'=>$noticeid,'typecontent'=>$typecontent,'typekey'=>$notice['requireofbidtype']));
             if($result){
                 $info['code'] = 0;
-//                 $info['con'] = 'Ìí¼Ó³É¹¦';
+//                 $info['con'] = 'æ·»åŠ æˆåŠŸ';
                 if($up) $bidnoticemod->Commit();
             }else{
                 $info['code'] = 4;
@@ -139,19 +139,19 @@ class WS_Bids implements I_WS_Bids{
         if(count($res) === 0){
             $info['code'] = 3;
         }elseif(count($res)>0){
-            //Ê×ÏÈÅĞ¶ÏÕĞ±êÏîºÍÕĞ±êÏîÃû³ÆÊÇ·ñ´æÔÚ Èç¹û´æÔÚÄÇÃ´È¥µôÕâÁ½Ïî
+            //é¦–å…ˆåˆ¤æ–­æ‹›æ ‡é¡¹å’Œæ‹›æ ‡é¡¹åç§°æ˜¯å¦å­˜åœ¨ å¦‚æœå­˜åœ¨é‚£ä¹ˆå»æ‰è¿™ä¸¤é¡¹
             if(isset($notice['bidid'])) unset($notice['bidid']);
             if(isset($notice['bidname'])) unset($notice['bidname']);
             if(isset($notice['iseffective'])) unset($notice['iseffective']);
             if(isset($notice['mbsbidid'])) unset($notice['mbsbidid']);
             
-            //µÃµ½µ±Ç°Òª¸üĞÂµÄÕĞ±ê¹«¸æµÄid
+            //å¾—åˆ°å½“å‰è¦æ›´æ–°çš„æ‹›æ ‡å…¬å‘Šçš„id
             $noticeid = $res[0]['id'];
-            //ÅĞ¶Ï×ÊÖÊÒªÇóÀàĞÍÊÇ·ñ¸üĞÂ
+            //åˆ¤æ–­èµ„è´¨è¦æ±‚ç±»å‹æ˜¯å¦æ›´æ–°
             if(isset($notice['typecontent']) && isset($notice['requireofbidtype'])){
                 $typemode = new BidtypeconModel();
-                //×ÊÖÊÒªÇóÀàĞÍ¸üĞÂ
-                //Ê×ÏÈ¿ªÆôÊÂÎñ´¦Àí
+                //èµ„è´¨è¦æ±‚ç±»å‹æ›´æ–°
+                //é¦–å…ˆå¼€å¯äº‹åŠ¡å¤„ç†
                 $typemode->startTransaction();
                 $sql = "update bidtypecon set typecontent='".$notice['typecontent']."',typekey='".$notice['requireofbidtype']."'";
                 $res = $typemode->sql($sql);
@@ -159,8 +159,9 @@ class WS_Bids implements I_WS_Bids{
                     $info['code'] = 4;
                     return json_encode($info);
                 }
-                //É¾³ı×ÊÖÊÒªÇóµÄÄÚÈİ ÒÔ·½±ã¸üĞÂbidnotice±íÖĞµÄÄÚÈİ
-                unset($notice['typecontent']);            }
+                //åˆ é™¤èµ„è´¨è¦æ±‚çš„å†…å®¹ ä»¥æ–¹ä¾¿æ›´æ–°bidnoticeè¡¨ä¸­çš„å†…å®¹
+                unset($notice['typecontent']);
+            }
             $sql = 'update bidnotice set ';
             foreach($notice as $key=>$val){
                 $sql .= $key."='".$val."',";
@@ -169,11 +170,11 @@ class WS_Bids implements I_WS_Bids{
             $res = $bidnoticemod->sql($sql);
             if($res){
                 $info['code'] = 0;
-                //Èç¹ûÕû¸ö¹«¸æ¸üĞÂ³É¹¦ ÔòÌá½»ÊÂÎñ Ê¹Ç°ÃæµÄ×ÊÖÊÒªÇó¸üĞÂ³É¹¦
+                //å¦‚æœæ•´ä¸ªå…¬å‘Šæ›´æ–°æˆåŠŸ åˆ™æäº¤äº‹åŠ¡ ä½¿å‰é¢çš„èµ„è´¨è¦æ±‚æ›´æ–°æˆåŠŸ
                 $typemode->Commit();
             }else{
                 $info['code'] = 5;
-                //Èç¹ûÕû¸ö¹«¸æ¸üĞÂÊ§°Ü  Ôò»Ø¹öÊÂÎñ Ê¹Ç°ÃæµÄ¸üĞÂµÄ×ÊÖÊÒªÇóÊ§Ğ§
+                //å¦‚æœæ•´ä¸ªå…¬å‘Šæ›´æ–°å¤±è´¥  åˆ™å›æ»šäº‹åŠ¡ ä½¿å‰é¢çš„æ›´æ–°çš„èµ„è´¨è¦æ±‚å¤±æ•ˆ
                 $typemode->rollBack();
             }
         }
@@ -182,7 +183,7 @@ class WS_Bids implements I_WS_Bids{
     }
     
     /**
-     * ºÏÍ¬½Ó¿Ú
+     * åˆåŒæ¥å£
      * @see \Inter\Webservice\I_WS_Bids::contracts()
      */
     public function contracts($contract = ''){
@@ -192,7 +193,7 @@ class WS_Bids implements I_WS_Bids{
             return json_encode($info);
         }
         $contract = json_decode($contract,true);
-        //ÅĞ¶Ï¹©Ó¦ÉÌ»òÕßÏîÄ¿¹«Ë¾ÊÇ·ñ´æÔÚ
+        //åˆ¤æ–­ä¾›åº”å•†æˆ–è€…é¡¹ç›®å…¬å¸æ˜¯å¦å­˜åœ¨
         /* if(!isset($contract['supplierid'])|| !isset($contract['itemcompanyid'])){
             $info['code'] = 3;
             return json_encode($info);
@@ -203,79 +204,79 @@ class WS_Bids implements I_WS_Bids{
         unset($contract['itemcompanyid']);
         $contractmod = new ContractsModel();
         
-        //Ê×ÏÈ²éÕÒ´ËºÏÍ¬ÊÇ·ñÒÑ¾­´æÔÚÓÚ±íÖĞ
+        //é¦–å…ˆæŸ¥æ‰¾æ­¤åˆåŒæ˜¯å¦å·²ç»å­˜åœ¨äºè¡¨ä¸­
         $sql = "select id from contracts where contractid=".$contract['contractid'];
         $res = $contractmod->select_sql($sql);
         if(count($res) == 1){
-            //Èç¹ûÒªÌí¼ÓµÄºÏÍ¬ÒÑ¾­´æÔÚÓÚcontracts±íÖĞ ËµÃ÷Ö®Ç°ÒÑ¾­Ìí¼Ó¹ı£¬Ôò²»ÔÙÌí¼Ó³ÌĞò²»ÔÙÏòÏÂÖ´ĞĞ
+            //å¦‚æœè¦æ·»åŠ çš„åˆåŒå·²ç»å­˜åœ¨äºcontractsè¡¨ä¸­ è¯´æ˜ä¹‹å‰å·²ç»æ·»åŠ è¿‡ï¼Œåˆ™ä¸å†æ·»åŠ ç¨‹åºä¸å†å‘ä¸‹æ‰§è¡Œ
             $info['code'] = 3;
             return json_encode($info);
         }
 //         $contractmod->startTransaction();
         /*
-         * Ìí¼ÓºÏÍ¬
+         * æ·»åŠ åˆåŒ
          */
         $res = $contractmod->add($contract);
         if($res){
-            /* $contractid = $contractmod->lastInsId(); //µÃµ½²åÈëid
-            //Ê×ÏÈ½«¼¯ÍÅ¸ºÔğÈË¼ÓÈë
+            /* $contractid = $contractmod->lastInsId(); //å¾—åˆ°æ’å…¥id
+            //é¦–å…ˆå°†é›†å›¢è´Ÿè´£äººåŠ å…¥
             $sql = "select id from company where usertype='E'";
             $res = $contractmod->select_sql($sql);
             if(count($res) == 0){
-                //Èç¹û±íÖĞ²»´æÔÚ¼¯ÍÅ¸ºÔğÈË Ôò½«Ìí¼ÓµÄºÏÍ¬ÖÃÎªÎŞĞ§ ²¢ÇÒ·µ»Ø´íÎóĞÅÏ¢ ³ÌĞò²»ÔÙÏòÏÂÖ´ĞĞ
+                //å¦‚æœè¡¨ä¸­ä¸å­˜åœ¨é›†å›¢è´Ÿè´£äºº åˆ™å°†æ·»åŠ çš„åˆåŒç½®ä¸ºæ— æ•ˆ å¹¶ä¸”è¿”å›é”™è¯¯ä¿¡æ¯ ç¨‹åºä¸å†å‘ä¸‹æ‰§è¡Œ
                 $info['code'] = 3;
                 $sql = 'update contracts set iseffective=0 where id='.$contractid;
                 $res = $contractmod->sql($sql);
                 return json_encode($info);
                 
             }
-            //±íÖĞ´æÔÚ¼¯ÍÅ¸ºÔğÈË Ôò²éÕÒuser±íÖĞ¶ÔÓ¦µÄÓÃ»§²¢ÇÒÊÇ¹ÜÀíÔ±
+            //è¡¨ä¸­å­˜åœ¨é›†å›¢è´Ÿè´£äºº åˆ™æŸ¥æ‰¾userè¡¨ä¸­å¯¹åº”çš„ç”¨æˆ·å¹¶ä¸”æ˜¯ç®¡ç†å‘˜
             $Eusers = array();
             for($i=0;$i<count($res);$i++){
                 $sql = "select id from user where companyid=".$res[$i]['id']." and ismanager='Y'";
                 $user = $contractmod->select_sql($sql);
                 $Eusers = array_merge(array_map(function($val){return $val['id'];},$user));
             }
-            //Èç¹û´æÔÚ¼¯ÍÅ¸ºÔğÈË¶ÔÓ¦µÄuserÔò ¿ªÊ¼Ìí¼Óµ½contracttouser±íÖĞ
+            //å¦‚æœå­˜åœ¨é›†å›¢è´Ÿè´£äººå¯¹åº”çš„useråˆ™ å¼€å§‹æ·»åŠ åˆ°contracttouserè¡¨ä¸­
             $contousermod = new ContracttouserModel();
             for($i = 0;$i<count($Eusers); $i++){
                 $contousermod->add(array('userid'=>$Eusers[$i],'contractid'=>$contractid));
             }
-            //ºÏÍ¬ºÍ¼¯ÍÅ¸ºÔğÈË¶¼Ìí¼Ó³É¹¦ Ôò²éÕÒ¹©Ó¦ÉÌidºÍÏîÄ¿¹«Ë¾idÊÇ·ñÔÚcompany±íÖĞ´æÔÚ
+            //åˆåŒå’Œé›†å›¢è´Ÿè´£äººéƒ½æ·»åŠ æˆåŠŸ åˆ™æŸ¥æ‰¾ä¾›åº”å•†idå’Œé¡¹ç›®å…¬å¸idæ˜¯å¦åœ¨companyè¡¨ä¸­å­˜åœ¨
             
-            //Ê×ÏÈ²éÕÒ¹©Ó¦ÉÌ¶ÔÓ¦µÄÊÇ·ñ´æÔÚ
+            //é¦–å…ˆæŸ¥æ‰¾ä¾›åº”å•†å¯¹åº”çš„æ˜¯å¦å­˜åœ¨
             $sql = "select id from company where mbsuserid='".$sup_id."' and usertype='S'";
             $res = $contractmod->select_sql($sql);
-            $Eusers = array();  //ÖØĞÂ³õÊ¼»¯Eusers±äÁ¿ ´æ·ÅÏÂÃæµÄ¹©Ó¦ÉÌºÍÏîÄ¿¹«Ë¾¶ÔÓ¦µÄuserid
+            $Eusers = array();  //é‡æ–°åˆå§‹åŒ–Euserså˜é‡ å­˜æ”¾ä¸‹é¢çš„ä¾›åº”å•†å’Œé¡¹ç›®å…¬å¸å¯¹åº”çš„userid
             $compid = array();
             if(count($res) == 1){
-                //¹©Ó¦ÉÌ´æÔÚ ²¢ÇÒsup_id ÓÉmbsid ¸ÄÎªcompanyid È»ºó²éÕÒÏîÄ¿¹«Ë¾ÊÇ·ñ´æÔÚ
-                $compid[] = $sup_id = $res[0]['id']; //µÃµ½¹©Ó¦ÉÌid
+                //ä¾›åº”å•†å­˜åœ¨ å¹¶ä¸”sup_id ç”±mbsid æ”¹ä¸ºcompanyid ç„¶åæŸ¥æ‰¾é¡¹ç›®å…¬å¸æ˜¯å¦å­˜åœ¨
+                $compid[] = $sup_id = $res[0]['id']; //å¾—åˆ°ä¾›åº”å•†id
                 $sql = "select id from company where mbsuserid='".$itemcomp_id."' and usertype='P'";
                 $r = $contractmod->select_sql($sql);
                 if(count($r) == 1){
-                    //ÏîÄ¿¹«Ë¾´æÔÚ ²¢ÇÒitemcomp_id ÓÉmbsid ¸ÄÎªcompanyid
+                    //é¡¹ç›®å…¬å¸å­˜åœ¨ å¹¶ä¸”itemcomp_id ç”±mbsid æ”¹ä¸ºcompanyid
                     $compid[] = $itemcomp_id = $r[0]['id'];
                 }else{
-                    $info['code'] = 4; //ÏîÄ¿¹«Ë¾²»´æÔÚ  Í¬Ñù½«Ìí¼ÓµÄºÏÍ¬ÖÃÎªÎŞĞ§ ²¢ÇÒ·µ»Ø´íÎóĞÅÏ¢ ³ÌĞò²»ÔÙÏòÏÂÖ´ĞĞ
+                    $info['code'] = 4; //é¡¹ç›®å…¬å¸ä¸å­˜åœ¨  åŒæ ·å°†æ·»åŠ çš„åˆåŒç½®ä¸ºæ— æ•ˆ å¹¶ä¸”è¿”å›é”™è¯¯ä¿¡æ¯ ç¨‹åºä¸å†å‘ä¸‹æ‰§è¡Œ
                     $sql = 'update contracts set iseffective=0 where id='.$contractid;
                     $res = $contractmod->sql($sql);
                     return json_encode($info);
                 }
                 
             }else{
-                //¹©Ó¦ÉÌ²»´æÔÚ Í¬Ñù½«Ìí¼ÓµÄºÏÍ¬ÖÃÎªÎŞĞ§ ²¢ÇÒ·µ»Ø´íÎóĞÅÏ¢ ³ÌĞò²»ÔÙÏòÏÂÖ´ĞĞ
+                //ä¾›åº”å•†ä¸å­˜åœ¨ åŒæ ·å°†æ·»åŠ çš„åˆåŒç½®ä¸ºæ— æ•ˆ å¹¶ä¸”è¿”å›é”™è¯¯ä¿¡æ¯ ç¨‹åºä¸å†å‘ä¸‹æ‰§è¡Œ
                 $sql = 'update contracts set iseffective=0 where id='.$contractid;
                 $res = $contractmod->sql($sql);
                 return json_encode($info);
             }
-            //ÔÚuser±íÖĞ²éÕÒ¹©Ó¦ÉÌºÍÏîÄ¿¹«Ë¾¶ÔÓ¦µÄÓÃ»§ ²¢ÇÒÊÇ¹ÜÀíÔ±
+            //åœ¨userè¡¨ä¸­æŸ¥æ‰¾ä¾›åº”å•†å’Œé¡¹ç›®å…¬å¸å¯¹åº”çš„ç”¨æˆ· å¹¶ä¸”æ˜¯ç®¡ç†å‘˜
             for($i=0;$i<count($compid);$i++){
                 $sql = "select id from user where companyid=".$compid[$i]." and ismanager='Y'";
                 $user = $contractmod->select_sql($sql);
                 $Eusers = array_merge($Eusers,array_map(function($val){return $val['id'];},$user));
             }
-            //È»ºó½«ÆäÌí¼Óµ½contracttouser±íÖĞ
+            //ç„¶åå°†å…¶æ·»åŠ åˆ°contracttouserè¡¨ä¸­
             for($i = 0;$i<count($Eusers); $i++){
                 $contousermod->add(array('userid'=>$Eusers[$i],'contractid'=>$contractid));
             }*/

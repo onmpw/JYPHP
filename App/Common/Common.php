@@ -2,34 +2,34 @@
 
 /**
  * 
- * @author ÁõººÔö
+ * @author åˆ˜æ±‰å¢
  *
  */
 class Common{
    
     /*
-     * Àà¿âµÄ»º´æ
+     * ç±»åº“çš„ç¼“å­˜
      */
     private static $_class = array();
 
     private static $_files = array();
     
     /*
-     * ÅäÖÃÎÄ¼şÖĞµÄ»º´æ
+     * é…ç½®æ–‡ä»¶ä¸­çš„ç¼“å­˜
      */
     private static $_conf = array();
     
     /*
-     * µÚÈı·½Àà¿âµÄ»º´æ
+     * ç¬¬ä¸‰æ–¹ç±»åº“çš„ç¼“å­˜
      */
     private static $_ext = array();
     
     const EXT = 'php';
     
     /**
-     * µ¼ÈëÀà¿âº¯Êı
-     * Èç¹û¿ªÍ·ÊÇ @|# ±íÊ¾ºóÃæ¸úµÄÊÇ´øÃüÃû¿Õ¼äµÄÀà
-     * # ´ú±íµ¼Èë³õÊ¼»¯Àà 
+     * å¯¼å…¥ç±»åº“å‡½æ•°
+     * å¦‚æœå¼€å¤´æ˜¯ @|# è¡¨ç¤ºåé¢è·Ÿçš„æ˜¯å¸¦å‘½åç©ºé—´çš„ç±»
+     * # ä»£è¡¨å¯¼å…¥åˆå§‹åŒ–ç±» 
      * 
      * @param string $name
      * 
@@ -42,7 +42,7 @@ class Common{
     public static function Import($name,$dir = '',$ext = '.php'){
         $name = str_replace('\\', '/',$name);
         /*
-         * Ê×ÏÈ¼ì²âÒªÒıÈëµÄÀàÖ®Ç°ÊÇ·ñÒıÈë¹ı
+         * é¦–å…ˆæ£€æµ‹è¦å¼•å…¥çš„ç±»ä¹‹å‰æ˜¯å¦å¼•å…¥è¿‡
          */
         if(isset(self::$_class[$name.'-'.$dir]))
             return true;
@@ -50,11 +50,11 @@ class Common{
             self::$_class[$name.'-'.$dir] = true;
         
         /*
-         * ·ÖÎöÒıÈëµÄÎÄ¼şÊôÓÚÄÄÒ»ÖÖÎÄ¼ş
+         * åˆ†æå¼•å…¥çš„æ–‡ä»¶å±äºå“ªä¸€ç§æ–‡ä»¶
          */
         $class_struct = explode('/',$name);
         
-        $ft = '';  //³õÊ¼»¯¶¨ÒåÎÄ¼şÀàĞÍ±äÁ¿
+        $ft = '';  //åˆå§‹åŒ–å®šä¹‰æ–‡ä»¶ç±»å‹å˜é‡
         
         if(empty($dir)){
             if('Lib' == $class_struct[0]){
@@ -83,12 +83,12 @@ class Common{
     }
     
     /**
-     * µ¼ÈëµÚÈı·½Àà¿â
-     * Èç¹û$extÖĞ´øÓĞ @ ÄÇÃ´@ºóÃæµÄ±íÊ¾ÎÄ¼şÃûµÄºó×º  ÔÚÀ©Õ¹ÃûÖ®Ç°£¬ÔÚÎÄ¼şÃûÖ®ºó
-     * Èç¹û$extÖĞ´øÓĞ # ÄÇÃ´#ºóÃæµÄ±íÊ¾ÎÄ¼şÃûµÄÇ°×º  ÔÚÎÄ¼şÃûÖ®Ç°
+     * å¯¼å…¥ç¬¬ä¸‰æ–¹ç±»åº“
+     * å¦‚æœ$extä¸­å¸¦æœ‰ @ é‚£ä¹ˆ@åé¢çš„è¡¨ç¤ºæ–‡ä»¶åçš„åç¼€  åœ¨æ‰©å±•åä¹‹å‰ï¼Œåœ¨æ–‡ä»¶åä¹‹å
+     * å¦‚æœ$extä¸­å¸¦æœ‰ # é‚£ä¹ˆ#åé¢çš„è¡¨ç¤ºæ–‡ä»¶åçš„å‰ç¼€  åœ¨æ–‡ä»¶åä¹‹å‰
      * 
      * @param string $ext
-     * $ext Èç¹û´øÓĞ : ÄÇÃ´ : ´ú±íµÄÊÇÂ·¾¶  ×îºóÒ»¸ö: Ö®ºóµÄÊÇÎÄ¼şÃû
+     * $ext å¦‚æœå¸¦æœ‰ : é‚£ä¹ˆ : ä»£è¡¨çš„æ˜¯è·¯å¾„  æœ€åä¸€ä¸ª: ä¹‹åçš„æ˜¯æ–‡ä»¶å
      * 
      * @return boolean
      */
@@ -99,11 +99,11 @@ class Common{
         }
         
         /*
-         * ÀûÓÃÕıÔò±í´ïÊ½Æ¥Åäµ±Ç°µÄÀàĞÅÏ¢
-         * Á½ÖÖÇé¿ö Ò»ÖÖÊÇ    ×Ö·û´®@|#ÎÄ¼şÀàĞÍ
-         * Ò»ÖÖÊÇ    ×Ö·û´®
+         * åˆ©ç”¨æ­£åˆ™è¡¨è¾¾å¼åŒ¹é…å½“å‰çš„ç±»ä¿¡æ¯
+         * ä¸¤ç§æƒ…å†µ ä¸€ç§æ˜¯    å­—ç¬¦ä¸²@|#æ–‡ä»¶ç±»å‹
+         * ä¸€ç§æ˜¯    å­—ç¬¦ä¸²
          * 
-         * ÆäËüÇé¿ö·µ»Øfalse
+         * å…¶å®ƒæƒ…å†µè¿”å›false
          */
         if(preg_match('/^([\w:]+)[@#]{1}([\w]+)$/', $ext,$matches)){
             $fext = $matches[2].'.';
@@ -115,28 +115,28 @@ class Common{
             return false;
         }
         
-        //²éÕÒÊÇ·ñ´æÔÚ:
-        // : ±íÊ¾ / Ò²¾ÍÊÇ·Ö¸îÂ·¾¶
+        //æŸ¥æ‰¾æ˜¯å¦å­˜åœ¨:
+        // : è¡¨ç¤º / ä¹Ÿå°±æ˜¯åˆ†å‰²è·¯å¾„
         if(strpos($finfo,':')){
-            $fname = ltrim(strrchr($finfo,':'),':'); //µÃµ½ÎÄ¼şÃû³Æ ×îºóÒ»¸ö : Ö®ºóµÄ×Ö·û´®
-            $finfo = substr($finfo,0,strrpos($finfo,':'));  //µÃµ½×îºóÒ»¸ö: Ö®Ç°µÄ×Ö·û´® ÕâÊÇÎÄ¼şËùÔÚÂ·¾¶ĞÅÏ¢
+            $fname = ltrim(strrchr($finfo,':'),':'); //å¾—åˆ°æ–‡ä»¶åç§° æœ€åä¸€ä¸ª : ä¹‹åçš„å­—ç¬¦ä¸²
+            $finfo = substr($finfo,0,strrpos($finfo,':'));  //å¾—åˆ°æœ€åä¸€ä¸ª: ä¹‹å‰çš„å­—ç¬¦ä¸² è¿™æ˜¯æ–‡ä»¶æ‰€åœ¨è·¯å¾„ä¿¡æ¯
         }else{
             $fname = $finfo;
         }
-        //½« : Ìæ»»³É /
+        //å°† : æ›¿æ¢æˆ /
         $finfo = str_replace(':','/',$finfo).'/';
         
         if(strpos($ext,'@'))
-            $fname = $fname.'.'.$fext.self::EXT;  // Èç¹ûÊÇ @ ÄÇÃ´ ÎÄ¼şÀ©Õ¹ĞÅÏ¢ ÔÚÎÄ¼şÃûÖ®ºó À©Õ¹ÃûÖ®Ç°
+            $fname = $fname.'.'.$fext.self::EXT;  // å¦‚æœæ˜¯ @ é‚£ä¹ˆ æ–‡ä»¶æ‰©å±•ä¿¡æ¯ åœ¨æ–‡ä»¶åä¹‹å æ‰©å±•åä¹‹å‰
         elseif(strpos($ext,'#')) 
-            $fname = $fext.$fname.".".self::EXT; //Èç¹ûÊÇ# ÄÇÃ´ÎÄ¼şÀ©Õ¹ĞÅÏ¢ÔÚÎÄ¼şÃûÖ®Ç°
+            $fname = $fext.$fname.".".self::EXT; //å¦‚æœæ˜¯# é‚£ä¹ˆæ–‡ä»¶æ‰©å±•ä¿¡æ¯åœ¨æ–‡ä»¶åä¹‹å‰
         else
-            $fname = $fname.'.'.self::EXT;  //×îºóÒ»ÖÖÇé¿öÊÇ Ã»ÓĞÀ©Õ¹ĞÅÏ¢
+            $fname = $fname.'.'.self::EXT;  //æœ€åä¸€ç§æƒ…å†µæ˜¯ æ²¡æœ‰æ‰©å±•ä¿¡æ¯
         return self::Require_file(EXT_PATH.$finfo.$fname);
     }
     
     /**
-     * ÒıÈëÎÄ¼şº¯Êı
+     * å¼•å…¥æ–‡ä»¶å‡½æ•°
      * 
      * @param string $file
      * 
@@ -157,41 +157,41 @@ class Common{
     }
 
     /**
-     * ´ø»º´æµÄÔØÈëÅäÖÃº¯Êı
-     * Ê×ÏÈÅĞ¶ÏÈç¹ûÊÇÊı×éµÄ»°£¬Ôò½«Æä¼ÓÈë$_conf ÖĞ
-     * Èç¹ûÊÇ×Ö·û´®£¬ËµÃ÷ÊÇÈ¡ÅäÖÃÖµ Èç¹û´æÔÚ ÔòÖ±½Ó·µ»Ø£¬Èç¹û»º´æÖĞ²»´æÔÚ ÄÇÃ´ÔÚÅäÖÃÎÄ¼şÖĞ²éÕÒ
-     * ¶şÎ¬¹ØÁªÊı×é²éÕÒ·½Ê½
+     * å¸¦ç¼“å­˜çš„è½½å…¥é…ç½®å‡½æ•°
+     * é¦–å…ˆåˆ¤æ–­å¦‚æœæ˜¯æ•°ç»„çš„è¯ï¼Œåˆ™å°†å…¶åŠ å…¥$_conf ä¸­
+     * å¦‚æœæ˜¯å­—ç¬¦ä¸²ï¼Œè¯´æ˜æ˜¯å–é…ç½®å€¼ å¦‚æœå­˜åœ¨ åˆ™ç›´æ¥è¿”å›ï¼Œå¦‚æœç¼“å­˜ä¸­ä¸å­˜åœ¨ é‚£ä¹ˆåœ¨é…ç½®æ–‡ä»¶ä¸­æŸ¥æ‰¾
+     * äºŒç»´å…³è”æ•°ç»„æŸ¥æ‰¾æ–¹å¼
      * C(name:name-key)
      * @param $conf
      * @return mixed
      */
     public static function C($conf){
         /*
-         * Ê×ÏÈÅĞ¶Ï²ÎÊıµÄÀàĞÍ
+         * é¦–å…ˆåˆ¤æ–­å‚æ•°çš„ç±»å‹
          */
         if(is_array($conf)){
-            //²ÎÊıÀàĞÍÊÇÊı×é ¼ÓÈë»º´æÊı×é
+            //å‚æ•°ç±»å‹æ˜¯æ•°ç»„ åŠ å…¥ç¼“å­˜æ•°ç»„
             foreach($conf as $key=>$val){
                 self::$_conf[$key] = $val;
             }
             return '';
         }
         if(is_string($conf)){
-            //²ÎÊıÀàĞÍÊÇ×Ö·û´® ¿ªÊ¼½øĞĞ²éÕÒ²Ù×÷
+            //å‚æ•°ç±»å‹æ˜¯å­—ç¬¦ä¸² å¼€å§‹è¿›è¡ŒæŸ¥æ‰¾æ“ä½œ
             if(strpos($conf,':')){
-                //²éÕÒ¶şÎ¬¹ØÁªÊı×éµÄÅäÖÃ
+                //æŸ¥æ‰¾äºŒç»´å…³è”æ•°ç»„çš„é…ç½®
                 $conf = explode(':', $conf);
                 if (count($conf) == 2) {
                     /*
-                     * Èç¹û ½âÎöºóµÄÊı×é´óĞ¡ÊÇ2 ËµÃ÷ÊÇ¶şÎ¬¹ØÁªÊı×é
-                     * Èç¹û»º´æÖĞ´æÔÚ Ö±½Ó·µ»Ø
+                     * å¦‚æœ è§£æåçš„æ•°ç»„å¤§å°æ˜¯2 è¯´æ˜æ˜¯äºŒç»´å…³è”æ•°ç»„
+                     * å¦‚æœç¼“å­˜ä¸­å­˜åœ¨ ç›´æ¥è¿”å›
                      */
                     if (isset(self::$_conf[$conf[0]]) && is_array(self::$_conf[$conf[0]])) {
                         if (isset(self::$_conf[$conf[0]][$conf[1]]))
                             return self::$_conf[$conf[0]][$conf[1]];
                     }
                     /*
-                     * »º´æÊı×éÖĞ²»´æÔÚ ÄÇÃ´Ê×ÏÈ¼ì²éµ±Ç°Ä£¿éµÄÅäÖÃÎÄ¼şÖĞÊÇ·ñ´æÔÚ
+                     * ç¼“å­˜æ•°ç»„ä¸­ä¸å­˜åœ¨ é‚£ä¹ˆé¦–å…ˆæ£€æŸ¥å½“å‰æ¨¡å—çš„é…ç½®æ–‡ä»¶ä¸­æ˜¯å¦å­˜åœ¨
                      */
                     if(file_exists(MODULE_PATH.MODULE_NAME.'/Config/app.php')){
                         $C = require(MODULE_PATH.MODULE_NAME.'/Config/app.php');
@@ -201,7 +201,7 @@ class Common{
                         }
                     }
                     /*
-                     * Èç¹ûµ±Ç°Êı×éÖĞ²»´æÔÚ Ôò²éÕÒ¹«¹²ÅäÖÃÎÄ¼şÖĞÊÇ·ñ´æÔÚ
+                     * å¦‚æœå½“å‰æ•°ç»„ä¸­ä¸å­˜åœ¨ åˆ™æŸ¥æ‰¾å…¬å…±é…ç½®æ–‡ä»¶ä¸­æ˜¯å¦å­˜åœ¨
                      */
                     $C = require(CONFIG_PATH . 'app.php');
                     if(isset($C[$conf[0]][$conf[1]])){
@@ -215,7 +215,7 @@ class Common{
             
             if(isset(self::$_conf[$conf])) return self::$_conf[$conf];
             /*
-             * »º´æÊı×éÖĞ²»´æÔÚ ÄÇÃ´Ê×ÏÈ¼ì²éµ±Ç°Ä£¿éµÄÅäÖÃÎÄ¼şÖĞÊÇ·ñ´æÔÚ
+             * ç¼“å­˜æ•°ç»„ä¸­ä¸å­˜åœ¨ é‚£ä¹ˆé¦–å…ˆæ£€æŸ¥å½“å‰æ¨¡å—çš„é…ç½®æ–‡ä»¶ä¸­æ˜¯å¦å­˜åœ¨
              */
             if(file_exists(MODULE_PATH.MODULE_NAME.'/Config/app.php')){
                 $C = require(MODULE_PATH.MODULE_NAME.'/Config/app.php');
@@ -225,7 +225,7 @@ class Common{
                 };
             }
             /*
-             * Èç¹ûµ±Ç°Êı×éÖĞ²»´æÔÚ Ôò²éÕÒ¹«¹²ÅäÖÃÎÄ¼şÖĞÊÇ·ñ´æÔÚ
+             * å¦‚æœå½“å‰æ•°ç»„ä¸­ä¸å­˜åœ¨ åˆ™æŸ¥æ‰¾å…¬å…±é…ç½®æ–‡ä»¶ä¸­æ˜¯å¦å­˜åœ¨
              */
             $C = require(CONFIG_PATH . 'app.php');
             if(isset($C[$conf])){
@@ -238,7 +238,7 @@ class Common{
     }
     
     /**
-     * ¼ÓÔØÅäÖÃÎÄ¼şº¯Êı
+     * åŠ è½½é…ç½®æ–‡ä»¶å‡½æ•°
      * 
      * @param string $conf_file
      * 
@@ -255,7 +255,7 @@ class Common{
     }
     
     /**
-     * ¹ıÂËurlÖĞµÄ Ä£¿é¡¢¿ØÖÆÆ÷¡¢·½·¨¡¢²ÎÊıµÈÊı¾İ
+     * è¿‡æ»¤urlä¸­çš„ æ¨¡å—ã€æ§åˆ¶å™¨ã€æ–¹æ³•ã€å‚æ•°ç­‰æ•°æ®
      * 
      * @param string $val
      * @param string $key
@@ -265,7 +265,7 @@ class Common{
             $val = '';
     }
     /**
-     * É¾³ıÊı×éÖĞÖµÎª¿ÕµÄ±äÁ¿
+     * åˆ é™¤æ•°ç»„ä¸­å€¼ä¸ºç©ºçš„å˜é‡
      * @param array $arr
      */
     public static function parse_empty(array &$arr){
@@ -277,7 +277,7 @@ class Common{
     }
     
     /**
-     * ¹ıÂË×Ö·û´®º¯Êı
+     * è¿‡æ»¤å­—ç¬¦ä¸²å‡½æ•°
      * @access public static
      * @param string $val
      * @return string
@@ -287,7 +287,7 @@ class Common{
     }
 
     /**
-     * ¹ıÂËsmarty ³£Á¿µÄ¸ñÊ½
+     * è¿‡æ»¤smarty å¸¸é‡çš„æ ¼å¼
      *
      * @param $tplName
      * @return string|string[]|null
@@ -298,14 +298,14 @@ class Common{
     }
     
     /**
-     * ÖØĞ´ $_GET
+     * é‡å†™ $_GET
      * @param string $key
      * @return boolean|string<>
      */
     public static function get($key = ''){
         static $data = array();
-        if(empty($key)) return false; //Èç¹û$key Îª¿Õ Ôò·µ»Ø false
-        if(isset($data[$key])) return $data[$key];  //Èç¹û µ±Ç°²ÎÊı²»ÕıÈ· ·µ»Ø¿Õ
+        if(empty($key)) return false; //å¦‚æœ$key ä¸ºç©º åˆ™è¿”å› false
+        if(isset($data[$key])) return $data[$key];  //å¦‚æœ å½“å‰å‚æ•°ä¸æ­£ç¡® è¿”å›ç©º
         if(isset($_GET)){
             $data = $_GET;
             unset($_GET);
@@ -318,7 +318,7 @@ class Common{
     }
     
     /**
-     * ÖØĞ´ $_POST
+     * é‡å†™ $_POST
      * @param string $key
      * @return boolean|string <>
      */
@@ -338,21 +338,21 @@ class Common{
     }
     
     /**
-     * session¹ÜÀíº¯Êı
-     * @param string|array $name sessionÃû³Æ Èç¹ûÎªÊı×éÔò±íÊ¾½øĞĞsessionÉèÖÃ
-     * @param mixed $value sessionÖµ
+     * sessionç®¡ç†å‡½æ•°
+     * @param string|array $name sessionåç§° å¦‚æœä¸ºæ•°ç»„åˆ™è¡¨ç¤ºè¿›è¡Œsessionè®¾ç½®
+     * @param mixed $value sessionå€¼
      * @return mixed
      */
     public static function session($name='',$value='') {
         $prefix   =  self::C('SESSION_PREFIX');
-        if(is_array($name)) { // session³õÊ¼»¯ ÔÚsession_start Ö®Ç°µ÷ÓÃ
+        if(is_array($name)) { // sessionåˆå§‹åŒ– åœ¨session_start ä¹‹å‰è°ƒç”¨
             if(isset($name['prefix'])) self::C(['SESSION_PREFIX',$name['prefix']]);
             if(self::C('VAR_SESSION_ID') && isset($_REQUEST[self::C('VAR_SESSION_ID')])){
                 session_id($_REQUEST[self::C('VAR_SESSION_ID')]);
             }elseif(isset($name['id'])) {
                 session_id($name['id']);
             }
-            if('common' == APP_MODE){ // ÆäËüÄ£Ê½¿ÉÄÜ²»Ö§³Ö
+            if('common' == APP_MODE){ // å…¶å®ƒæ¨¡å¼å¯èƒ½ä¸æ”¯æŒ
                 ini_set('session.auto_start', 0);
             }
             if(isset($name['name']))            session_name($name['name']);
@@ -367,7 +367,7 @@ class Common{
             if(isset($name['cache_limiter']))   session_cache_limiter($name['cache_limiter']);
             if(isset($name['cache_expire']))    session_cache_expire($name['cache_expire']);
             if(isset($name['type']))            self::C(['SESSION_TYPE',$name['type']]);
-            if(self::C('SESSION_TYPE')) { // ¶ÁÈ¡sessionÇı¶¯
+            if(self::C('SESSION_TYPE')) { // è¯»å–sessioné©±åŠ¨
                 $type   =   self::C('SESSION_TYPE');
                 $class  =   strpos($type,'\\')? $type : 'Think\\Session\\Driver\\'. ucwords(strtolower($type));
                 $hander =   new $class();
@@ -379,39 +379,39 @@ class Common{
                     array(&$hander,"destroy"),
                     array(&$hander,"gc"));
             }
-            // Æô¶¯session
+            // å¯åŠ¨session
             if(self::C('SESSION_AUTO_START'))  session_start();
         }elseif('' === $value){
             if(''===$name){
-                // »ñÈ¡È«²¿µÄsession
+                // è·å–å…¨éƒ¨çš„session
                 return $prefix ? $_SESSION[$prefix] : $_SESSION;
-            }elseif(0===strpos($name,'[')) { // session ²Ù×÷
-                if('[pause]'==$name){ // ÔİÍ£session
+            }elseif(0===strpos($name,'[')) { // session æ“ä½œ
+                if('[pause]'==$name){ // æš‚åœsession
                     session_write_close();
-                }elseif('[start]'==$name){ // Æô¶¯session
+                }elseif('[start]'==$name){ // å¯åŠ¨session
                     session_start();
-                }elseif('[destroy]'==$name){ // Ïú»Ùsession
+                }elseif('[destroy]'==$name){ // é”€æ¯session
                     $_SESSION =  array();
                     session_unset();
                     session_destroy();
-                }elseif('[regenerate]'==$name){ // ÖØĞÂÉú³Éid
+                }elseif('[regenerate]'==$name){ // é‡æ–°ç”Ÿæˆid
                     session_regenerate_id();
                 }
-            }elseif(0===strpos($name,'?')){ // ¼ì²ésession
+            }elseif(0===strpos($name,'?')){ // æ£€æŸ¥session
                 $name   =  substr($name,1);
-                if(strpos($name,'.')){ // Ö§³ÖÊı×é
+                if(strpos($name,'.')){ // æ”¯æŒæ•°ç»„
                     list($name1,$name2) =   explode('.',$name);
                     return $prefix?isset($_SESSION[$prefix][$name1][$name2]):isset($_SESSION[$name1][$name2]);
                 }else{
                     return $prefix?isset($_SESSION[$prefix][$name]):isset($_SESSION[$name]);
                 }
-            }elseif(is_null($name)){ // Çå¿Õsession
+            }elseif(is_null($name)){ // æ¸…ç©ºsession
                 if($prefix) {
                     unset($_SESSION[$prefix]);
                 }else{
                     $_SESSION = array();
                 }
-            }elseif($prefix){ // »ñÈ¡session
+            }elseif($prefix){ // è·å–session
                 if(strpos($name,'.')){
                     list($name1,$name2) =   explode('.',$name);
                     return isset($_SESSION[$prefix][$name1][$name2])?$_SESSION[$prefix][$name1][$name2]:null;
@@ -426,7 +426,7 @@ class Common{
                     return isset($_SESSION[$name])?$_SESSION[$name]:null;
                 }
             }
-        }elseif(is_null($value)){ // É¾³ısession
+        }elseif(is_null($value)){ // åˆ é™¤session
             if(strpos($name,'.')){
                 list($name1,$name2) =   explode('.',$name);
                 if($prefix){
@@ -441,7 +441,7 @@ class Common{
                     unset($_SESSION[$name]);
                 }
             }
-        }else{ // ÉèÖÃsession
+        }else{ // è®¾ç½®session
             if(strpos($name,'.')){
                 list($name1,$name2) =   explode('.',$name);
                 if($prefix){
@@ -462,7 +462,7 @@ class Common{
     
     /**
      * 
-     * ²úÉúËæ»ú×Ö·û´®
+     * äº§ç”Ÿéšæœºå­—ç¬¦ä¸²
      * @access public static
      * @return string
      */
@@ -479,7 +479,7 @@ class Common{
     }
 
     /**
-     * ²úÉúhash×Ö·û´®
+     * äº§ç”Ÿhashå­—ç¬¦ä¸²
      * @param $algorithm
      * @param string $str
      * @param string $ext_str

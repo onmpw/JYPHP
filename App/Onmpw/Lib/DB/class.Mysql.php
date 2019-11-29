@@ -9,15 +9,15 @@ use PDO;
 class Mysql extends BaseDB implements IMysql
 {
 
-    //ĞŞ¸Ä²¿·Ö
-    public static $_instance; //¾²Ì¬ÊôĞÔ£¬´æ´¢ÊµÀı¶ÔÏó
+    //ä¿®æ”¹éƒ¨åˆ†
+    public static $_instance; //é™æ€å±æ€§ï¼Œå­˜å‚¨å®ä¾‹å¯¹è±¡
 
-    private $startTrans = false; //ÊÇ·ñ¿ªÆôÊÂÎñ´¦Àí
+    private $startTrans = false; //æ˜¯å¦å¼€å¯äº‹åŠ¡å¤„ç†
 
     private $transLink;
 
     /**
-     * Ë½ÓĞ»¯¹¹Ôìº¯Êı£¬Ê¹ÓÃµ¥ÀıÄ£Ê½
+     * ç§æœ‰åŒ–æ„é€ å‡½æ•°ï¼Œä½¿ç”¨å•ä¾‹æ¨¡å¼
      * @param string $config
      */
     private function __construct($config = '')
@@ -26,7 +26,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ÊµÀı»¯¶ÔÏó
+     * å®ä¾‹åŒ–å¯¹è±¡
      * @access public static
      * @param string $options
      * @return Mysql
@@ -52,7 +52,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ö´ĞĞsqlÓï¾ä
+     * æ‰§è¡Œsqlè¯­å¥
      * @param string $sql
      * @access public
      * @return bool|mixed
@@ -60,7 +60,7 @@ class Mysql extends BaseDB implements IMysql
     public function sql($sql = '')
     {
         if (empty($sql)) return false;
-        //ÅĞ¶ÏÊÇ²éÑ¯²Ù×÷ÒÖ»òÊÇ¸üĞÂ²Ù×÷
+        //åˆ¤æ–­æ˜¯æŸ¥è¯¢æ“ä½œæŠ‘æˆ–æ˜¯æ›´æ–°æ“ä½œ
         if (preg_match("/^\s*(SELECT|select\s)\s+/i", $sql)) {
             return $this->query($sql);
         } else {
@@ -69,7 +69,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ö´ĞĞ²éÑ¯Óï¾ä
+     * æ‰§è¡ŒæŸ¥è¯¢è¯­å¥
      *
      * @param string $sql
      * @param bool $getSql
@@ -88,7 +88,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ö´ĞĞÔöÉ¾¸ÄµÄÓï¾ä
+     * æ‰§è¡Œå¢åˆ æ”¹çš„è¯­å¥
      *
      * @param string $sql
      * @param bool $getSql
@@ -109,7 +109,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ö´ĞĞsql
+     * æ‰§è¡Œsql
      *
      * @param $sql
      * @param $getSql
@@ -135,18 +135,18 @@ class Mysql extends BaseDB implements IMysql
         }
 //        if ($getSql) return $this->sql;
 
-         // ÊÍ·ÅÉÏ´ÎÖ´ĞĞµÄ½á¹û
+         // é‡Šæ”¾ä¸Šæ¬¡æ‰§è¡Œçš„ç»“æœ
         if (!empty($this->PDOStatement)){
             $this->free();
         }
 
-         // ×¼±¸Ò»ÌõÔ¤´¦ÀíÓï¾ä
+         // å‡†å¤‡ä¸€æ¡é¢„å¤„ç†è¯­å¥
         $this->PDOStatement = $this->link->prepare($sql);
         if (false === $this->PDOStatement){
             return false;
         }
 
-        // °ó¶¨²ÎÊı
+        // ç»‘å®šå‚æ•°
         foreach ($this->bind as $key => $val) {
             if (is_array($val)) {
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
@@ -155,7 +155,7 @@ class Mysql extends BaseDB implements IMysql
             }
         }
 
-        // ÊÍ·Å°ó¶¨µÄ²ÎÊı±äÁ¿
+        // é‡Šæ”¾ç»‘å®šçš„å‚æ•°å˜é‡
         $this->bind = array();
 
         return $this->PDOStatement->execute();
@@ -163,7 +163,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * °ó¶¨²ÎÊı
+     * ç»‘å®šå‚æ•°
      * @param string $key
      * @param mixed $val
      */
@@ -173,7 +173,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎö°ó¶¨µÄ²ÎÊı,Èç¹û²ÎÊı²»Îª¿ÕÔòºÏ²¢²ÎÊı
+     * è§£æç»‘å®šçš„å‚æ•°,å¦‚æœå‚æ•°ä¸ä¸ºç©ºåˆ™åˆå¹¶å‚æ•°
      * @param array $bind
      */
     private function parseBind($bind = array())
@@ -184,7 +184,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ²åÈëº¯Êı
+     * æ’å…¥å‡½æ•°
      * @param array $data
      * @param array $options
      * @return mixed
@@ -199,7 +199,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ¸üĞÂº¯Êı
+     * æ›´æ–°å‡½æ•°
      * @param array $data
      * @param array $options
      * @return mixed
@@ -224,7 +224,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎöÊı¾İ£¬²¢ÇÒÉèÖÃfieldºÍvalue
+     * è§£ææ•°æ®ï¼Œå¹¶ä¸”è®¾ç½®fieldå’Œvalue
      * @param $data
      * @param $fields
      * @param $values
@@ -234,7 +234,7 @@ class Mysql extends BaseDB implements IMysql
         foreach ($data as $key => $val) {
             $fields[] = $key;
 
-            // ¼ì²â×Ö¶ÎÀàĞÍ
+            // æ£€æµ‹å­—æ®µç±»å‹
             for ($i = 0; $i < count($this->options['fields']); $i++) {
                 if ($this->options['fields'][$i]['field'] == $key) {
                     if (preg_match('/\w*(int|INT)$/i', $this->options['fields'][$i]['type'])) {
@@ -245,15 +245,15 @@ class Mysql extends BaseDB implements IMysql
                     break;
                 }
             }
-            //°ó¶¨²ÎÊı
+            //ç»‘å®šå‚æ•°
             $this->bindParams($key, $val);
         }
     }
 
     /**
-     * ÉèÖÃ±íÃû
+     * è®¾ç½®è¡¨å
      * @param string $table
-     * @return bool|Mysql ·µ»Øµ±Ç°¶ÔÏó
+     * @return bool|Mysql è¿”å›å½“å‰å¯¹è±¡
      */
     public function table($table = '')
     {
@@ -265,9 +265,9 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * µÃµ½Êı¾İ¿âÖĞµÄÊı¾İ±í
+     * å¾—åˆ°æ•°æ®åº“ä¸­çš„æ•°æ®è¡¨
      * @access public
-     * @param string $dbname Ö¸¶¨Êı¾İ¿â
+     * @param string $dbname æŒ‡å®šæ•°æ®åº“
      * @return array <boolean, string, unknown>
      */
     public function getTables($dbname = '')
@@ -282,7 +282,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * µÃµ½Êı¾İ¿âÊÜÓ°ÏìµÄĞĞÊı
+     * å¾—åˆ°æ•°æ®åº“å—å½±å“çš„è¡Œæ•°
      * @access public
      * @return int
      */
@@ -292,9 +292,9 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ÉèÖÃÒª²éÑ¯µÄ±í×Ö¶Î£¬Èç¹ûÃ»ÓĞÉèÖÃ£¬ÔòÄ¬ÈÏ²éÑ¯±íµÄËùÓĞ×Ö¶Î
+     * è®¾ç½®è¦æŸ¥è¯¢çš„è¡¨å­—æ®µï¼Œå¦‚æœæ²¡æœ‰è®¾ç½®ï¼Œåˆ™é»˜è®¤æŸ¥è¯¢è¡¨çš„æ‰€æœ‰å­—æ®µ
      * @param string $field
-     * @return Mysql ·µ»Øµ±Ç°¶ÔÏó
+     * @return Mysql è¿”å›å½“å‰å¯¹è±¡
      */
     public function field($field = '')
     {
@@ -310,7 +310,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * where Ìõ¼şÉèÖÃ
+     * where æ¡ä»¶è®¾ç½®
      * @param string $where
      * @return Mysql
      */
@@ -329,7 +329,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ²éÑ¯¶àÌõÊı¾İº¯Êı
+     * æŸ¥è¯¢å¤šæ¡æ•°æ®å‡½æ•°
      * @param array $options
      * @return array <mixed, boolean, string, string, unknown>
      */
@@ -337,7 +337,7 @@ class Mysql extends BaseDB implements IMysql
     {
         $this->parseBind(isset($options['bind']) ? $options['bind'] : array());
         /*
-         * ÅĞ¶ÏÊÇ·ñÓĞ·ÖÒ³
+         * åˆ¤æ–­æ˜¯å¦æœ‰åˆ†é¡µ
          */
         if (isset($options['page'])) {
             $this->limit($options['page']);
@@ -348,7 +348,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ²éÕÒµ¥ÌõÊı¾İ
+     * æŸ¥æ‰¾å•æ¡æ•°æ®
      * @param array $options
      * @return boolean|unknown
      */
@@ -356,7 +356,7 @@ class Mysql extends BaseDB implements IMysql
     {
         $this->parseBind(isset($options['bind']) ? $options['bind'] : array());
         /*
-         * ÅĞ¶ÏÊÇ·ñÓĞ·ÖÒ³
+         * åˆ¤æ–­æ˜¯å¦æœ‰åˆ†é¡µ
         */
         if (isset($options['page'])) {
             $this->limit($options['page']);
@@ -369,7 +369,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ĞÂÔöÊı¾İ
+     * æ–°å¢æ•°æ®
      * @param array $data
      * @param array $options
      * @return boolean|Ambigous <mixed, boolean, string, string>
@@ -384,12 +384,12 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ò»´ÎĞÔ²åÈë¶àÌõÊı¾İ£¬Ö§³Ö²»Í¬±íµÄ²åÈë
-     * µ±Ê¹ÓÃ¶à±í²åÈë¹¦ÄÜÊ±ĞèÒªÔÚµÚ¶ş¸ö²ÎÊıÖĞÖ¸¶¨ $options['multitable'] = true
-     * ²¢ÇÒ$dataµÄ¸ñÊ½Îª
+     * ä¸€æ¬¡æ€§æ’å…¥å¤šæ¡æ•°æ®ï¼Œæ”¯æŒä¸åŒè¡¨çš„æ’å…¥
+     * å½“ä½¿ç”¨å¤šè¡¨æ’å…¥åŠŸèƒ½æ—¶éœ€è¦åœ¨ç¬¬äºŒä¸ªå‚æ•°ä¸­æŒ‡å®š $options['multitable'] = true
+     * å¹¶ä¸”$dataçš„æ ¼å¼ä¸º
      * array(
-     *  '±íÃû1'=>array(array(),array()),
-     *  '±íÃû2'=>array(array(),array())
+     *  'è¡¨å1'=>array(array(),array()),
+     *  'è¡¨å2'=>array(array(),array())
      * )
      * @param array $data
      * @param array $options
@@ -401,34 +401,34 @@ class Mysql extends BaseDB implements IMysql
             $this->table($options['table']);
         if (!is_array($data)) return false;
         /*
-         * ¿ªÆôÊÂÎñ´¦Àí¶àÌõÓï¾ä
+         * å¼€å¯äº‹åŠ¡å¤„ç†å¤šæ¡è¯­å¥
          */
 //         $this->startTransaction();
         foreach ($data as $key => $val) {
-            //²é¿´ÊÇ·ñÊÇ¶à±í²åÈë
+            //æŸ¥çœ‹æ˜¯å¦æ˜¯å¤šè¡¨æ’å…¥
             if (isset($options['multitable']) && $options['multitable']) {
                 /*
-                 * ¶à±í²åÈë£¬Ôò$keyÎª±íÃû,$valÎªÒª²åÈëµÄÊı¾İ
-                 * Ê¹ÓÃµİ¹éµÄ·½Ê½ÔÙ´Î¶Ô¶àÌõÊı¾İ½øĞĞ²åÈë
+                 * å¤šè¡¨æ’å…¥ï¼Œåˆ™$keyä¸ºè¡¨å,$valä¸ºè¦æ’å…¥çš„æ•°æ®
+                 * ä½¿ç”¨é€’å½’çš„æ–¹å¼å†æ¬¡å¯¹å¤šæ¡æ•°æ®è¿›è¡Œæ’å…¥
                  */
                 $res = $this->addMore($val, array('table' => $key));
             } else {
-                //µ¥±í²åÈë
+                //å•è¡¨æ’å…¥
                 $res = $this->add($val);
             }
             if (!$res) {
-                //Èç¹ûÓĞÒ»ÌõÊı¾İ²åÈëÊ§°Ü£¬Ôò»Ø¹öÊÂÎñ£¬³·ÏúËùÓĞµÄ²Ù×÷
+                //å¦‚æœæœ‰ä¸€æ¡æ•°æ®æ’å…¥å¤±è´¥ï¼Œåˆ™å›æ»šäº‹åŠ¡ï¼Œæ’¤é”€æ‰€æœ‰çš„æ“ä½œ
 //                 $this->rollback();
                 return false;
             }
         }
-        //Èç¹ûËùÓĞ²åÈë²Ù×÷ÎŞÎó£¬ÔòÌá½»ÊÂÎñ
+        //å¦‚æœæ‰€æœ‰æ’å…¥æ“ä½œæ— è¯¯ï¼Œåˆ™æäº¤äº‹åŠ¡
         $this->commit();
         return true;
     }
 
     /**
-     * É¾³ıÊı¾İº¯Êı
+     * åˆ é™¤æ•°æ®å‡½æ•°
      * @param array $options
      * @return Ambigous <mixed, boolean, string, string>
      */
@@ -448,7 +448,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎölimitº¯Êı
+     * è§£ælimitå‡½æ•°
      * @return string
      */
     private function parseLimit()
@@ -462,7 +462,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ¹¹½¨sqlÓï¾ä
+     * æ„å»ºsqlè¯­å¥
      * @param array $options
      * @return string
      */
@@ -479,7 +479,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ñ¡ÔñÅÅÁĞË³Ğò
+     * é€‰æ‹©æ’åˆ—é¡ºåº
      * @param string $order
      * @return Mysql
      */
@@ -490,7 +490,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * limitÉèÖÃº¯Êı
+     * limitè®¾ç½®å‡½æ•°
      * @param string $limit
      * @return Mysql
      */
@@ -509,7 +509,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎö±í×Ö¶Î
+     * è§£æè¡¨å­—æ®µ
      * @param string $table
      * @return boolean
      */
@@ -536,7 +536,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎöwhereº¯Êı
+     * è§£æwhereå‡½æ•°
      * @return string
      */
     private function parseWhere()
@@ -550,7 +550,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎöorderº¯Êı
+     * è§£æorderå‡½æ•°
      * @return string
      */
     private function parseOrder()
@@ -564,25 +564,25 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ·ÖÅäÁ¬½Ó
-     * @param bool $master Ö÷·şÎñÆ÷²Ù×÷»¹ÊÇ´Ó·şÎñÆ÷²Ù×÷
+     * åˆ†é…è¿æ¥
+     * @param bool $master ä¸»æœåŠ¡å™¨æ“ä½œè¿˜æ˜¯ä»æœåŠ¡å™¨æ“ä½œ
      * @return void
      */
     private function parseConnect($master = true)
     {
-        if ($this->config['deploy_type'] == 1) {  //·Ö²¼Ê½²¿Êğ
+        if ($this->config['deploy_type'] == 1) {  //åˆ†å¸ƒå¼éƒ¨ç½²
             $this->link = $this->multiConnect($master);
         } else {
             $this->link = $this->connect();
         }
 
-        // Èç¹û¿ªÆôÁËÊÂÎñ£¬ÄÇÃ´½«Á¬½Ó×ÊÔ´±£´æÆğÀ´
+        // å¦‚æœå¼€å¯äº†äº‹åŠ¡ï¼Œé‚£ä¹ˆå°†è¿æ¥èµ„æºä¿å­˜èµ·æ¥
         if ($this->startTrans && $master) $this->transLink = $this->link;
         return;
     }
 
     /**
-     * Êı¾İ¿âÁ¬½Óº¯Êı
+     * æ•°æ®åº“è¿æ¥å‡½æ•°
      *
      * @param string $config
      * @param int $identify
@@ -624,8 +624,8 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ·Ö²¼Ê½Êı¾İ¿âÁ¬½Ó
-     * @param bool $master Ö÷·şÎñÆ÷²Ù×÷»¹ÊÇ´Ó·şÎñÆ÷²Ù×÷
+     * åˆ†å¸ƒå¼æ•°æ®åº“è¿æ¥
+     * @param bool $master ä¸»æœåŠ¡å™¨æ“ä½œè¿˜æ˜¯ä»æœåŠ¡å™¨æ“ä½œ
      * @return mixed
      */
     private function multiConnect($master = false)
@@ -637,10 +637,10 @@ class Mysql extends BaseDB implements IMysql
         $config['password'] = explode(',', $this->config['password']);
         $config['dsn'] = explode(',', $this->config['dsn']);
         /*
-         * Ëæ»ú»ñÈ¡Ò»¸öÖ÷·şÎñÆ÷µÄÏÂ±ê
-         * ÎªÁË±£Ö¤¶à¸öÖ÷·şÎñÆ÷ÔÚÆäÖĞÒ»¸öå´»úÒÔºó£¬³ÌĞò×Ô¶¯Á¬½ÓÆäËûµÄ·şÎñÆ÷
-         * ĞèÒªÑ­»·»ñÈ¡Ö÷·şÎñÆ÷ÏÂ±ê£¬Èç¹ûÈ¡³öµÄÏÂ±êÔÚå´»úµÄ·şÎñÆ÷±íÖĞÔò¼ÌĞøÑ­»·È¡ÏÂ±ê
-         * Ö±µ½²»ÔÚå´»úÁĞ±íÖĞ£¬µ±È»Èç¹ûÑ­»·µÄ´ÎÊı³¬¹ıÒ»¶¨Á¿£¬ÎÒÃÇ¿ÉÒÔÈÏÎª·şÎñÆ÷Á¬½Ó³öÏÖÒì³££¬·µ»Øfalse
+         * éšæœºè·å–ä¸€ä¸ªä¸»æœåŠ¡å™¨çš„ä¸‹æ ‡
+         * ä¸ºäº†ä¿è¯å¤šä¸ªä¸»æœåŠ¡å™¨åœ¨å…¶ä¸­ä¸€ä¸ªå®•æœºä»¥åï¼Œç¨‹åºè‡ªåŠ¨è¿æ¥å…¶ä»–çš„æœåŠ¡å™¨
+         * éœ€è¦å¾ªç¯è·å–ä¸»æœåŠ¡å™¨ä¸‹æ ‡ï¼Œå¦‚æœå–å‡ºçš„ä¸‹æ ‡åœ¨å®•æœºçš„æœåŠ¡å™¨è¡¨ä¸­åˆ™ç»§ç»­å¾ªç¯å–ä¸‹æ ‡
+         * ç›´åˆ°ä¸åœ¨å®•æœºåˆ—è¡¨ä¸­ï¼Œå½“ç„¶å¦‚æœå¾ªç¯çš„æ¬¡æ•°è¶…è¿‡ä¸€å®šé‡ï¼Œæˆ‘ä»¬å¯ä»¥è®¤ä¸ºæœåŠ¡å™¨è¿æ¥å‡ºç°å¼‚å¸¸ï¼Œè¿”å›false
          * 
          */
         $count = 0;
@@ -655,22 +655,22 @@ class Mysql extends BaseDB implements IMysql
         } while (count($this->ignore) < $this->config['master_num']);
         if ($flag === false) return false;
 
-        //ÅĞ¶ÏÊÇ¶Á»¹ÊÇĞ´
-        if ($master) { //$masterÎªtrue ±íÊ¾Êı¾İ¸üĞÂ
+        //åˆ¤æ–­æ˜¯è¯»è¿˜æ˜¯å†™
+        if ($master) { //$masterä¸ºtrue è¡¨ç¤ºæ•°æ®æ›´æ–°
             /*
-             * Èç¹ûÊÂÎñÊıÁ¿´óÓÚ0 ËµÃ÷ÒÑ¾­¿ªÆôÁËÊÂÎñ£¬½ÓÏÂÀ´µÄ¸üĞÂ²Ù×÷ÒªÔÚµ±Ç°Á¬½ÓÉÏ½øĞĞ
-             * Èç¹ûÖØĞÂÁ¬½Ó¿ÉÄÜ»áÁ¬½Ó²»Í¬µÄ·şÎñÆ÷
+             * å¦‚æœäº‹åŠ¡æ•°é‡å¤§äº0 è¯´æ˜å·²ç»å¼€å¯äº†äº‹åŠ¡ï¼Œæ¥ä¸‹æ¥çš„æ›´æ–°æ“ä½œè¦åœ¨å½“å‰è¿æ¥ä¸Šè¿›è¡Œ
+             * å¦‚æœé‡æ–°è¿æ¥å¯èƒ½ä¼šè¿æ¥ä¸åŒçš„æœåŠ¡å™¨
              */
             if ($this->transNum > 0) {
                 $this->link = $this->transLink;
                 return $this->transLink;
             }
             $db = $this->buildConnectDb($config,$m);
-        } else { //¶Á²Ù×÷
+        } else { //è¯»æ“ä½œ
             /*
-             * ÅĞ¶ÏÊÇ·ñÊÇ¶ÁĞ´·ÖÀë
+             * åˆ¤æ–­æ˜¯å¦æ˜¯è¯»å†™åˆ†ç¦»
              */
-            if ($this->config['rw_separate']) {  //¶ÁĞ´·ÖÀë
+            if ($this->config['rw_separate']) {  //è¯»å†™åˆ†ç¦»
                 $count = 0;
                 $flag = false;
                 do {
@@ -683,7 +683,7 @@ class Mysql extends BaseDB implements IMysql
                 } while (count($this->ignore) < count($config['host']) - $this->config['master_num']);
                 if (false === $flag) return false;
             } else {
-                //¶ÁĞ´²»·ÖÀë
+                //è¯»å†™ä¸åˆ†ç¦»
                 $count = 0;
                 $flag = false;
                 do {
@@ -699,9 +699,9 @@ class Mysql extends BaseDB implements IMysql
             $db = $this->buildConnectDb($config,$s);
         }
 
-         // Á¬½ÓÊı¾İ¿â
+         // è¿æ¥æ•°æ®åº“
         $identify = $master === true ? $m : $s;
-        $res = parent::connect($db, $identify, true);
+        $res = $this->connect($db, $identify, true);
         if ($res === false) {
             return false;
         } elseif ($res == 'reconnect') {
@@ -714,7 +714,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ¹¹½¨Á¬½ÓµÄdb
+     * æ„å»ºè¿æ¥çš„db
      * @param $config
      * @param $host
      * @return array
@@ -733,7 +733,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ½âÎödsn
+     * è§£ædsn
      * @param string $config
      * @return array
      */
@@ -757,7 +757,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ¿ªÆôÊÂÎñ
+     * å¼€å¯äº‹åŠ¡
      * @access public
      * @return void|boolean
      */
@@ -773,14 +773,14 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * »Ø¹öÊÂÎñ
+     * å›æ»šäº‹åŠ¡
      * @access public
      * @return boolean
      */
     public function rollback()
     {
         if ($this->transNum > 0) {
-            //Èç¹ûÊÂÎñÖ¸ÁîÊı´óÓÚ0 Ôò»Ø¹öÊÂÎñ ²¢ÇÒ½«ÊÂÎñÖ¸ÁîÊıÖÃÎª0
+            //å¦‚æœäº‹åŠ¡æŒ‡ä»¤æ•°å¤§äº0 åˆ™å›æ»šäº‹åŠ¡ å¹¶ä¸”å°†äº‹åŠ¡æŒ‡ä»¤æ•°ç½®ä¸º0
             $res = $this->link->rollBack();
             $this->transNum = 0;
             $this->startTrans = false;
@@ -792,14 +792,14 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * Ìá½»ÊÂÎñ
+     * æäº¤äº‹åŠ¡
      * @access public
      * @return boolean
      */
     public function commit()
     {
         if ($this->transNum > 0) {
-            //Èç¹ûÊÂÎñÖ¸ÁîÊı´óÓÚ0 ÔòÌá½»ÊÂÎñ ²¢ÇÒ½«ÊÂÎñÖ¸ÁîÊıÖÃÎª0
+            //å¦‚æœäº‹åŠ¡æŒ‡ä»¤æ•°å¤§äº0 åˆ™æäº¤äº‹åŠ¡ å¹¶ä¸”å°†äº‹åŠ¡æŒ‡ä»¤æ•°ç½®ä¸º0
             $res = $this->link->commit();
             $this->transNum = 0;
             $this->startTrans = false;
@@ -811,7 +811,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ÊÍ·Å²éÑ¯
+     * é‡Šæ”¾æŸ¥è¯¢
      */
     private function free()
     {
@@ -819,7 +819,7 @@ class Mysql extends BaseDB implements IMysql
     }
 
     /**
-     * ¹Ø±ÕÁ¬½Ó
+     * å…³é—­è¿æ¥
      */
     private function close()
     {

@@ -3,10 +3,10 @@ namespace Lib;
 
 class Action{
     
-    private $_obj = array(); //´æ·ÅÊµÀý»¯µÄ¶ÔÏó
+    private $_obj = array(); //å­˜æ”¾å®žä¾‹åŒ–çš„å¯¹è±¡
     
     /**
-     * ×Ô¶¨ÒåÏÔÊ¾Ä£°åº¯Êý
+     * è‡ªå®šä¹‰æ˜¾ç¤ºæ¨¡æ¿å‡½æ•°
      * 
      * @param string $tpl
      */
@@ -15,11 +15,11 @@ class Action{
         if(!isset($this->_obj['tpl']))
             $this->_obj['tpl'] = Template::_newInstance();
         /*
-         * Ê×ÏÈÅÐ¶Ï²ÎÊý$tplÊÇ·ñÎª¿Õ Èç¹ûÎª¿Õ£¬ÄÇÃ´°´ÕÕÄ¬ÈÏµÄµ±Ç°Ä£¿éÏÂÃæµÄ·½·¨Êä³öÒ³Ãæ
+         * é¦–å…ˆåˆ¤æ–­å‚æ•°$tplæ˜¯å¦ä¸ºç©º å¦‚æžœä¸ºç©ºï¼Œé‚£ä¹ˆæŒ‰ç…§é»˜è®¤çš„å½“å‰æ¨¡å—ä¸‹é¢çš„æ–¹æ³•è¾“å‡ºé¡µé¢
          */
         $this->_obj['tpl']->_setTplFoulder(AC_NAME);
         if(empty($tpl)){
-            //µÃµ½µ±Ç°
+            //å¾—åˆ°å½“å‰
             $this->_obj['tpl']->_setTplName(strtolower(FC_NAME));
         }elseif(is_string($tpl)){
             if(false === strpos($tpl,':')){
@@ -36,9 +36,9 @@ class Action{
         return ;
     }
     /**
-     * ×Ô¶¨ÒåÄ£°å±äÁ¿·ÖÅäº¯Êý
-     * @param unknown $tpl_var ±äÁ¿Ãû³Æ
-     * @param string $val   ±äÁ¿Öµ
+     * è‡ªå®šä¹‰æ¨¡æ¿å˜é‡åˆ†é…å‡½æ•°
+     * @param unknown $tpl_var å˜é‡åç§°
+     * @param string $val   å˜é‡å€¼
      */
     protected function assign($tpl_var, $val = null){
         if(!isset($this->_obj['tpl']))

@@ -3,7 +3,7 @@ namespace Lib;
 
 class Template{
     
-    private $_tpl_ext = '';  //Ä£°åÀ©Õ¹Ãû
+    private $_tpl_ext = '';  //æ¨¡æ¿æ‰©å±•å
     
     private $_smarty_obj = '';
     
@@ -11,7 +11,7 @@ class Template{
     
     public static $temobj;
     /*
-     * Ò»¸öÇëÇóÖ»ÓĞÒ»¸öÄ£°åÊµÀı
+     * ä¸€ä¸ªè¯·æ±‚åªæœ‰ä¸€ä¸ªæ¨¡æ¿å®ä¾‹
      */
     private function __construct(){
         $this->_tpl_ext = '.html';
@@ -33,7 +33,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃsmarty Ä£°åÄ¿Â¼
+     * è®¾ç½®smarty æ¨¡æ¿ç›®å½•
      * 
      * @param string $template_dir
      */
@@ -46,7 +46,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃsmarty±àÒëÄ¿Â¼
+     * è®¾ç½®smartyç¼–è¯‘ç›®å½•
      * 
      * @param string $compile_dir
      */
@@ -59,7 +59,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃsmarty»º´æÄ¿Â¼
+     * è®¾ç½®smartyç¼“å­˜ç›®å½•
      * 
      * @param string $cache_dir
      */
@@ -73,7 +73,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃsmartyÅäÖÃÄ¿Â¼
+     * è®¾ç½®smartyé…ç½®ç›®å½•
      * 
      * @param string $config_dir
      */
@@ -85,7 +85,7 @@ class Template{
         }
     }
     /**
-     * ÎªÄ£°å±äÁ¿·ÖÅäÖµ
+     * ä¸ºæ¨¡æ¿å˜é‡åˆ†é…å€¼
      * 
      * @param mixed $tpl_var
      * @param string $val
@@ -99,7 +99,7 @@ class Template{
     }
     
     /**
-     * ÏÔÊ¾Ä£°åÎÄ¼ş
+     * æ˜¾ç¤ºæ¨¡æ¿æ–‡ä»¶
      * 
      * @param string $tpl
      */
@@ -112,7 +112,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃÄ£°åÎÄ¼şÀ©Õ¹Ãû
+     * è®¾ç½®æ¨¡æ¿æ–‡ä»¶æ‰©å±•å
      * 
      * @param string $ext
      */
@@ -123,7 +123,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃÄ£°åÎÄ¼şËùÔÚÎÄ¼ş¼ĞÃû³Æ
+     * è®¾ç½®æ¨¡æ¿æ–‡ä»¶æ‰€åœ¨æ–‡ä»¶å¤¹åç§°
      * @param unknown $val
      */
     public function _setTplFoulder($val){
@@ -131,7 +131,7 @@ class Template{
     }
     
     /**
-     * ÉèÖÃÄ£°åÎÄ¼şÃû³Æ
+     * è®¾ç½®æ¨¡æ¿æ–‡ä»¶åç§°
      * @param unknown $val
      */
     public function _setTplName($val){

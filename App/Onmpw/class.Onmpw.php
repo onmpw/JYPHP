@@ -8,15 +8,13 @@ use Lib\Router;
 /**
  * 核心类文件 用来启动整个应用程序
  * 
- * @author onmpw
+ * @author liuhanzeng
  *
  */
 class Onmpw{
     
-    private static $_instance = array();
-    
     private static $_map = array();
-    
+
     private static $EXT = '.php';
 
 
@@ -29,16 +27,15 @@ class Onmpw{
     ];
     
     protected static function _Init(){
-        /*
-         * 设置引入文件的路径
-         */
+
+        // 设置引入文件的路径
         _set_include_path(APP_PATH);
+
         //开启session
         session_start();
-        /*
-         * 注册自动载入类|接口方法
-         */
-       spl_autoload_register('self::autoload');
+
+        //注册自动载入类|接口方法
+       spl_autoload_register(['self','autoload']);
        require APP_PATH.'../vendor/autoload.php';
     }
 
@@ -50,7 +47,7 @@ class Onmpw{
      * @return bool
      * @throws FileNotFoundException
      */
-    public static function autoload($class){
+    protected static function autoload($class){
         $after_ext = '.php';
         if(!isset(self::$_map[$class]) || empty(self::$_map[$class])){
             //返回 \ 第一次出现的位置之前的字符串
@@ -77,7 +74,6 @@ class Onmpw{
                 if(preg_match('/^[A-Z]?\w*Model$/',$name)){
                     $pre_ext = 'Model.';
                 }
-//                 $name = $pre_ext.str_replace('Action','', $name);//去掉Action并且加上前缀Action.
                 $name = $pre_ext.str_replace(rtrim($pre_ext,'.'),'', $name);//去掉Action并且加上前缀Action.
                 
                 $path = MODULE_PATH;  //设置路径
