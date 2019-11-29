@@ -36,7 +36,7 @@ class HandlerExceptions
         if(error_reporting() & $level){
             throw new ErrorException($message,0,$level,$file,$line);
         }
-
+        echo $file,"<br/>";
         var_dump($message);exit;
     }
 
@@ -47,8 +47,9 @@ class HandlerExceptions
      */
     public function handleException(Exception $e)
     {
-        var_dump($e->getCode());
-        var_dump($e->getMessage());
+        echo ("ErrorCode: ".$e->getCode()),"<br/><br/>";
+        echo ("Message: ".$e->getMessage()),"<br/><br/>";
+        echo $e->getTraceAsString();
     }
 
     public function handleShutdown()

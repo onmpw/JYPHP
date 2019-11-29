@@ -2,7 +2,9 @@
 namespace Common\Action;
 use Lib\Action;
 use User\Model\UserModel;
-class CommonAction extends Action{
+use Lib\CheckCode;
+
+abstract class CommonAction extends Action{
     public function checkislogin($type = 1){
         if($type == 1){
             if(isset($_SESSION['userid']))
@@ -15,7 +17,7 @@ class CommonAction extends Action{
                     $res = $mod->select_sql($sql);
                     for ($i = 0; $i < count($res); $i ++) {
                         if ($res[$i]['pwd'] == $_COOKIE['password']) {
-                            // µÇÂ¼³É¹¦
+                            // ç™»å½•æˆåŠŸ
                             $_SESSION['userid'] = $res[$i]['id'];
 //                             $_SESSION['cid'] = $res[$i]['cid'];
                             $_SESSION['uname'] = $res[$i]['uname'];
@@ -36,26 +38,26 @@ class CommonAction extends Action{
         }
     }
     /**
-     * ´´½¨ÑéÖ¤Âëº¯Êý
+     * åˆ›å»ºéªŒè¯ç å‡½æ•°
      * @param string $id
      * @param unknown $config
      */
     public function make_verify_code($id = '',$config=array()){
-        $verify = new \Lib\Checkcode($config);
+        $verify = new CheckCode($config);
         $verify->entry($id);
     }
     
     /**
-     * ÉÏ´«Í¼Æ¬
+     * ä¸Šä¼ å›¾ç‰‡
      */
     public function UploadImg(){
         $file = $_FILES['upload'];
         /*
-         * Éè¶¨ÔÊÐíÉÏ´«µÄÍ·ÏñµÄÀàÐÍ
+         * è®¾å®šå…è®¸ä¸Šä¼ çš„å¤´åƒçš„ç±»åž‹
         */
         $allow_type = array('jpg','jpeg','png','gif');
         /*
-         * Éè¶¨ÉÏ´«Â·¾¶
+         * è®¾å®šä¸Šä¼ è·¯å¾„
         */
         $upload_path = DOC_ROOT."Data/Upload/Images/";
         $furl = "/Data/Upload/Images/";
@@ -64,10 +66,10 @@ class CommonAction extends Action{
         $filetype = substr($file['name'],strrpos($file['name'],'.')+1);
         $filename = \Common::make_hash('sha1', $filename,\Common::make_rand_str()).".".$filetype;
         /*
-         * °´ÕÕÒ»¶¨µÄ¹æÔò ÖØÃüÃûÎÄ¼þÃû³Æ
+         * æŒ‰ç…§ä¸€å®šçš„è§„åˆ™ é‡å‘½åæ–‡ä»¶åç§°
          */
         /*
-         * µ÷ÓÃ ¹«¹²ÉÏ´«º¯ÊýÉÏ´«Í·Ïñ
+         * è°ƒç”¨ å…¬å…±ä¸Šä¼ å‡½æ•°ä¸Šä¼ å¤´åƒ
          */
         //         $res = $this->upload_file($file,$allow_type,$upload_path,$filename);
         if(is_uploaded_file($file['tmp_name'])){

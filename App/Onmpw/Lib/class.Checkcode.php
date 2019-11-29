@@ -6,7 +6,7 @@
 */
 namespace Lib;
 
-class Checkcode {
+class CheckCode {
 
     //     public static $_instance;
 
