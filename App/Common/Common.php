@@ -59,27 +59,23 @@ class Common{
         if(empty($dir)){
             if('Lib' == $class_struct[0]){
                 $dir = LIB_PATH;
-                $ft = 'class.';
             }elseif('Inter' == $class_struct[0]){
                 $dir = INTERFACE_PATH;
-                $ft = 'interface.';
             }elseif('Ext' == $class_struct[0]){
                 $dir = EXT_PATH;
-                $ft = 'class.';
             }elseif('@' == $class_struct[0]){
                 $dir = MODULE_PATH;
                 $ft = 'Action.';
                 $name = substr_replace($name, '', 0 ,strlen($class_struct[0])+1);
             }elseif('#' == $class_struct[0]){
                 $dir = APP_PATH;
-                $ft = 'class.';
                 $name = substr_replace($name, '', 0 ,strlen($class_struct[0])+1);
             }
         }
         $name = substr($name,0,-strlen($class_struct[count($class_struct)-1])).$ft.$class_struct[count($class_struct)-1];
         if(substr($dir,-1) != '/')
             $dir .= '/';
-        return self::Require_file($dir.$name.$ext);
+        return self::RequireFile($dir.$name.$ext);
     }
     
     /**
@@ -132,7 +128,7 @@ class Common{
             $fname = $fext.$fname.".".self::EXT; //如果是# 那么文件扩展信息在文件名之前
         else
             $fname = $fname.'.'.self::EXT;  //最后一种情况是 没有扩展信息
-        return self::Require_file(EXT_PATH.$finfo.$fname);
+        return self::RequireFile(EXT_PATH.$finfo.$fname);
     }
     
     /**
@@ -142,7 +138,7 @@ class Common{
      * 
      * @return boolean
      */
-    public static function Require_file($file){
+    public static function RequireFile($file){
         if(isset(self::$_files[$file])){
             return true;
         }else{

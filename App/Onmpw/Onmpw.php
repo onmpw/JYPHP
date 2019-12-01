@@ -1,6 +1,6 @@
 <?php
 
-namespace Onmpw;
+//namespace Onmpw;
 
 use Exceptions\FileNotFoundException;
 use Exceptions\HandlerExceptions;

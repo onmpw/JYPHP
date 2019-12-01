@@ -76,7 +76,7 @@ function _set_include_path($path = ''){
  * 导入 启动类文件 Onmpw
  */
 Common::Import("#/Onmpw/Onmpw");
-use Onmpw\Onmpw as Kernel;
+use Onmpw as Kernel;
 class Core extends Kernel{
     public static function _Init()
     {
