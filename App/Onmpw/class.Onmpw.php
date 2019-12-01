@@ -59,14 +59,9 @@ class Onmpw
             // 如果自动加载的类 是Lib、Ext、Inter Exceptions 中的类文件或者接口文件那么向下执行
             if (in_array($name, array('Lib', 'Ext', 'Inter', 'Exceptions'))) {
                 $class_name = str_replace('\\', '/', $class);
-                if ($name == 'Inter') {
-                    $pre_ext = 'interface.';
-                } else {
-                    $pre_ext = 'class.';
-                }
                 $path = APP_PATH . 'Onmpw/';
                 $struct = explode('/', $class_name);
-                $file_name = substr($class_name, 0, -strlen($struct[count($struct) - 1])) . $pre_ext . $struct[count($struct) - 1] . $after_ext;
+                $file_name = substr($class_name, 0, -strlen($struct[count($struct) - 1])) . $struct[count($struct) - 1] . $after_ext;
             } else {
                 $pre_ext = 'Action.';
                 $class_name = str_replace('\\', '/', $class);
