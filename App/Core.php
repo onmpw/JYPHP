@@ -86,9 +86,18 @@ class Core extends Kernel{
         // 内核初始化
         parent::_Init();
 
+        $app = new App();
+
         // 加载需要初始化的功能
-        foreach(self::$_inits as $class){
-            call_user_func([new $class,'_Init']);
+
+        try {
+            foreach (self::$_inits as $class) {
+                $obj = $app->make($class);
+                call_user_func([$obj, '_Init']);
+            }
+        } catch (ReflectionException $e) {
+
         }
+
     }
 }

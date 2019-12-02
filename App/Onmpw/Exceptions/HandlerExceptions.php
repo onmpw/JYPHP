@@ -2,6 +2,7 @@
 
 namespace Exceptions;
 
+use App;
 use Exception;
 use ErrorException;
 
