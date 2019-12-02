@@ -30,7 +30,6 @@ class Onmpw
 
     protected static function _Init()
     {
-
         // 设置引入文件的路径
         _set_include_path(APP_PATH);
 
