@@ -13,10 +13,10 @@ class IndexAction extends CommonAction{
         $sql = "select * from users";
         $mod = new NewsModel();
         $res = $mod->select_sql($sql);
-        var_dump(10/0);
         $logger = new Logger('my_logger');
         var_dump($logger);
-        throw new ConnectException("lianjiecuowu");
+//        throw new ConnectException("lianjiecuowu");
+        return "test";
 
     }
     public function login(){

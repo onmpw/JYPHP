@@ -2,7 +2,6 @@
 
 //namespace Onmpw;
 
-use Exceptions\FileNotFoundException;
 use Exceptions\HandlerExceptions;
 use Lib\Router;
 
