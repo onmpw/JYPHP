@@ -10,6 +10,7 @@ use Exceptions\ConnectException;
 
 class IndexAction extends CommonAction{
     public function index(){
+//        echo $id,"<br />";
         $sql = "select * from users";
         $mod = new NewsModel();
         $res = $mod->select_sql($sql);

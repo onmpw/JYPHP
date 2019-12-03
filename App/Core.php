@@ -81,10 +81,10 @@ Common::Import("#/Onmpw/Onmpw");
 Common::Import("#/App");
 use Onmpw as Kernel;
 class Core extends Kernel{
-    public static function _Init()
+    public static function Boot()
     {
         // 内核初始化
-        parent::_Init();
+        parent::Boot();
 
         $app = new App();
 
@@ -95,6 +95,7 @@ class Core extends Kernel{
                 $obj = $app->make($class);
                 call_user_func([$obj, '_Init']);
             }
+            parent::start($app);
         } catch (ReflectionException $e) {
 
         }

@@ -17,6 +17,10 @@ class RouterException extends Exception
 
     public function setRouter($router)
     {
+        if(is_array($router)){
+            $router = json_encode($router);
+        }
+
         $this->router = $router;
     }
 

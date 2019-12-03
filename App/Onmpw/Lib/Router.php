@@ -2,41 +2,46 @@
 
 namespace Lib;
 
+use App;
 use Exceptions\RouterException;
 use ReflectionException;
 use ReflectionClass;
 use ReflectionMethod;
 use Common;
+use Symfony\Component\HttpFoundation\Request;
 
 class Router
 {
 
+    private $request;
+
+    private $app;
+
     /**
-     * 开始路由
+     * Router constructor.
+     *
+     * @param App $app
+     * @param Request $request
+     */
+    public function __construct(App $app,Request $request)
+    {
+        $this->request = $request;
+
+        $this->app = $app;
+    }
+
+    /**
+     * 开始路由。
      *
      * @throws ReflectionException
      * @throws RouterException
      */
-    public static function router()
+    public function router()
     {
+        $urlArr = $this->parseUrl();
 
-        $urlArr = self::parseUrl();
-
-        // 首先判断模块参数是否存在
-        if (in_array(Common::C('URL:M_NAME'), array_keys($urlArr))) {
-            //如果存在，则判断当前的模块是否存在
-            if (in_array(strtolower($urlArr[Common::C('URL:M_NAME')]), array_map(function ($v) {
-                return strtolower($v);
-            }, Common::C('MODULE')))) {
-                defined('MODULE_NAME') or define('MODULE_NAME', ucwords(strtolower($urlArr[Common::C('URL:M_NAME')])));
-            } elseif (!empty($urlArr[Common::C('URL:M_NAME')])) {
-                throw new RouterException('Error!');
-            } else {
-                defined('MODULE_NAME') or define('MODULE_NAME', Common::C('DEFAULT_MODULE'));
-            }
-        } else {
-            defined('MODULE_NAME') or define('MODULE_NAME', Common::C('DEFAULT_MODULE'));
-        }
+        // 解析模块
+        $this->parseModule($urlArr);
 
         // 然后判断控制器是否存在
         if (in_array(Common::C('URL:A_NAME'), array_keys($urlArr)) && !empty($urlArr[Common::C('URL:A_NAME')])) {
@@ -51,7 +56,7 @@ class Router
                 }
 
                 // 检测方法参数是否存在
-                // 首先取出次控制器的所有方法 并且只过滤出 public 方法
+                // 首先取出该控制器的所有方法 并且只过滤出 public 方法
                 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
                 $methods = array_map(function ($val) { //利用回调函数 将非 static 函数的名称返回给数组
                     if (!$val->isStatic())
@@ -137,16 +142,15 @@ class Router
      * @return array
      * @access private
      */
-    private static function parseUrl()
+    private function parseUrl()
     {
-        $uri = $_SERVER['QUERY_STRING'];
+        $uri = $this->request->getQueryString();
 
         // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
         $urlArr = array();
         if (!empty($uri)) {
 
             // 解析uri
-
             $url = parse_url($uri, PHP_URL_PATH);
             $url = explode('&', $url);
 
@@ -156,10 +160,10 @@ class Router
                 $urlArr[$a[0]] = $a[1];
             }
         } else {
-            if (isset($_SERVER['PATH_INFO']) && !empty(trim($_SERVER['PATH_INFO'], '/'))) {
+            $uri = $this->request->getRequestUri();
+            if (!empty($uri)) {
                 //pathinfo 模式
-                $uri = $_SERVER['PATH_INFO'];
-                $uri = self::check($uri);
+                $uri = $this->prepare($uri);
                 $uri = explode('/', trim($uri, '/'));
                 //模块
                 if (($m = array_shift($uri)) != false) {
@@ -177,7 +181,6 @@ class Router
                 if (!empty($uri)) {
                     $urlArr[Common::C("URL:P_NAME")] = implode('/', $uri);
                 }
-
             } else {
                 $urlArr[Common::C("URL:M_NAME")] = Common::C('DEFAULT_MODULE');
                 $urlArr[Common::C("URL:A_NAME")] = Common::C('DEFAULT_ACTION');
@@ -187,56 +190,40 @@ class Router
         return $urlArr;
     }
 
-    private static function check($uri)
+    /**
+     * 准备一条路由
+     *
+     * @param $uri
+     * @return string|string[]
+     */
+    private function prepare($uri)
     {
 
         // 检测是否开启了路由功能
         if (!Common::C("ROUTER:START")) {
             return $uri;
         }
+
         $routes = Common::C("ROUTER:RULE");
+        $route = '';
         foreach ($routes as $rule => $route) {
-            if (strpos($rule, "/") === 0 && preg_match($rule, $uri, $matches)) {
-                array_shift($matches);
-                $match = array();
-                for ($i = 0; $i < count($matches); $i++) {
-                    $match[':' . ($i + 1)] = $matches[$i];
-                }
-                foreach ($match as $key => $val) {
-                    $route = str_replace($key, $val, $route);
-                }
-                return $route;
-            }
             if (trim($rule, '/') == trim($uri, '/')) {
                 return $route;
             }
-            $url = explode('/', trim($uri, '/'));
+
+            $matchRule = "/".str_replace('/','\/',$rule)."/";
+            if (strpos($rule, "/") === 0 && preg_match($matchRule, $uri, $matches)) {
+                return $this->fetchPregRoute($route,$matches);
+            }
+
             if (preg_match_all('/(?:[\w\d]+\/)?:([\w\d]+)/i', $rule, $matches)) {
-                $r = explode('/', substr($rule, 0, strpos($rule, ':') - 1));
-                if (implode('/', $r) != implode('/', array_slice($url, 0, count($r)))) {
-                    continue;
+                if($route = $this->fetchParameterRoute($rule,$route,$uri,$matches)){
+                    break;
                 }
-                $r = array_slice($url, count($r));
-                if (count($matches[1]) != count($r)) {
-                    continue;
-                }
-                $url = array();
-                for ($i = 0; $i < count($r); $i++) {
-                    $url[':' . $matches[1][$i]] = $r[$i];
-                }
-                foreach ($url as $key => $val) {
-                    $route = str_replace($key, $val, $route, $count);
-                    if ($count == 1) {
-                        unset($url[$key]);
-                    }
-                }
-                if (count($url) > 0) {
-                    $route = rtrim($route, '/') . '/' . implode('/', array_values($url));
-                }
-                return $route;
             }
         }
-        return $uri;
+
+        return $route;
     }
 
     /**
@@ -250,9 +237,9 @@ class Router
     private static function parseParam($uri = '', $parNum = 0, $parNames = array())
     {
         //清除 GET 中的 模块、控制器、方法、参数等元素
-        array_walk_recursive($_GET, 'Common::Url_filter');
+        array_walk_recursive($_GET, 'Common::UrlFilter');
         //清除空元素
-        Common::parse_empty($_GET);
+        Common::parseEmpty($_GET);
 
         // 如果没有参数传进来 那么解析失败 返回false
         if (empty($uri)) {
@@ -267,17 +254,18 @@ class Router
         // 然后判断参数个数是否为1
         if (!strpos($uri, '/')) {
             $_GET[$uri] = '';
-            if ($parNum >= 1)
+            if ($parNum >= 1) {
                 return array($parNames[0] => $uri);
-            else return false;
+            }
+
+            return false;
         }
         $par = array();
         $uri = explode('/', $uri);
 
 
         // 去除 数组中的空的变量
-
-        Common::parse_empty($uri);
+        Common::parseEmpty($uri);
 
 
         //比较url中参数的个数和$parNum 的大小 根据两者的数量确定方法的参数
@@ -310,5 +298,106 @@ class Router
         }
         if (count($par) > 0) return $par;
         return false;
+    }
+
+    /**
+     * 解析模块
+     *
+     * @param $urlArr
+     * @throws RouterException
+     */
+    private function parseModule($urlArr)
+    {
+        if (in_array(Common::C('URL:M_NAME'), array_keys($urlArr))) {
+            //如果存在，则判断当前的模块是否存在
+            if (in_array(strtolower($urlArr[Common::C('URL:M_NAME')]), array_map(function ($v) {
+                return strtolower($v);
+            }, Common::C('MODULE')))) {
+                defined('MODULE_NAME') or define('MODULE_NAME', ucwords(strtolower($urlArr[Common::C('URL:M_NAME')])));
+            } elseif (!empty($urlArr[Common::C('URL:M_NAME')])) {
+                $e = new RouterException("模块不存在");
+                $e->setRouter($urlArr);
+                throw $e;
+            } else {
+                defined('MODULE_NAME') or define('MODULE_NAME', Common::C('DEFAULT_MODULE'));
+            }
+        } else {
+            $e = new RouterException("指定的模块参数名称错误");
+            $e->setRouter($urlArr);
+            throw $e;
+        }
+    }
+
+    /**
+     * 获取实际路由
+     * 对于pathinfo模式的路由，遵循以下规则
+     *      1. /p/index => /Web/Index/index  // 表示访问的是 Web模块下的Index控制下的index方法  例如：http://domain/p/index;
+     *      2. /p/(\w+) => /Web/Index/:1     // 表示访问的是 Web模块下的Index控制器下的任意有效的方法
+     *          例如：     http://domain/p/login  则访问的是 Web模块下的Index控制器中的login方法；
+     *                    http://domain/p/index  则访问的是 Web模块下的Index控制器中的index方法。
+     *      其实相当于 p 是 Web/Index的简化形式
+     *      也可以通过正则表达式放置参数
+     *      3. /p/(\w+)/(\d+)=> /Web/Index/:1/:2  其中 :2 就是参数  可以通过 \Common:get('p') 访问参数
+     *
+     * 该种方式不带参数，也就是说控制器中不会接收到参数
+     *
+     * @param $route
+     * @param array $matches
+     * @return string|string[]
+     */
+    private function fetchPregRoute($route,array $matches)
+    {
+        array_shift($matches);
+        $match = array();
+        for ($i = 0; $i < count($matches); $i++) {
+            $match[':' . ($i + 1)] = $matches[$i];
+        }
+        foreach ($match as $key => $val) {
+            $route = str_replace($key, $val, $route);
+        }
+
+        return $route;
+    }
+
+    /**
+     * 获取带有参数的路由
+     * 对于pathinfo模式的路由，遵循以下规则
+     *      1. /p/:id => /Web/Index/index  //表示访问的是 Web模块下的Index控制器中的index方法，参数在访问请求中指定
+     *              例如： http://domain/p/12  则参数值为12
+     *
+     * @param $rule
+     * @param $route
+     * @param $uri
+     * @param $matches
+     * @return bool|string|string[]
+     */
+    private function fetchParameterRoute($rule,$route,$uri,$matches)
+    {
+        $url = explode('/', trim($uri, '/'));
+        $r = explode('/', trim(substr($rule, 0, strpos($rule, ':') - 1),'/'));
+
+        if (implode('/', $r) != implode('/', array_slice($url, 0, count($r)))) {
+            return false;
+        }
+
+        $r = array_slice($url, count($r));
+        if (count($matches[1]) != count($r)) {
+            return false;
+        }
+
+        $url = array();
+        for ($i = 0; $i < count($r); $i++) {
+            $url[':' . $matches[1][$i]] = $r[$i];
+        }
+        foreach ($url as $key => $val) {
+            $route = str_replace($key, $val, $route, $count);
+            if ($count == 1) {
+                unset($url[$key]);
+            }
+        }
+        if (count($url) > 0) {
+            $route = rtrim($route, '/') . '/' . implode('/', array_values($url));
+        }
+        return $route;
     }
 }

@@ -22,7 +22,7 @@ class Template{
         $this->_smarty_obj->setCompileDir(DATA_PATH.'compile/'.MODULE_NAME);
         $this->_smarty_obj->setCacheDir(DATA_PATH.'cache/');
         $this->_smarty_obj->setConfigDir(DATA_PATH.'config/');
-        $this->_smarty_obj->registerFilter('pre', '\\Common::smarty_constant_filter');
+        $this->_smarty_obj->registerFilter('pre', '\\Common::smartyConstantFilter');
     }
     
     public static function _newInstance(){

@@ -4,9 +4,10 @@
 
 use Exceptions\HandlerExceptions;
 use Lib\Router;
+use Lib\Request;
 
 /**
- * ºËĞÄÀàÎÄ¼ş ÓÃÀ´Æô¶¯Õû¸öÓ¦ÓÃ³ÌĞò
+ * æ ¸å¿ƒç±»æ–‡ä»¶ ç”¨æ¥å¯åŠ¨æ•´ä¸ªåº”ç”¨ç¨‹åº
  *
  * @author liuhanzeng
  *
@@ -27,21 +28,21 @@ class Onmpw
         HandlerExceptions::class
     ];
 
-    protected static function _Init()
+    protected static function Boot()
     {
-        // ÉèÖÃÒıÈëÎÄ¼şµÄÂ·¾¶
+        // è®¾ç½®å¼•å…¥æ–‡ä»¶çš„è·¯å¾„
         _set_include_path(APP_PATH);
 
-        //¿ªÆôsession
+        //å¼€å¯session
         session_start();
 
-        //×¢²á×Ô¶¯ÔØÈëÀà|½Ó¿Ú·½·¨
+        //æ³¨å†Œè‡ªåŠ¨è½½å…¥ç±»|æ¥å£æ–¹æ³•
         spl_autoload_register(['self', 'autoload']);
         require APP_PATH . '../vendor/autoload.php';
     }
 
     /**
-     * ×Ô¶¯ÔØÈëº¯Êı
+     * è‡ªåŠ¨è½½å…¥å‡½æ•°
      *
      * @param string $class
      *
@@ -51,10 +52,10 @@ class Onmpw
     {
         $after_ext = '.php';
         if (!isset(self::$_map[$class]) || empty(self::$_map[$class])) {
-            //·µ»Ø \ µÚÒ»´Î³öÏÖµÄÎ»ÖÃÖ®Ç°µÄ×Ö·û´®
+            //è¿”å› \ ç¬¬ä¸€æ¬¡å‡ºç°çš„ä½ç½®ä¹‹å‰çš„å­—ç¬¦ä¸²
             $name = strstr($class, '\\', true);
 
-            // Èç¹û×Ô¶¯¼ÓÔØµÄÀà ÊÇLib¡¢Ext¡¢Inter Exceptions ÖĞµÄÀàÎÄ¼ş»òÕß½Ó¿ÚÎÄ¼şÄÇÃ´ÏòÏÂÖ´ĞĞ
+            // å¦‚æœè‡ªåŠ¨åŠ è½½çš„ç±» æ˜¯Libã€Extã€Inter Exceptions ä¸­çš„ç±»æ–‡ä»¶æˆ–è€…æ¥å£æ–‡ä»¶é‚£ä¹ˆå‘ä¸‹æ‰§è¡Œ
             if (in_array($name, array('Lib', 'Ext', 'Inter', 'Exceptions'))) {
                 $class_name = str_replace('\\', '/', $class);
                 $path = APP_PATH . 'Onmpw/';
@@ -64,16 +65,16 @@ class Onmpw
                 $pre_ext = 'Action.';
                 $class_name = str_replace('\\', '/', $class);
 
-                // Èç¹û²»ÊÇÀà¿â»òÕßµÚÈı·½Àà¿âÀïµÄÎÄ¼şµÄ»°£¬ÄÇÃ´¼ì²âÊÇ·ñÊÇ¿ØÖÆÆ÷ÎÄ¼ş
-                $name = ltrim(strrchr($class_name, '/'), '/'); //²éÕÒ/ÔÚ×Ö·û´®ÖĞ×îºóÒ»´Î³öÏÖµÄÎ»ÖÃÖ®ºóµÄ×Ö·û´®
+                // å¦‚æœä¸æ˜¯ç±»åº“æˆ–è€…ç¬¬ä¸‰æ–¹ç±»åº“é‡Œçš„æ–‡ä»¶çš„è¯ï¼Œé‚£ä¹ˆæ£€æµ‹æ˜¯å¦æ˜¯æ§åˆ¶å™¨æ–‡ä»¶
+                $name = ltrim(strrchr($class_name, '/'), '/'); //æŸ¥æ‰¾/åœ¨å­—ç¬¦ä¸²ä¸­æœ€åä¸€æ¬¡å‡ºç°çš„ä½ç½®ä¹‹åçš„å­—ç¬¦ä¸²
 
                 if (preg_match('/^[A-Z]?\w*Model$/', $name)) {
                     $pre_ext = 'Model.';
                 }
-                $name = $pre_ext . str_replace(rtrim($pre_ext, '.'), '', $name);//È¥µôAction²¢ÇÒ¼ÓÉÏÇ°×ºAction.
+                $name = $pre_ext . str_replace(rtrim($pre_ext, '.'), '', $name);//å»æ‰Actionå¹¶ä¸”åŠ ä¸Šå‰ç¼€Action.
 
-                $path = MODULE_PATH;  //ÉèÖÃÂ·¾¶
-                //ÕûÀíÎÄ¼şÃû³Æ
+                $path = MODULE_PATH;  //è®¾ç½®è·¯å¾„
+                //æ•´ç†æ–‡ä»¶åç§°
                 $file_name = str_replace(strrchr($class_name, '/'), '/' . $name . $after_ext, $class_name);
             }
 
@@ -88,17 +89,24 @@ class Onmpw
 
     }
 
-    public static function start()
+    /**
+     * å¼€å§‹æ¡†æ¶
+     *
+     * @param App $app
+     * @throws ReflectionException
+     */
+    protected static function start(App $app)
     {
-        /*
-         * ¼ÓÔØ¹«¹²ÅäÖÃÎÄ¼ş
-         */
+        // åŠ è½½å…¬å…±é…ç½®æ–‡ä»¶
         if (file_exists(CONFIG_PATH . 'app' . self::$EXT)) {
-            \Common::C(\Common::Load_conf(CONFIG_PATH . 'app' . self::$EXT));
+            Common::C(Common::LoadConf(CONFIG_PATH . 'app' . self::$EXT));
         }
 
-        // ¿ªÊ¼Â·ÓÉ
-        Router::router();
+        $request = Request::createFromGlobals();
+        $router = $app->make(Router::class,['request'=>$request]);
+
+        // å¼€å§‹è·¯ç”±
+        $router->router();
     }
 
 }
