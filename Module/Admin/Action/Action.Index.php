@@ -1,6 +1,8 @@
 <?php
 namespace Admin\Action;
+use App;
 use Common\Action\CommonAction;
+use Lib\Request;
 use News\Model\NewsModel;
 use Onlinebid\Model\BidsModel;
 use Monolog\Logger;
@@ -9,16 +11,17 @@ use Monolog\Handler\FirePHPHandler;
 use Exceptions\ConnectException;
 
 class IndexAction extends CommonAction{
-    public function index(){
+    public function index(App $app, Request $request,$p,$ac='nihao'){
+        echo $p,"<br />",$ac,"<br />";
 //        echo $id,"<br />";
+        var_dump($request->get('p'));
         $sql = "select * from users";
         $mod = new NewsModel();
         $res = $mod->select_sql($sql);
         $logger = new Logger('my_logger');
         var_dump($logger);
 //        throw new ConnectException("lianjiecuowu");
-        return "test";
-
+        $this->send("test");
     }
     public function login(){
         $this->display();

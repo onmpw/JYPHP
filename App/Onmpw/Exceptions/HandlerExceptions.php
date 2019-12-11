@@ -56,6 +56,8 @@ class HandlerExceptions
     public function handleShutdown()
     {
         $error = error_get_last();
-        var_dump($error);
+        if(!is_null($error)){
+            var_dump($error);
+        }
     }
 }

@@ -8,7 +8,7 @@ use ReflectionException;
 use ReflectionClass;
 use ReflectionMethod;
 use Common;
-use Symfony\Component\HttpFoundation\Request;
+use ReflectionParameter;
 
 class Router
 {
@@ -17,13 +17,15 @@ class Router
 
     private $app;
 
+    private $urlParameters = [];
+
     /**
      * Router constructor.
      *
      * @param App $app
      * @param Request $request
      */
-    public function __construct(App $app,Request $request)
+    public function __construct(App $app, Request $request)
     {
         $this->request = $request;
 
@@ -50,17 +52,18 @@ class Router
             defined('AC_NAME') or define('AC_NAME', ucwords(strtolower($urlArr[Common::C('URL:A_NAME')])));
             if (class_exists($class)) {
                 try {
-                    $class = new ReflectionClass($class);
+                    $classReflection = new ReflectionClass($class);
                 } catch (ReflectionException $e) {
                     throw new RouterException($e->getMessage());
                 }
 
                 // 检测方法参数是否存在
                 // 首先取出该控制器的所有方法 并且只过滤出 public 方法
-                $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
-                $methods = array_map(function ($val) { //利用回调函数 将非 static 函数的名称返回给数组
-                    if (!$val->isStatic())
+                $methods = $classReflection->getMethods(ReflectionMethod::IS_PUBLIC);
+                $methods = array_map(function (ReflectionMethod $val) { //利用回调函数 将非 static 函数的名称返回给数组
+                    if (!$val->isStatic()) {
                         return $val->name;
+                    }
                 }, $methods);
 
                 //去除空元素
@@ -92,38 +95,23 @@ class Router
 
 
                 // 如果没有找到方法 或者该方法为静态static 方法 那么输出错误  否则
-                if (!$if || $class->getMethod($func)->isStatic()) {
+                if (!$if || $classReflection->getMethod($func)->isStatic()) {
                     throw new RouterException('Can not find Action!');
                 } else {
                     defined('FC_NAME') or define('FC_NAME', $func);
-                    $method = $class->getMethod($func);
-                    //得到方法参数的个数
-                    $par = $method->getNumberOfParameters();
-                    //得到必须参数的个数
-                    $rPar = $method->getNumberOfRequiredParameters();
-                    $parArr = array(); //定义存放参数名称的数组
-                    if ($par > 0) {
-                        $parArr = array_map(function ($val) {
-                            return $val->name;
-                        }, $method->getParameters());
-                    }
+                    $method = $classReflection->getMethod($func);
 
                     if (in_array(Common::C('URL:P_NAME'), array_keys($urlArr))) {
-                        $args = self::parseParam($urlArr[Common::C('URL:P_NAME')], $par, $parArr);
+                        $args = $this->parseParam($urlArr[Common::C('URL:P_NAME')], $method);
                     } else {
                         $args = array();
                     }
 
-                    if (false === $args) {
-                        $method->invoke($class->newInstance());
-                    } elseif (is_array($args)) {
-                        //根据返回的参数数组的个数  和该方法必须的参数个数做比较
-                        //如果前者小于后者 那么 参数个数错误 否则 则调用函数
-                        if (count($args) < $rPar) {
-                            throw new RouterException("Parameter Is Required!");
-                        } else {
-                            $method->invokeArgs($class->newInstance(), $args);
-                        }
+                    if (empty($args)) { // 说明没有参数
+                        $method->invoke($classReflection->newInstance());
+                    } else {
+                        // 解析参数
+                        $method->invokeArgs($classReflection->newInstance(), $args);
                     }
 
                 }
@@ -145,7 +133,6 @@ class Router
     private function parseUrl()
     {
         $uri = $this->request->getQueryString();
-
         // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
         $urlArr = array();
         if (!empty($uri)) {
@@ -161,7 +148,7 @@ class Router
             }
         } else {
             $uri = $this->request->getRequestUri();
-            if (!empty($uri)) {
+            if (!empty($uri) && $uri != '/') {
                 //pathinfo 模式
                 $uri = $this->prepare($uri);
                 $uri = explode('/', trim($uri, '/'));
@@ -211,13 +198,13 @@ class Router
                 return $route;
             }
 
-            $matchRule = "/".str_replace('/','\/',$rule)."/";
+            $matchRule = "/" . str_replace('/', '\/', $rule) . "/";
             if (strpos($rule, "/") === 0 && preg_match($matchRule, $uri, $matches)) {
-                return $this->fetchPregRoute($route,$matches);
+                return $this->fetchPregRoute($route, $matches);
             }
 
             if (preg_match_all('/(?:[\w\d]+\/)?:([\w\d]+)/i', $rule, $matches)) {
-                if($route = $this->fetchParameterRoute($rule,$route,$uri,$matches)){
+                if ($route = $this->fetchParameterRoute($rule, $route, $uri, $matches)) {
                     break;
                 }
             }
@@ -230,74 +217,137 @@ class Router
      * 解析url参数方法
      *
      * @param string $uri
-     * @param int $parNum
-     * @param array $parNames
+     * @param ReflectionMethod $method
+     *
      * @return mixed
      */
-    private static function parseParam($uri = '', $parNum = 0, $parNames = array())
+    private function parseParam($uri, ReflectionMethod $method)
     {
         //清除 GET 中的 模块、控制器、方法、参数等元素
         array_walk_recursive($_GET, 'Common::UrlFilter');
         //清除空元素
         Common::parseEmpty($_GET);
 
-        // 如果没有参数传进来 那么解析失败 返回false
-        if (empty($uri)) {
-            if ($parNum == 0) {
-                return false;
+        $uri = explode('/', trim($uri, '/'));
+
+        $this->urlParameters = $this->getUriParameter($uri);
+
+        // uri中的参数不为空，并且方法参数也不为空
+        // 下面开始解析参数
+        $parameterInfo = [];
+        array_map(function ($val) use (&$uri, &$parameterInfo) {
+            $this->setMethodParameter($val, $parameterInfo, $uri);
+        }, $method->getParameters());
+
+        return $parameterInfo;
+    }
+
+    /**
+     * 解析url地址中的参数
+     *
+     * @param array $uri
+     *
+     * @return array
+     */
+    private function getUriParameter(array $uri)
+    {
+        $parameterInfo = [];
+        while (!empty($uri)) {
+            // 当uri的个数为1 时，说明元素个数时奇数，则退出循环
+            if (count($uri) == 1) {
+                break;
             }
-            return array();
+
+            $parameterInfo[array_shift($uri)] = array_shift($uri);
         }
 
+        return $parameterInfo;
+    }
 
-        // 如果url参数中没有找到 / 说明只有一条数据
-        // 然后判断参数个数是否为1
-        if (!strpos($uri, '/')) {
-            $_GET[$uri] = '';
-            if ($parNum >= 1) {
-                return array($parNames[0] => $uri);
+    /**
+     * 根据action的方法中的参数名称，从url中的参数获取值
+     *
+     * @param $name
+     * @param $uri
+     *
+     * @return mixed|null
+     */
+    private function getMethodParameterFromUriParameter($name, $uri)
+    {
+        if (count($uri) == 0) {
+            return null;
+        }
+
+        if (count($uri) == 1) {
+            return $uri[0];
+        }
+
+        if (empty($this->urlParameters)) {
+            $this->urlParameters = $this->getUriParameter($uri);
+        }
+
+        return $this->urlParameters[$name] ?? null;
+    }
+
+    /**
+     * 设置action方法的参数
+     *
+     * @param ReflectionParameter $parameter
+     * @param $parameterInfo
+     * @param $uri
+     *
+     * @throws ReflectionException
+     * @throws RouterException
+     */
+    private function setMethodParameter(ReflectionParameter $parameter, &$parameterInfo, &$uri): void
+    {
+        $class = $parameter->getClass();
+
+        if (is_null($class)) {
+            $parVal = $this->getMethodParameterFromUriParameter($parameter->name, $uri);
+            if (!is_null($parVal)) {
+                $parameterInfo[$parameter->name] = $this->convertValType($parameter, $parVal);
+            } else {
+                // 请求的参数已经用完，查看方法中的参数是否有默认值
+                if ($parameter->isDefaultValueAvailable()) {
+                    // 参数本身带有默认值
+                    $parameterInfo[$parameter->name] = $parameter->getDefaultValue();
+                } else {
+                    // 参数没有默认值，并且也没有在url参数中找到，则抛出异常
+                    throw new RouterException("Parameter \${$parameter->name} Is Required!");
+                }
             }
-
-            return false;
-        }
-        $par = array();
-        $uri = explode('/', $uri);
-
-
-        // 去除 数组中的空的变量
-        Common::parseEmpty($uri);
-
-
-        //比较url中参数的个数和$parNum 的大小 根据两者的数量确定方法的参数
-        if (count($uri) <= 0) {
-            return false;
-        } elseif (count($uri) == 1) {
-            //如果url中参数的个数为1 
-            $_GET[$uri[0]] = '';
-            if ($parNum >= 0) return array($parNames[0] => $uri[0]);
-
-            return false;
-        }
-
-        // 判断url传递的参数个数 和 方法参数个数比较
-        // 如果前者大 则按照后者循环
-        // 否则 按照前者循环
-        if (count($uri) <= $parNum) {
-            for ($i = 0; $i < count($uri); $i++)
-                $par[$parNames[$i]] = $uri[$i];
         } else {
-            for ($i = 0; $i < $parNum; $i++)
-                $par[$parNames[$i]] = $uri[$i];
+            if ($class->name == Request::class) {
+                $parameterInfo[$parameter->name] = $this->request->createFromNewGlobal($this->urlParameters);
+            } else {
+                $parameterInfo[$parameter->name] = $this->app->make($class->name);
+                /*$parameterInfo[$parameter->name] = function () use ($class) {
+                    $obj = $this->app->make($class->name);
+                    return $obj;
+                };*/
+            }
         }
-        while (count($uri) > 0) {
-            $k = $uri[0];
-            array_shift($uri);
-            $v = $uri[0];
-            array_shift($uri);
-            $_GET[$k] = $v;
+    }
+
+    /**
+     * @param ReflectionParameter $parameter
+     * @param $val
+     * @return int|string
+     */
+    private function convertValType(ReflectionParameter $parameter, $val)
+    {
+        $type = $parameter->getType();
+        if (is_null($type)) {
+            return $val;
         }
-        if (count($par) > 0) return $par;
-        return false;
+
+        switch ($type->__toString()) {
+            case "int":
+                return intval($val);
+            default:
+                return (string)$val;
+        }
     }
 
     /**
@@ -345,7 +395,7 @@ class Router
      * @param array $matches
      * @return string|string[]
      */
-    private function fetchPregRoute($route,array $matches)
+    private function fetchPregRoute($route, array $matches)
     {
         array_shift($matches);
         $match = array();
@@ -371,10 +421,10 @@ class Router
      * @param $matches
      * @return bool|string|string[]
      */
-    private function fetchParameterRoute($rule,$route,$uri,$matches)
+    private function fetchParameterRoute($rule, $route, $uri, $matches)
     {
         $url = explode('/', trim($uri, '/'));
-        $r = explode('/', trim(substr($rule, 0, strpos($rule, ':') - 1),'/'));
+        $r = explode('/', trim(substr($rule, 0, strpos($rule, ':') - 1), '/'));
 
         if (implode('/', $r) != implode('/', array_slice($url, 0, count($r)))) {
             return false;

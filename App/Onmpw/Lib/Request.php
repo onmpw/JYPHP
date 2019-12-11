@@ -11,4 +11,11 @@ class Request extends HttpRequest
     {
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
     }
+
+    public function createFromNewGlobal($parameters) {
+        foreach($parameters as $key=>$val){
+            $_GET[$key] = addslashes($val);
+        }
+        return parent::createFromGlobals();
+    }
 }

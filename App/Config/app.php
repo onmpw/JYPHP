@@ -13,7 +13,7 @@ return array(
     'CHAT_SHOW_NUM'=>10,
     'CHAT_EVERY_TIME'=>6, //聊天内容每隔多少个小时显示时间
     'ROUTER'=>array(
-        'START'=>true,
+        'START'=>false,
         'RULE'=>array(
             '/p/(\w+)'=>'/Admin/Index/:1'
         )
