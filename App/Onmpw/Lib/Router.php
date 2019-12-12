@@ -42,83 +42,117 @@ class Router
     {
         $urlArr = $this->parseUrl();
 
-        // 解析模块
         $this->parseModule($urlArr);
 
-        // 然后判断控制器是否存在
-        if (in_array(Common::C('URL:A_NAME'), array_keys($urlArr)) && !empty($urlArr[Common::C('URL:A_NAME')])) {
-            // 控制器存在 并且不为空
+        if (in_array(Common::C('URL:A_NAME'), array_keys($urlArr))
+            && !empty($urlArr[Common::C('URL:A_NAME')])) {
+            // 控制器存在 并且不为空 则开始解析控制器
             $class = MODULE_NAME . '\\Action\\' . ucwords(strtolower($urlArr[Common::C('URL:A_NAME')])) . 'Action';
             defined('AC_NAME') or define('AC_NAME', ucwords(strtolower($urlArr[Common::C('URL:A_NAME')])));
-            if (class_exists($class)) {
-                try {
-                    $classReflection = new ReflectionClass($class);
-                } catch (ReflectionException $e) {
-                    throw new RouterException($e->getMessage());
-                }
-
-                // 检测方法参数是否存在
-                // 首先取出该控制器的所有方法 并且只过滤出 public 方法
-                $methods = $classReflection->getMethods(ReflectionMethod::IS_PUBLIC);
-                $methods = array_map(function (ReflectionMethod $val) { //利用回调函数 将非 static 函数的名称返回给数组
-                    if (!$val->isStatic()) {
-                        return $val->name;
-                    }
-                }, $methods);
-
-                //去除空元素
-                $func = '';
-                if (in_array(Common::C('URL:F_NAME'), array_keys($urlArr)) && !empty($urlArr[Common::C('URL:F_NAME')])) {
-                    // 存在 并且不为空那么检测当前控制器中是否存在此方法
-                    $func = $urlArr[Common::C('URL:F_NAME')]; // 将 访问的方法赋值给变量
-                    // 首先判断方法名称是否符合规范
-                    if (!preg_match('/^[A-Za-z](\w)*$/', $func)) {
-                        // 不合乎规范 抛出异常
-                        $e = new RouterException("不合乎规范");
-                        $e->setRouter("router");
-                        throw $e;
-                    }
-                } elseif (empty($urlArr[Common::C('URL:F_NAME')]) || !in_array(Common::C('URL:F_NAME'), array_keys($urlArr))) {
-                    $func = 'index';
-                }
-
-                // 此判断是为了使方法名称不区分大小写
-                // 判断当前方法是否在控制器中存在
-                $if = false;
-                for ($i = 0; $i < count($methods); $i++) {
-                    if (strtolower($func) == strtolower($methods[$i])) {
-                        $func = $methods[$i];
-                        $if = true;
-                        break;
-                    }
-                }
-
-
-                // 如果没有找到方法 或者该方法为静态static 方法 那么输出错误  否则
-                if (!$if || $classReflection->getMethod($func)->isStatic()) {
-                    throw new RouterException('Can not find Action!');
-                } else {
-                    defined('FC_NAME') or define('FC_NAME', $func);
-                    $method = $classReflection->getMethod($func);
-
-                    $args = $this->parseParam($urlArr[Common::C('URL:P_NAME')]??'', $method);
-
-
-                    if (empty($args)) { // 说明没有参数
-                        $method->invoke($classReflection->newInstance());
-                    } else {
-                        // 解析参数
-                        $method->invokeArgs($classReflection->newInstance(), $args);
-                    }
-
-                }
-            } else {
-                throw new RouterException('Can not find Action!');
-            }
+            $this->startAction($class,$urlArr);
         } else {
             throw new RouterException('Lack of Action');
         }
 
+    }
+
+    /**
+     * 开始执行Action
+     *
+     * @param $action
+     * @param $urlArr
+     *
+     * @throws ReflectionException
+     * @throws RouterException
+     */
+    private function startAction($action,$urlArr)
+    {
+        if (class_exists($action)) {
+            try {
+                $actionReflection = new ReflectionClass($action);
+            } catch (ReflectionException $e) {
+                throw new RouterException($e->getMessage());
+            }
+
+            // 检测方法参数是否存在
+            // 首先取出该控制器的所有方法 并且只过滤出 public 方法
+            $methods = $actionReflection->getMethods(ReflectionMethod::IS_PUBLIC);
+            $methods = array_filter($methods,function (ReflectionMethod $val) { //利用回调函数 将非 static 函数的名称返回给数组
+                if ($val->isStatic()) {
+                    return false;
+                }
+                return true;
+            });
+
+            $func = $this->getUrlMethodName($urlArr);
+
+            // 此判断是为了使方法名称不区分大小写
+            // 判断当前方法是否在控制器中存在
+            $if = false;
+            for ($i = 0; $i < count($methods); $i++) {
+                if (strtolower($func) == strtolower($methods[$i]->name)) {
+                    defined('FC_NAME') or define('FC_NAME', $methods[$i]->name);
+                    $this->callMethod($methods[$i],$actionReflection,$urlArr);
+                    $if = true;
+                    break;
+                }
+            }
+
+            if($if) {
+                throw new RouterException("Can not find Method in $action Action!");
+            }
+        } else {
+            throw new RouterException('Can not find Action!');
+        }
+    }
+
+    /**
+     * 开始调用方法
+     *
+     * @param ReflectionMethod $method
+     * @param ReflectionClass $actionReflection
+     * @param $urlArr
+     */
+    private function callMethod(ReflectionMethod $method,ReflectionCLass $actionReflection,$urlArr): void
+    {
+        $args = $this->parseParam($urlArr[Common::C('URL:P_NAME')] ?? '', $method);
+
+
+        if (empty($args)) { // 说明没有参数
+            $method->invoke($actionReflection->newInstance());
+        } else {
+            // 解析参数
+            $method->invokeArgs($actionReflection->newInstance(), $args);
+        }
+    }
+
+
+
+    /**
+     * 获取url请求中指定的method
+     *  如果url请求中的method 不是以字母开头的 则说明不符合规范，抛出异常
+     *  如果没有指定method 或者指定的为空 则 访问控制器中的 index方法
+     *
+     * @param $urlArr
+     * @return mixed|string
+     * @throws RouterException
+     */
+    private function getUrlMethodName($urlArr)
+    {
+        if (in_array(Common::C('URL:F_NAME'), array_keys($urlArr)) && !empty($urlArr[Common::C('URL:F_NAME')])) {
+            // 存在 并且不为空那么检测当前控制器中是否存在此方法
+            $func = $urlArr[Common::C('URL:F_NAME')]; // 将 访问的方法赋值给变量
+            // 首先判断方法名称是否符合规范
+            if (!preg_match('/^[A-Za-z](\w)*$/', $func)) {
+                // 不合乎规范 抛出异常
+                $e = new RouterException("不合乎规范");
+                $e->setRouter("router");
+                throw $e;
+            }
+            return $func;
+        }
+
+        return 'index';
     }
 
     /**
@@ -132,16 +166,16 @@ class Router
         $uri = $this->request->getRequestUri();
 
         $queryString = $this->request->getQueryString();
-        if(is_null($queryString)){
+        if (is_null($queryString)) {
             // 当 queryString 的值为null 说明url请求格式包含下面两种情况
             // 请求格式 1. http://domain/Module/Action/Method/P/V&p1=1&p2=2
             //         2. http://domain/&m=Module&a=Action&f=Method&p1=1&p2=2 / http://domain/&p1=1&p2=2
             // 这二种情况下认为参数是无效的，所以请求参数不做处理。只处理有效访问路径
-            if(strpos($uri,'&') !== false){
-                $uri = substr($uri,0,strpos($uri,'&'));
+            if (strpos($uri, '&') !== false) {
+                $uri = substr($uri, 0, strpos($uri, '&'));
             }
-        }else{
-            $uri = trim(substr($uri,0,strpos($uri,'?')),'/');
+        } else {
+            $uri = trim(substr($uri, 0, strpos($uri, '?')), '/');
 
             // 当 queryString 的值不为null 说明url请求格式包含下面四种情况
             // 请求格式 1. http://domain/Module/Action/Method/P/V?p1=1&p2=2
@@ -150,7 +184,7 @@ class Router
             //         4. http://domain/p/w/?p1=1&p2=2
             // 这1、2种情况下认为请求是有效的 第3种情况是没有指定模块，控制器和方法 所以无效
             // 第4中情况是开启了路由模式，相当于第一种情况
-            if(empty($uri)) {
+            if (empty($uri)) {
                 // 2、3 种情况
                 return $this->getQueryStringUrlArr($queryString);
             }
@@ -158,10 +192,10 @@ class Router
 
         $urlArr = $this->getRequestUriUrlArr($uri);
 
-        if(!is_null($queryString)){
-            $paramArr = $this->getQueryStringUrlArr($queryString,true);
-            if(isset($urlArr[Common::C('URL:P_NAME')]) && isset($paramArr[Common::C('URL:P_NAME')])) {
-                $urlArr[Common::C('URL:P_NAME')] = $urlArr[Common::C('URL:P_NAME')].'/'.$paramArr[Common::C('URL:P_NAME')];
+        if (!is_null($queryString)) {
+            $paramArr = $this->getQueryStringUrlArr($queryString, true);
+            if (isset($urlArr[Common::C('URL:P_NAME')]) && isset($paramArr[Common::C('URL:P_NAME')])) {
+                $urlArr[Common::C('URL:P_NAME')] = $urlArr[Common::C('URL:P_NAME')] . '/' . $paramArr[Common::C('URL:P_NAME')];
             }
         }
 
@@ -175,13 +209,13 @@ class Router
      * @param bool $isParam
      * @return array
      */
-    private function getQueryStringUrlArr($uri,$isParam = false): array
+    private function getQueryStringUrlArr($uri, $isParam = false): array
     {
         $urlArr = [];
         $urlPar = [];
 
         // 解析uri
-        $url = explode('&',parse_url($uri, PHP_URL_PATH));
+        $url = explode('&', parse_url($uri, PHP_URL_PATH));
 
         // 遍历url数组 开始解析
         foreach ($url as $val) {
@@ -195,7 +229,7 @@ class Router
         }
 
         if (!empty($urlPar)) {
-            $this->setParam($urlArr,$urlPar);
+            $this->setParam($urlArr, $urlPar);
         }
 
         return $urlArr;
@@ -227,7 +261,7 @@ class Router
             }
 
             //参数
-            $this->setParam($urlArr,$uri);
+            $this->setParam($urlArr, $uri);
 
         } else {
             $urlArr[Common::C("URL:M_NAME")] = Common::C('DEFAULT_MODULE');
@@ -244,12 +278,12 @@ class Router
      * @param $urlArr
      * @param $uriParam
      */
-    private function setParam(&$urlArr,$uriParam)
+    private function setParam(&$urlArr, $uriParam): void
     {
         if (!empty($uriParam)) {
-            if(count($uriParam)%2 != 0){
+            if (count($uriParam) % 2 != 0) {
                 // 参数个数为奇数
-                array_splice($uriParam,0,count($uriParam)-1);
+                array_splice($uriParam, 0, count($uriParam) - 1);
             }
             $urlArr[Common::C("URL:P_NAME")] = implode('/', $uriParam);
         }
@@ -257,6 +291,8 @@ class Router
 
     /**
      * 准备一条路由
+     *  其中第二种和第三种是不能混合在一起的，例如下面的路由就是非法的
+     *  /p/(\w+)/:id/:name => /Admin/Index/:1   目前系统无法解析
      *
      * @param $uri
      * @return string|string[]
@@ -272,15 +308,25 @@ class Router
         $routes = Common::C("ROUTER:RULE");
         $route = '';
         foreach ($routes as $rule => $route) {
+
+            // 第一种 全等的路由规则
+            // 例如： /p/c => /Admin/Index/index   请求的url 为 http://domain/p/c  则实际访问的是 http://domain/Admin/Index/index
+            //      url后面是可以跟上参数的 例如 http://domain/p/c?test=1&test2=2  则也是合法的url地址
+            //
             if (trim($rule, '/') == trim($uri, '/')) {
                 return $route;
             }
 
+            // 第二种 简单的带正则表达式的路由
+            // 例如： /p/(\w+)=>/Admin/Index/:1  指定Admin模块的Action为Index的中的任意的合法的方法
             $matchRule = "/" . str_replace('/', '\/', $rule) . "/";
             if (strpos($rule, "/") === 0 && preg_match($matchRule, $uri, $matches)) {
                 return $this->fetchPregRoute($route, $matches);
             }
 
+            // 第三种 不带正则表达式但是可以指定参数的路由
+            // 例如： /p/:id/:name=>/Admin/Index/index  指定了具体的module(Admin)、控制器(Index)和方法(index)
+            //       并且参数为 $id=? 和 $name=?  当然也可以通过 $request->get() 方法来获取参数
             if (preg_match_all('/(?:[\w\d]+\/)?:([\w\d]+)/i', $rule, $matches)) {
                 if ($route = $this->fetchParameterRoute($rule, $route, $uri, $matches)) {
                     break;
@@ -306,10 +352,10 @@ class Router
         //清除空元素
         Common::parseEmpty($_GET);
 
-        $uri = trim($uri,'/');
-        if(empty($uri)){
+        $uri = trim($uri, '/');
+        if (empty($uri)) {
             $uri = [];
-        }else{
+        } else {
             $uri = explode('/', trim($uri, '/'));
         }
 
@@ -410,6 +456,8 @@ class Router
     }
 
     /**
+     * 根据方法中参数的类型转换url请求中的参数值
+     *
      * @param ReflectionParameter $parameter
      * @param $val
      * @return int|string
@@ -431,11 +479,13 @@ class Router
 
     /**
      * 解析模块
+     * 查看url中指定的module是否存在或者是否在url中指定了module参数
+     * 如果module不存在或者url中没有指定module参数 则程序抛出异常
      *
      * @param $urlArr
      * @throws RouterException
      */
-    private function parseModule($urlArr)
+    private function parseModule($urlArr): void
     {
         if (in_array(Common::C('URL:M_NAME'), array_keys($urlArr))) {
             //如果存在，则判断当前的模块是否存在
@@ -492,7 +542,7 @@ class Router
      * 获取带有参数的路由
      * 对于pathInfo模式的路由，遵循以下规则
      *      1. /p/:id => /Web/Index/index  //表示访问的是 Web模块下的Index控制器中的index方法，参数在访问请求中指定
-     *              例如： http://domain/p/12  则参数值为12
+     *              例如： http://domain/p/12  则参数值为12 参数名称为id
      *
      * @param $rule
      * @param $route
@@ -516,7 +566,7 @@ class Router
 
         $url = array();
         for ($i = 0; $i < count($r); $i++) {
-            $url = array_merge($url,[$matches[1][$i],$r[$i]]);
+            $url = array_merge($url, [$matches[1][$i], $r[$i]]);
         }
         foreach ($url as $key => $val) {
             $route = str_replace($key, $val, $route, $count);
