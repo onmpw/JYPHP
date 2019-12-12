@@ -129,21 +129,40 @@ class Router
      */
     private function parseUrl()
     {
-        $uri = $this->request->getQueryString();
-
         $uri = $this->request->getRequestUri();
 
-        // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
-        if (!empty($uri)) {
+        $queryString = $this->request->getQueryString();
+        if(is_null($queryString)){
+            // 当 queryString 的值为null 说明url请求格式包含下面两种情况
+            // 请求格式 1. http://domain/Module/Action/Method/P/V&p1=1&p2=2
+            //         2. http://domain/&m=Module&a=Action&f=Method&p1=1&p2=2 / http://domain/&p1=1&p2=2
+            // 这二种情况下认为参数是无效的，所以请求参数不做处理。只处理有效访问路径
+            if(strpos($uri,'&') !== false){
+                $uri = substr($uri,0,strpos($uri,'&'));
+            }
+        }else{
+            $uri = trim(substr($uri,0,strpos($uri,'?')),'/');
 
-            $urlArr = $this->getQueryStringUrlArr($uri);
+            // 当 queryString 的值不为null 说明url请求格式包含下面四种情况
+            // 请求格式 1. http://domain/Module/Action/Method/P/V?p1=1&p2=2
+            //         2. http://domain/?m=Module&a=Action&f=Method&p1=1&p2=2
+            //         3. http://domain/?p1=1&p2=2
+            //         4. http://domain/p/w/?p1=1&p2=2
+            // 这1、2种情况下认为请求是有效的 第3种情况是没有指定模块，控制器和方法 所以无效
+            // 第4中情况是开启了路由模式，相当于第一种情况
+            if(empty($uri)) {
+                // 2、3 种情况
+                return $this->getQueryStringUrlArr($queryString);
+            }
+        }
 
-        } else {
+        $urlArr = $this->getRequestUriUrlArr($uri);
 
-            $uri = $this->request->getRequestUri();
-
-            $urlArr = $this->getRequestUriUrlArr($uri);
-
+        if(!is_null($queryString)){
+            $paramArr = $this->getQueryStringUrlArr($queryString,true);
+            if(isset($urlArr[Common::C('URL:P_NAME')]) && isset($paramArr[Common::C('URL:P_NAME')])) {
+                $urlArr[Common::C('URL:P_NAME')] = $urlArr[Common::C('URL:P_NAME')].'/'.$paramArr[Common::C('URL:P_NAME')];
+            }
         }
 
         return $urlArr;
@@ -153,9 +172,10 @@ class Router
      * 获取queryString 格式的请求数据
      *
      * @param $uri
+     * @param bool $isParam
      * @return array
      */
-    private function getQueryStringUrlArr($uri): array
+    private function getQueryStringUrlArr($uri,$isParam = false): array
     {
         $urlArr = [];
         $urlPar = [];
@@ -167,7 +187,7 @@ class Router
         foreach ($url as $val) {
             $a = explode('=', $val);
 
-            if (in_array($a[0], [Common::C("URL:M_NAME"), Common::C("URL:A_NAME"), Common::C("URL:F_NAME")])) {
+            if (in_array($a[0], [Common::C("URL:M_NAME"), Common::C("URL:A_NAME"), Common::C("URL:F_NAME")]) && !$isParam) {
                 $urlArr[$a[0]] = $a[1];
                 continue;
             }
@@ -175,7 +195,7 @@ class Router
         }
 
         if (!empty($urlPar)) {
-            $urlArr[Common::C("URL:P_NAME")] = implode('/', $urlPar);
+            $this->setParam($urlArr,$urlPar);
         }
 
         return $urlArr;
@@ -205,10 +225,10 @@ class Router
             if (($f = array_shift($uri)) != false) {
                 $urlArr[Common::C("URL:F_NAME")] = $f;
             }
+
             //参数
-            if (!empty($uri)) {
-                $urlArr[Common::C("URL:P_NAME")] = implode('/', $uri);
-            }
+            $this->setParam($urlArr,$uri);
+
         } else {
             $urlArr[Common::C("URL:M_NAME")] = Common::C('DEFAULT_MODULE');
             $urlArr[Common::C("URL:A_NAME")] = Common::C('DEFAULT_ACTION');
@@ -216,6 +236,23 @@ class Router
         }
 
         return $urlArr;
+    }
+
+    /**
+     * 解析并设置请求的参数
+     *
+     * @param $urlArr
+     * @param $uriParam
+     */
+    private function setParam(&$urlArr,$uriParam)
+    {
+        if (!empty($uriParam)) {
+            if(count($uriParam)%2 != 0){
+                // 参数个数为奇数
+                array_splice($uriParam,0,count($uriParam)-1);
+            }
+            $urlArr[Common::C("URL:P_NAME")] = implode('/', $uriParam);
+        }
     }
 
     /**
