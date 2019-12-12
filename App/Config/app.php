@@ -15,7 +15,7 @@ return array(
     'ROUTER'=>array(
         'START'=>false,
         'RULE'=>array(
-            '/p/(\w+)'=>'/Admin/Index/:1'
+            '/p/a/:id/:w'=>'/Admin/Index/index'
         )
     ),
     /**

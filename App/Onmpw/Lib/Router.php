@@ -101,11 +101,8 @@ class Router
                     defined('FC_NAME') or define('FC_NAME', $func);
                     $method = $classReflection->getMethod($func);
 
-                    if (in_array(Common::C('URL:P_NAME'), array_keys($urlArr))) {
-                        $args = $this->parseParam($urlArr[Common::C('URL:P_NAME')], $method);
-                    } else {
-                        $args = array();
-                    }
+                    $args = $this->parseParam($urlArr[Common::C('URL:P_NAME')]??'', $method);
+
 
                     if (empty($args)) { // 说明没有参数
                         $method->invoke($classReflection->newInstance());
@@ -133,47 +130,91 @@ class Router
     private function parseUrl()
     {
         $uri = $this->request->getQueryString();
+
+        $uri = $this->request->getRequestUri();
+
         // 定义一个数组 用来存储url的模块、控制器、方法 及其所对应的值
-        $urlArr = array();
         if (!empty($uri)) {
 
-            // 解析uri
-            $url = parse_url($uri, PHP_URL_PATH);
-            $url = explode('&', $url);
+            $urlArr = $this->getQueryStringUrlArr($uri);
 
-            // 遍历url数组 开始解析
-            foreach ($url as $val) {
-                $a = explode('=', $val);
+        } else {
+
+            $uri = $this->request->getRequestUri();
+
+            $urlArr = $this->getRequestUriUrlArr($uri);
+
+        }
+
+        return $urlArr;
+    }
+
+    /**
+     * 获取queryString 格式的请求数据
+     *
+     * @param $uri
+     * @return array
+     */
+    private function getQueryStringUrlArr($uri): array
+    {
+        $urlArr = [];
+        $urlPar = [];
+
+        // 解析uri
+        $url = explode('&',parse_url($uri, PHP_URL_PATH));
+
+        // 遍历url数组 开始解析
+        foreach ($url as $val) {
+            $a = explode('=', $val);
+
+            if (in_array($a[0], [Common::C("URL:M_NAME"), Common::C("URL:A_NAME"), Common::C("URL:F_NAME")])) {
                 $urlArr[$a[0]] = $a[1];
+                continue;
+            }
+            $urlPar = array_merge($urlPar, $a);
+        }
+
+        if (!empty($urlPar)) {
+            $urlArr[Common::C("URL:P_NAME")] = implode('/', $urlPar);
+        }
+
+        return $urlArr;
+    }
+
+    /**
+     * 获取RequestUri（pathInfo） 格式的请求数据
+     *
+     * @param $uri
+     * @return array
+     */
+    private function getRequestUriUrlArr($uri): array
+    {
+        $urlArr = [];
+        if (!empty($uri) && $uri != '/') {
+            //pathInfo 模式
+            $uri = explode('/', trim($this->prepare($uri), '/'));
+            //模块
+            if (($m = array_shift($uri)) != false) {
+                $urlArr[Common::C("URL:M_NAME")] = $m;
+            }
+            //控制器
+            if (($a = array_shift($uri)) != false) {
+                $urlArr[Common::C("URL:A_NAME")] = $a;
+            }
+            //方法
+            if (($f = array_shift($uri)) != false) {
+                $urlArr[Common::C("URL:F_NAME")] = $f;
+            }
+            //参数
+            if (!empty($uri)) {
+                $urlArr[Common::C("URL:P_NAME")] = implode('/', $uri);
             }
         } else {
-            $uri = $this->request->getRequestUri();
-            if (!empty($uri) && $uri != '/') {
-                //pathinfo 模式
-                $uri = $this->prepare($uri);
-                $uri = explode('/', trim($uri, '/'));
-                //模块
-                if (($m = array_shift($uri)) != false) {
-                    $urlArr[Common::C("URL:M_NAME")] = $m;
-                }
-                //控制器
-                if (($a = array_shift($uri)) != false) {
-                    $urlArr[Common::C("URL:A_NAME")] = $a;
-                }
-                //方法
-                if (($f = array_shift($uri)) != false) {
-                    $urlArr[Common::C("URL:F_NAME")] = $f;
-                }
-                //参数
-                if (!empty($uri)) {
-                    $urlArr[Common::C("URL:P_NAME")] = implode('/', $uri);
-                }
-            } else {
-                $urlArr[Common::C("URL:M_NAME")] = Common::C('DEFAULT_MODULE');
-                $urlArr[Common::C("URL:A_NAME")] = Common::C('DEFAULT_ACTION');
-                $urlArr[Common::C("URL:F_NAME")] = Common::C('DEFAULT_FUNC');
-            }
+            $urlArr[Common::C("URL:M_NAME")] = Common::C('DEFAULT_MODULE');
+            $urlArr[Common::C("URL:A_NAME")] = Common::C('DEFAULT_ACTION');
+            $urlArr[Common::C("URL:F_NAME")] = Common::C('DEFAULT_FUNC');
         }
+
         return $urlArr;
     }
 
@@ -228,7 +269,12 @@ class Router
         //清除空元素
         Common::parseEmpty($_GET);
 
-        $uri = explode('/', trim($uri, '/'));
+        $uri = trim($uri,'/');
+        if(empty($uri)){
+            $uri = [];
+        }else{
+            $uri = explode('/', trim($uri, '/'));
+        }
 
         $this->urlParameters = $this->getUriParameter($uri);
 
@@ -322,10 +368,6 @@ class Router
                 $parameterInfo[$parameter->name] = $this->request->createFromNewGlobal($this->urlParameters);
             } else {
                 $parameterInfo[$parameter->name] = $this->app->make($class->name);
-                /*$parameterInfo[$parameter->name] = function () use ($class) {
-                    $obj = $this->app->make($class->name);
-                    return $obj;
-                };*/
             }
         }
     }
@@ -342,7 +384,7 @@ class Router
             return $val;
         }
 
-        switch ($type->__toString()) {
+        switch ($type->getName()) {
             case "int":
                 return intval($val);
             default:
@@ -411,7 +453,7 @@ class Router
 
     /**
      * 获取带有参数的路由
-     * 对于pathinfo模式的路由，遵循以下规则
+     * 对于pathInfo模式的路由，遵循以下规则
      *      1. /p/:id => /Web/Index/index  //表示访问的是 Web模块下的Index控制器中的index方法，参数在访问请求中指定
      *              例如： http://domain/p/12  则参数值为12
      *
@@ -437,7 +479,7 @@ class Router
 
         $url = array();
         for ($i = 0; $i < count($r); $i++) {
-            $url[':' . $matches[1][$i]] = $r[$i];
+            $url = array_merge($url,[$matches[1][$i],$r[$i]]);
         }
         foreach ($url as $key => $val) {
             $route = str_replace($key, $val, $route, $count);
@@ -446,7 +488,7 @@ class Router
             }
         }
         if (count($url) > 0) {
-            $route = rtrim($route, '/') . '/' . implode('/', array_values($url));
+            $route = rtrim($route, '/') . '/' . implode('/', $url);
         }
         return $route;
     }
