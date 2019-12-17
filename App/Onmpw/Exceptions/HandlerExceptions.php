@@ -2,14 +2,23 @@
 
 namespace Exceptions;
 
+use ReflectionException;
+use Inter\ExceptionHandler as ExceptionHandlerContract;
 use App;
 use Exception;
 use ErrorException;
 
 class HandlerExceptions
 {
-    public function _Init()
+    /**
+     * @var App
+     */
+    protected $app;
+
+    public function _Init(App $app)
     {
+        $this->app = $app;
+
         error_reporting(-1);
 
         set_error_handler([$this,'handleError']);
@@ -30,6 +39,7 @@ class HandlerExceptions
      * @param string $file
      * @param int $line
      * @param array $context
+     *
      * @throws ErrorException
      */
     public function handleError($level, $message, $file = '', $line = 0, $context = [])
@@ -37,27 +47,45 @@ class HandlerExceptions
         if(error_reporting() & $level){
             throw new ErrorException($message,0,$level,$file,$line);
         }
-        echo $file,"<br/>";
-        var_dump($message);exit;
+
     }
 
     /**
      * 异常处理函数
      *
      * @param $e
+     *
+     * @throws ReflectionException
      */
     public function handleException(Exception $e)
     {
-        echo ("ErrorCode: ".$e->getCode()),"<br/><br/>";
-        echo ("Message: ".$e->getMessage()),"<br/><br/>";
-        echo $e->getTraceAsString();
+        try{
+            $this->getExceptionHandler()->report($e);
+        }catch (Exception $e){
+
+        }
+
+        $this->getExceptionHandler()->render($e);
     }
 
     public function handleShutdown()
     {
-        $error = error_get_last();
-        if(!is_null($error)){
-            var_dump($error);
-        }
+        /*$run = new Run();
+        $run->prependHandler(new PrettyPageHandler);
+        $run->register();
+
+        $run->handleShutdown();*/
+    }
+
+    /**
+     * 获取异常处理器
+     *
+     * @return ExceptionHandlerContract
+     *
+     * @throws ReflectionException
+     */
+    protected function getExceptionHandler()
+    {
+        return $this->app->make(ExceptionHandlerContract::class);
     }
 }

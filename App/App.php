@@ -23,7 +23,9 @@ class App
      *
      * @param $abstract
      * @param array $parameters
-     * @return object
+     *
+     * @return mixed
+     *
      * @throws ReflectionException
      */
     public function make($abstract, array $parameters = [])
@@ -115,7 +117,7 @@ class App
      */
     private function isSingled($abstract)
     {
-        return isset($this->bindings[$abstract]) ? $this->bindings[$abstract]['shared']:false;
+        return isset($this->bindings[$abstract]) ? $this->bindings[$abstract]['single']:false;
     }
 
     /**

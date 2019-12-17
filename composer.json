@@ -1,6 +1,7 @@
 {
     "require": {
         "monolog/monolog": "^1.25",
-        "symfony/http-kernel": "^4.4"
+        "symfony/http-kernel": "^4.4",
+        "filp/whoops": "^2.5"
     }
 }

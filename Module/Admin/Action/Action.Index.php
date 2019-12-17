@@ -32,7 +32,7 @@ class IndexAction extends CommonAction
         $this->send("test");
     }
 
-    public function login(App $app, Request $request, $p, $ac = 'nihao')
+    public function login(App $app, Request $request)
     {
         $this->display();
     }

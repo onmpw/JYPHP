@@ -80,6 +80,8 @@ Common::Import("#/Onmpw/Onmpw");
 // 导入应用程序管理文件
 Common::Import("#/App");
 use Onmpw as Kernel;
+use Exceptions\ExceptionHandler;
+use Inter\ExceptionHandler as ExceptionHandlerContract;
 class Core extends Kernel{
     public static function Boot()
     {
@@ -88,12 +90,14 @@ class Core extends Kernel{
 
         $app = new App();
 
+        $app->singleton(ExceptionHandlerContract::class,ExceptionHandler::class);
+
         // 加载需要初始化的功能
 
         try {
             foreach (self::$_inits as $class) {
                 $obj = $app->make($class);
-                call_user_func([$obj, '_Init']);
+                call_user_func([$obj, '_Init'],$app);
             }
             parent::start($app);
         } catch (ReflectionException $e) {

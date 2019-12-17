@@ -35,7 +35,6 @@ class Router
     /**
      * 开始路由。
      *
-     * @throws ReflectionException
      * @throws RouterException
      */
     public function router()
@@ -62,7 +61,6 @@ class Router
      * @param $action
      * @param $urlArr
      *
-     * @throws ReflectionException
      * @throws RouterException
      */
     private function startAction($action,$urlArr)
@@ -98,7 +96,7 @@ class Router
                 }
             }
 
-            if($if) {
+            if(!$if) {
                 throw new RouterException("Can not find Method in $action Action!");
             }
         } else {
