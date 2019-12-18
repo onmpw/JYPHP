@@ -14,7 +14,7 @@ use Exceptions\ConnectException;
 
 class IndexAction extends CommonAction
 {
-    public function index(App $app, Request $request,$id)
+    public function index(App $app, Request $request)
     {
 //        echo $p, "<br />", $ac, "<br />";
 //        echo $id,"<br />";
@@ -22,14 +22,14 @@ class IndexAction extends CommonAction
         var_dump($request->get('test2'));
         var_dump($request->get('id'));
         var_dump($request->get('key'));
-        var_dump($id);
         $sql = "select * from users";
         $mod = new NewsModel();
         $res = $mod->select_sql($sql);
         $logger = new Logger('my_logger');
         var_dump($logger);
 //        throw new ConnectException("lianjiecuowu");
-        $this->send("test");
+        echo "test123";
+//        $this->send("test");
     }
 
     public function login(App $app, Request $request)

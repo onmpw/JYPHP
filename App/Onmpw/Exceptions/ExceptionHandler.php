@@ -12,7 +12,7 @@ class ExceptionHandler implements ExceptionHandlerContract
 {
     public function report(Exception $e)
     {
-//        file_put_contents("/tmp/err.txt",$e->getMessage());
+        file_put_contents("/tmp/err.txt",$e->getMessage());
     }
 
     public function render(Exception $e)

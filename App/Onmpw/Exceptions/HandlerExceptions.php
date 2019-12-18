@@ -7,6 +7,7 @@ use Inter\ExceptionHandler as ExceptionHandlerContract;
 use App;
 use Exception;
 use ErrorException;
+use Throwable;
 
 class HandlerExceptions
 {
@@ -52,13 +53,18 @@ class HandlerExceptions
 
     /**
      * 异常处理函数
+     * 对未使用`try{}catch(){}` 捕获的异常进行处理
      *
      * @param $e
      *
      * @throws ReflectionException
      */
-    public function handleException(Exception $e)
+    public function handleException($e)
     {
+        if(! $e instanceof Exception) {
+            $e = new FatalThrowableError($e);
+        }
+
         try{
             $this->getExceptionHandler()->report($e);
         }catch (Exception $e){
@@ -68,13 +74,18 @@ class HandlerExceptions
         $this->getExceptionHandler()->render($e);
     }
 
+    /**
+     * 程序终止处理
+     *
+     * @throws ReflectionException
+     */
     public function handleShutdown()
     {
-        /*$run = new Run();
-        $run->prependHandler(new PrettyPageHandler);
-        $run->register();
-
-        $run->handleShutdown();*/
+        $error = error_get_last();
+        if(!is_null($error)) {
+            // 发生了错误导致程序异常终止
+            $this->handleException(new FatalErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+        }
     }
 
     /**
