@@ -7,10 +7,11 @@ use Common\Action\CommonAction;
 use Lib\Request;
 use News\Model\NewsModel;
 use Onlinebid\Model\BidsModel;
-use Monolog\Logger;
+use Monolog\Logger as BaseLogger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 use Exceptions\ConnectException;
+use Log\Logger;
 
 class IndexAction extends CommonAction
 {
@@ -22,11 +23,9 @@ class IndexAction extends CommonAction
         var_dump($request->get('test2'));
         var_dump($request->get('id'));
         var_dump($request->get('key'));
-        $sql = "select * from users";
+        /*$sql = "select * from users";
         $mod = new NewsModel();
-        $res = $mod->select_sql($sql);
-        $logger = new Logger('my_logger');
-        var_dump($logger);
+        $res = $mod->select_sql($sql);*/
 //        throw new ConnectException("lianjiecuowu");
         echo "test123";
 //        $this->send("test");

@@ -1,7 +1,6 @@
 <?php
 /**
  * 定义应用根目录常量
- * @var APP_PATH
  */
 defined('DOC_ROOT') or define('DOC_ROOT',$_SERVER['DOCUMENT_ROOT'].'/');
 
@@ -41,7 +40,12 @@ defined('LIB_PATH') or define('LIB_PATH',APP_PATH.'Onmpw/Lib/');
   * 定义 data目录
   */
  defined('DATA_PATH') or define('DATA_PATH',DOC_ROOT.'Data/');
- 
+
+/**
+ * 定义 log 目录
+ */
+defined('LOG_PATH') or define('LOG_PATH',DATA_PATH.'log/');
+
  /**
   * 定义模块目录
   */
@@ -49,7 +53,6 @@ defined('LIB_PATH') or define('LIB_PATH',APP_PATH.'Onmpw/Lib/');
  
  /**
   * 定义当前时间
-  * @var unknown
   */
  define('NOW_TIME',      $_SERVER['REQUEST_TIME']);
  
@@ -82,6 +85,7 @@ Common::Import("#/App");
 use Onmpw as Kernel;
 use Exceptions\ExceptionHandler;
 use Inter\ExceptionHandler as ExceptionHandlerContract;
+use Log\Logger;
 class Core extends Kernel{
     public static function Boot()
     {
@@ -91,13 +95,14 @@ class Core extends Kernel{
         $app = new App();
 
         $app->singleton(ExceptionHandlerContract::class,ExceptionHandler::class);
+        $app->singleton(Logger::class);
 
         // 加载需要初始化的功能
 
         try {
             foreach (self::$_inits as $class) {
                 $obj = $app->make($class);
-                call_user_func([$obj, '_Init'],$app);
+                call_user_func([$obj, '__Init'],$app);
             }
             parent::start($app);
         } catch (ReflectionException $e) {

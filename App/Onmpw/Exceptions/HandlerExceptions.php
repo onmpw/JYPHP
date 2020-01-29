@@ -7,7 +7,6 @@ use Inter\ExceptionHandler as ExceptionHandlerContract;
 use App;
 use Exception;
 use ErrorException;
-use Throwable;
 
 class HandlerExceptions
 {
@@ -16,7 +15,7 @@ class HandlerExceptions
      */
     protected $app;
 
-    public function _Init(App $app)
+    public function __Init(App $app)
     {
         $this->app = $app;
 

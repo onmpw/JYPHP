@@ -260,7 +260,7 @@ class PHPExcel_Calculation_Statistical {
 	private static $_logGammaCache_x		= 0.0;
 
 	private static function _logGamma($x) {
-		// Log Gamma related constants
+		// Logger Gamma related constants
 		static $lg_d1 = -0.5772156649015328605195174;
 		static $lg_d2 = 0.4227843350984671393993777;
 		static $lg_d4 = 1.791759469228055000094023;

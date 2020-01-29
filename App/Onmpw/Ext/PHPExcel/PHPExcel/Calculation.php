@@ -3111,7 +3111,7 @@ class PHPExcel_Calculation {
 				$operand1 = self::_dataTestReference($operand1Data);
 				$operand2 = self::_dataTestReference($operand2Data);
 
-				//	Log what we're doing
+				//	Logger what we're doing
 				if ($token == ':') {
 					$this->_debugLog->writeDebugLog('Evaluating Range ', $this->_showValue($operand1Data['reference']), ' ', $token, ' ', $this->_showValue($operand2Data['reference']));
 				} else {
@@ -3547,7 +3547,7 @@ class PHPExcel_Calculation {
 					$result[$x] = $r['value'];
 				}
 			}
-			//	Log the result details
+			//	Logger the result details
 			$this->_debugLog->writeDebugLog('Comparison Evaluation Result is ', $this->_showTypeDetails($result));
 			//	And push the result onto the stack
 			$stack->push('Array',$result);
@@ -3616,7 +3616,7 @@ class PHPExcel_Calculation {
 				break;
 		}
 
-		//	Log the result details
+		//	Logger the result details
 		$this->_debugLog->writeDebugLog('Evaluation Result is ', $this->_showTypeDetails($result));
 		//	And push the result onto the stack
 		$stack->push('Value',$result);
@@ -3700,7 +3700,7 @@ class PHPExcel_Calculation {
 			}
 		}
 
-		//	Log the result details
+		//	Logger the result details
 		$this->_debugLog->writeDebugLog('Evaluation Result is ', $this->_showTypeDetails($result));
 		//	And push the result onto the stack
 		$stack->push('Value',$result);

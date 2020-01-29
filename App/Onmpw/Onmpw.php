@@ -5,6 +5,7 @@
 use Exceptions\HandlerExceptions;
 use Lib\Router;
 use Lib\Request;
+use Log\Logger;
 
 /**
  * 核心类文件 用来启动整个应用程序
@@ -25,7 +26,8 @@ class Onmpw
      * @var array
      */
     protected static $_inits = [
-        HandlerExceptions::class
+        HandlerExceptions::class,
+        Logger::class
     ];
 
     protected static function Boot()
@@ -56,7 +58,7 @@ class Onmpw
             $name = strstr($class, '\\', true);
 
             // 如果自动加载的类 是Lib、Ext、Inter Exceptions 中的类文件或者接口文件那么向下执行
-            if (in_array($name, array('Lib', 'Ext', 'Inter', 'Exceptions'))) {
+            if (in_array($name, array('Lib', 'Ext', 'Inter', 'Exceptions','Log'))) {
                 $class_name = str_replace('\\', '/', $class);
                 $path = APP_PATH . 'Onmpw/';
                 $struct = explode('/', $class_name);
