@@ -9,6 +9,7 @@ use Log\Logger;
 use Whoops\Run;
 use Whoops\Handler\PrettyPageHandler;
 use App;
+use Log;
 
 class ExceptionHandler implements ExceptionHandlerContract
 {
@@ -21,12 +22,10 @@ class ExceptionHandler implements ExceptionHandlerContract
 
     /**
      * @param Exception $e
-     * @throws \ReflectionException
      */
     public function report(Exception $e)
     {
-        $logger = $this->app->make(Logger::class);
-        $logger->log()->error($e->getMessage().$e->getTraceAsString());
+        Log::log()->error($e->getMessage().$e->getTraceAsString());
     }
 
     public function render(Exception $e)

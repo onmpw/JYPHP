@@ -11,7 +11,8 @@ use Monolog\Logger as BaseLogger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 use Exceptions\ConnectException;
-use Log\Logger;
+use Utility;
+use Log;
 
 class IndexAction extends CommonAction
 {
@@ -28,6 +29,7 @@ class IndexAction extends CommonAction
         $res = $mod->select_sql($sql);*/
 //        throw new ConnectException("lianjiecuowu");
         echo "test123";
+        var_dump(Log::log()->info(123456));
 //        $this->send("test");
     }
 

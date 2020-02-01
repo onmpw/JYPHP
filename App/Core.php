@@ -82,10 +82,13 @@ Common::Import("#/Onmpw/Onmpw");
 
 // 导入应用程序管理文件
 Common::Import("#/App");
+
 use Onmpw as Kernel;
 use Exceptions\ExceptionHandler;
 use Inter\ExceptionHandler as ExceptionHandlerContract;
 use Log\Logger;
+use Facades\Facade;
+
 class Core extends Kernel{
     public static function Boot()
     {
@@ -96,6 +99,8 @@ class Core extends Kernel{
 
         $app->singleton(ExceptionHandlerContract::class,ExceptionHandler::class);
         $app->singleton(Logger::class);
+
+        Facade::bootstrapFacade($app); // 开启Facade模式
 
         // 加载需要初始化的功能
 

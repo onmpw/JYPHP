@@ -52,32 +52,40 @@ class Onmpw
      */
     protected static function autoload($class)
     {
-        $after_ext = '.php';
+        self::requireFile($class);
+        return true;
+    }
+
+    protected static function requireFile($class) : void
+    {
         if (!isset(self::$_map[$class]) || empty(self::$_map[$class])) {
             //返回 \ 第一次出现的位置之前的字符串
             $name = strstr($class, '\\', true);
 
-            // 如果自动加载的类 是Lib、Ext、Inter Exceptions 中的类文件或者接口文件那么向下执行
-            if (in_array($name, array('Lib', 'Ext', 'Inter', 'Exceptions','Log'))) {
-                $class_name = str_replace('\\', '/', $class);
-                $path = APP_PATH . 'Onmpw/';
-                $struct = explode('/', $class_name);
-                $file_name = substr($class_name, 0, -strlen($struct[count($struct) - 1])) . $struct[count($struct) - 1] . $after_ext;
+            // 如果自动加载的类 是Lib、Ext、Inter Exceptions Log Facades 中的类文件或者接口文件那么向下执行
+            if ($name && in_array($name,['Lib','Ext','Inter','Exceptions','Log','Facades'])) {
+                list($path,$file_name) = self::makeLibFileName($class);
             } else {
-                $pre_ext = 'Action.';
-                $class_name = str_replace('\\', '/', $class);
+                // 是否有alias
+                $aliases = require APP_PATH."Onmpw/Facades/Aliases.php";
+                if(in_array($class,array_keys($aliases))){
+                    list($path,$file_name) = self::makeLibFileName(class_alias($aliases[$class],$class));
+                }else{
+                    $pre_ext = 'Action.';
+                    $class_name = str_replace('\\', '/', $class);
 
-                // 如果不是类库或者第三方类库里的文件的话，那么检测是否是控制器文件
-                $name = ltrim(strrchr($class_name, '/'), '/'); //查找/在字符串中最后一次出现的位置之后的字符串
+                    // 如果不是类库或者第三方类库里的文件的话，那么检测是否是控制器文件
+                    $name = ltrim(strrchr($class_name, '/'), '/'); //查找/在字符串中最后一次出现的位置之后的字符串
 
-                if (preg_match('/^[A-Z]?\w*Model$/', $name)) {
-                    $pre_ext = 'Model.';
+                    if (preg_match('/^[A-Z]?\w*Model$/', $name)) {
+                        $pre_ext = 'Model.';
+                    }
+                    $name = $pre_ext . str_replace(rtrim($pre_ext, '.'), '', $name);//去掉Action并且加上前缀Action.
+
+                    $path = MODULE_PATH;  //设置路径
+                    //整理文件名称
+                    $file_name = str_replace(strrchr($class_name, '/'), '/' . $name . self::$EXT, $class_name);
                 }
-                $name = $pre_ext . str_replace(rtrim($pre_ext, '.'), '', $name);//去掉Action并且加上前缀Action.
-
-                $path = MODULE_PATH;  //设置路径
-                //整理文件名称
-                $file_name = str_replace(strrchr($class_name, '/'), '/' . $name . $after_ext, $class_name);
             }
 
             if (file_exists($path . $file_name)) {
@@ -86,9 +94,17 @@ class Onmpw
                 require self::$_map[$class];
             }
         }
+        return ;
+    }
 
-        return true;
+    protected static function makeLibFileName($class)
+    {
+        $path = APP_PATH . 'Onmpw/';
+        $class_name = str_replace('\\', '/', $class);
+        $struct = explode('/', $class_name);
+        $file_name = substr($class_name, 0, -strlen($struct[count($struct) - 1])) . $struct[count($struct) - 1] . self::$EXT;
 
+        return [$path,$file_name];
     }
 
     /**
