@@ -10,7 +10,7 @@ function handle(req,response){
 
 }
 var onlineUsers = {};
-//µ±Ç°ÔÚÏßÈËÊı
+//å½“å‰åœ¨çº¿äººæ•°
 var onlineCount = 0;
 var mscon = '';
 var dbinfo = {host:"192.168.5.102",user:'admin',password:'q1w2e3r4',database:'moma_mobileapp'};
@@ -60,17 +60,17 @@ io.on('connection',function(socket){
 
         var dir = "/www/mobileapp";
         var fname = obj.filename;
-        fname = fname.split(".");  //½«ÎÄ¼şÃûºÍÎÄ¼ş¸ñÊ½½âÎö³öÀ´
+        fname = fname.split(".");  //å°†æ–‡ä»¶åå’Œæ–‡ä»¶æ ¼å¼è§£æå‡ºæ¥
         /**
-         * ÎªÎÄ¼şÃû¼ÓÃÜ ²úÉúËæ»úµÄ¼ÓÃÜµÄÎÄ¼şÃû ÒÔ±£Ö¤ÉÏ´«µÄÎÄ¼şÃû²»ÏàÍ¬
+         * ä¸ºæ–‡ä»¶ååŠ å¯† äº§ç”Ÿéšæœºçš„åŠ å¯†çš„æ–‡ä»¶å ä»¥ä¿è¯ä¸Šä¼ çš„æ–‡ä»¶åä¸ç›¸åŒ
          */
-        var sha1 = crypto.createHash('sha1');  //ÒÔ¸üĞÂµÄsha1Ëã·¨´´½¨hash
-        var str = crypto.randomBytes(20).toString('hex');  //²úÉúËæ»ú×Ö·û´®
+        var sha1 = crypto.createHash('sha1');  //ä»¥æ›´æ–°çš„sha1ç®—æ³•åˆ›å»ºhash
+        var str = crypto.randomBytes(20).toString('hex');  //äº§ç”Ÿéšæœºå­—ç¬¦ä¸²
         var updir = "/Data/Upload/Images";
         sha1.update(fname[0]);
         sha1.update(str);
-        fname[0]=sha1.digest('hex');  //½«¾­¹ı´¦ÀíµÄÎÄ¼şÃûÖØĞÂ¸³Öµµ½fname[0]
-        fname = fname[0]+"."+fname[1];  //ÖØĞÂºÏ³ÉÎÄ¼şÃû
+        fname[0]=sha1.digest('hex');  //å°†ç»è¿‡å¤„ç†çš„æ–‡ä»¶åé‡æ–°èµ‹å€¼åˆ°fname[0]
+        fname = fname[0]+"."+fname[1];  //é‡æ–°åˆæˆæ–‡ä»¶å
         var file = dir+updir+"/"+fname;
         files.open(file,'w',function(err,fd){
             if(!err){
@@ -78,14 +78,14 @@ io.on('connection',function(socket){
                     flags: 'w',
                     encoding: null,
                     fd: fd,
-                    mode: 0666
+                    mode: 0o666
                 };
                 //var bf = new Buffer(obj.message);
                // var con = bf.slice(0, 300).toString();
                // console.log(obj.message);
                 var ws = files.createWriteStream(file,option);
                 ws.write(obj.message);
-                //½«ĞÅÏ¢Ğ´ÈëÊı¾İ¿â
+                //å°†ä¿¡æ¯å†™å…¥æ•°æ®åº“
                 if(mscon == ''){
                     mscon = ms.createConnection(dbinfo);
                     mscon.connect();
@@ -111,7 +111,7 @@ io.on('connection',function(socket){
                         io.emit('upfile',{username:obj.username,topicid:obj.topicid,userid:obj.userid,headimage:obj.headimage,message:updir+"/"+fname});
                         io.emit('topicmes',{username:obj.username,topicid:obj.topicid,userid:obj.userid,message:'',headimage:obj.headimage,time:t});
                         io.emit('contractmes',{username:obj.username,topicid:obj.topicid,userid:obj.userid,message:'',headimage:obj.headimage,time:t,contractid:obj.contractid});
-                        //½«µ±Ç°Ëµ»°µÄÓÃ»§µÄidºÍ»°ÌâidµÄÊ±¼ä¸üĞÂµ½usertopictime±íÖĞ
+                        //å°†å½“å‰è¯´è¯çš„ç”¨æˆ·çš„idå’Œè¯é¢˜idçš„æ—¶é—´æ›´æ–°åˆ°usertopictimeè¡¨ä¸­
                         mscon.query("UPDATE usertopictime SET lasttime=? WHERE userid=? and topicid=?",
                             [time,obj.userid,obj.topicid]
                         );
@@ -147,7 +147,7 @@ io.on('connection',function(socket){
                 io.emit('upfile',{username:obj.username,topicid:obj.topicid,userid:obj.userid,headimage:obj.headimage,message:obj.message});
                 io.emit('topicmes',{username:obj.username,topicid:obj.topicid,userid:obj.userid,message:'',headimage:obj.headimage,time:t});
                 io.emit('contractmes',{username:obj.username,topicid:obj.topicid,userid:obj.userid,message:'',headimage:obj.headimage,time:t,contractid:obj.contractid});
-                //½«µ±Ç°Ëµ»°µÄÓÃ»§µÄidºÍ»°ÌâidµÄÊ±¼ä¸üĞÂµ½usertopictime±íÖĞ
+                //å°†å½“å‰è¯´è¯çš„ç”¨æˆ·çš„idå’Œè¯é¢˜idçš„æ—¶é—´æ›´æ–°åˆ°usertopictimeè¡¨ä¸­
                 mscon.query("UPDATE usertopictime SET lasttime=? WHERE userid=? and topicid=?",
                     [time,obj.userid,obj.topicid]
                 );
