@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Nginx/Dockerfile
+    ports:
+      - "80:80"
+
+    depends_on:
+      - fpm
+
+
+  fpm:
+    build:
+      context: .
+      dockerfile: ./Fpm/Dockerfile
+    volumes:
+      - ./vendor:/usr/share/html/JYPHP/vendor
+
+

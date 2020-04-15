@@ -30,6 +30,7 @@ class IndexAction extends CommonAction
 //        throw new ConnectException("lianjiecuowu");
         echo "test123";
         var_dump(Log::log()->info(123456));
+        var_dump(getenv('DATA'));
 //        $this->send("test");
     }
 
