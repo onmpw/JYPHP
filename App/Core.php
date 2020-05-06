@@ -102,6 +102,8 @@ class Core extends Kernel{
 
         Facade::bootstrapFacade($app); // 开启Facade模式
 
+        $dotEnv = Dotenv\Dotenv::createImmutable(DOC_ROOT);
+        $dotEnv->load();
         // 加载需要初始化的功能
 
         try {
