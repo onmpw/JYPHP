@@ -23,13 +23,13 @@ return array(
      * 数据库配置部分
      */
     'DB_TYPE' => 'mysql',
-    'DB_HOST' => 'localhost',
-    'DB_USER'  => 'root',
-    'DB_PASSWORD'  => 'djz082818',
-    'DB_DBNAME'    => 'jiyi',
+    'DB_HOST' => getenv('DB_HOST'),
+    'DB_USER'  => getenv('DB_USER'),
+    'DB_PASSWORD'  => getenv('DB_PASSWORD'),
+    'DB_DBNAME'    => getenv('DB_DBNAME'),
     'DB_PREFIX'    => '',
-    'DB_CHARSET'   => 'utf8',
-    'DB_PORT'   => '3306',
+    'DB_CHARSET'   => getenv('DB_CHARSET'),
+    'DB_PORT'   => getenv('DB_PORT'),
     'USE_PDO'   => 'yes',
     'SLAVE_NO'=>'2',    //指定从服务器来进行读操作
     'MASTER_NUM'=>1,    //主服务器的数量
