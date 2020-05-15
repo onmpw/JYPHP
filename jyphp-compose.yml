@@ -5,18 +5,45 @@ services:
     build:
       context: .
       dockerfile: ./Nginx/Dockerfile
+
+    container_name: web
     ports:
       - "80:80"
 
     depends_on:
       - fpm
+      - db
 
 
   fpm:
     build:
       context: .
       dockerfile: ./Fpm/Dockerfile
+
+    container_name: fpm
     volumes:
+      - ./:/usr/share/html/JYPHP/
+      - ./App:/usr/share/html/JYPHP/App
+      - ./Module:/usr/share/html/JYPHP/Module
+      - ./Service:/usr/share/html/JYPHP/Service
       - ./vendor:/usr/share/html/JYPHP/vendor
+
+  db:
+    build:
+      context: .
+      dockerfile: ./Mysql/Dockerfile
+
+    container_name: db
+
+    volumes:
+      - $HOME/workspace/data:/var/lib/mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: $DBPASSWORD
+      MYSQL_DATABASE: $DBNAME
+
+    ports:
+      - "3306:3306"
+
 
 

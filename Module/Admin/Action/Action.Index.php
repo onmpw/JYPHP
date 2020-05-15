@@ -24,7 +24,7 @@ class IndexAction extends CommonAction
 //        var_dump($request->get('test2'));
 //        var_dump($request->get('id'));
 //        var_dump($request->get('key'));
-        $sql = "select * from users";
+        $sql = "select * from user";
         $mod = new NewsModel();
         $res = $mod->select_sql($sql);
         var_dump($res);
