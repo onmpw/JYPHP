@@ -33,8 +33,8 @@ if ! [[ " ${operateArr[@]} " =~ " ${operate} " ]]; then
   exit
 fi
 
-read -p "数据库名称 (jiyi)" dbname
-read -p "root用户密码(123456)" dbpassword
+read -p "数据库名称 (jiyi): " dbname
+read -p "root用户密码(123456): " dbpassword
 
 if [ -z "$dbname" ]; then
 dbname=jiyi
