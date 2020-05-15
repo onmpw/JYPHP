@@ -10,5 +10,6 @@ RUN apt-get update --fix-missing && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql
 
-CMD ["php-fpm","-R"]
+
+CMD ["sh","install_project.sh"]
 

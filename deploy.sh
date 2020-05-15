@@ -48,4 +48,5 @@ export DBNAME=$dbname
 export DBPASSWORD=$dbpassword
 
 echo "下面开始部署"
+(chmod +x "install_project.sh")
 (docker-compose -f jyphp-compose.yml "${operate}")
