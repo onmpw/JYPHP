@@ -1,4 +1,4 @@
 #!/bin/bash
 
-(composer install)
+(cp ./composer.phar /usr/bin/composer ; composer install)
 (php-fpm -R)
