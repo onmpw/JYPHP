@@ -4,7 +4,7 @@ WORKDIR /usr/share/html/JYPHP
 
 RUN sed -i "s@http://deb.debian.org@http://mirrors.163.com@g" /etc/apt/sources.list \
     && rm -Rf /var/lib/apt/lists/* \
-    && sed "d@security.debian.org@d" /etc/apt/sources.list \
+    && sed -i "d@security.debian.org@d" /etc/apt/sources.list \
     && apt-get clean
 RUN apt-get update --fix-missing && apt-get install -y \
         libfreetype6-dev \
