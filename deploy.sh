@@ -24,6 +24,17 @@ if [ -n "$1" ]; then
 operate=$1
 fi
 
+echo "Checking If The Data Dir Exist..."
+if [ ! -d "$(pwd)/Data" ]; then
+  mkdir "$(pwd)/Data"
+  chmod o+x -R "$(pwd)/Data"
+fi
+
+echo "Checking If The File .env Exist..."
+if [ ! -f "$(pwd)/.env" ]; then
+  cp .env.example .env
+fi
+
 operateArr=("up" "start" "stop" "rm")
 
 # shellcheck disable=SC2199
