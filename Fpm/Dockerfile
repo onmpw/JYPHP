@@ -11,7 +11,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
         libjpeg62-turbo-dev \
         libpng-dev \
         git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype-dir --with-jpeg-dir \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql
 
