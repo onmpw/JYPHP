@@ -604,6 +604,7 @@ class Mysql extends BaseDB implements IMysql
                 try {
                     $this->_links[$identify] = new \PDO($config['dsn'], $config['user'], $config['password'], $this->options);
                 } catch (\PDOException $e) {
+                    var_dump($e->getMessage());
                     if ($reconnect)
                         return "reconnect";
                     else

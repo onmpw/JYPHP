@@ -20,13 +20,14 @@ class IndexAction extends CommonAction
     {
 //        echo $p, "<br />", $ac, "<br />";
 //        echo $id,"<br />";
-        var_dump($request->get('w'));
-        var_dump($request->get('test2'));
-        var_dump($request->get('id'));
-        var_dump($request->get('key'));
-        /*$sql = "select * from users";
+//        var_dump($request->get('w'));
+//        var_dump($request->get('test2'));
+//        var_dump($request->get('id'));
+//        var_dump($request->get('key'));
+        $sql = "select * from user";
         $mod = new NewsModel();
-        $res = $mod->select_sql($sql);*/
+        $res = $mod->select_sql($sql);
+        var_dump($res);
 //        throw new ConnectException("lianjiecuowu");
         echo "test123";
         var_dump(Log::log()->info(123456));
