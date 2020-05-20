@@ -27,7 +27,7 @@ fi
 echo "Checking If The Data Dir Exist..."
 if [ ! -d "$(pwd)/Data" ]; then
   mkdir "$(pwd)/Data"
-  chmod o+x -R "$(pwd)/Data"
+  chmod o+w -R "$(pwd)/Data"
 fi
 
 echo "Checking If The File .env Exist..."
