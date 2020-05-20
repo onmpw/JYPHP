@@ -24,17 +24,6 @@ if [ -n "$1" ]; then
 operate=$1
 fi
 
-echo "Checking If The Data Dir Exist..."
-if [ ! -d "$(pwd)/Data" ]; then
-  mkdir "$(pwd)/Data"
-  chmod o+w -R "$(pwd)/Data"
-fi
-
-echo "Checking If The File .env Exist..."
-if [ ! -f "$(pwd)/.env" ]; then
-  cp .env.example .env
-fi
-
 operateArr=("up" "start" "stop" "rm")
 
 # shellcheck disable=SC2199
@@ -42,6 +31,18 @@ operateArr=("up" "start" "stop" "rm")
 if ! [[ " ${operateArr[@]} " =~ " ${operate} " ]]; then
   echo "参数无效"
   exit
+fi
+
+if [ "$operate" == "up" ]; then
+echo "Checking If The Data Dir Exist..."
+if [ ! -d "$(pwd)/Data" ]; then
+  mkdir "$(pwd)/Data"
+  chmod -R o+w "$(pwd)/Data"
+fi
+
+echo "Checking If The File .env Exist..."
+if [ ! -f "$(pwd)/.env" ]; then
+  cp .env.example .env
 fi
 
 read -p "数据库名称 (jiyi): " dbname
@@ -59,5 +60,6 @@ export DBNAME=$dbname
 export DBPASSWORD=$dbpassword
 
 echo "下面开始部署"
+fi
 (chmod +x "install_project.sh")
 (docker-compose -f jyphp-compose.yml "${operate}")
