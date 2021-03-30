@@ -325,6 +325,7 @@ class Router
             // 第三种 不带正则表达式但是可以指定参数的路由
             // 例如： /p/:id/:name=>/Admin/Index/index  指定了具体的module(Admin)、控制器(Index)和方法(index)
             //       并且参数为 $id=? 和 $name=?  当然也可以通过 $request->get() 方法来获取参数
+            //       如 function index($id,$name){}  或者 function index(Request $request){$id=$request->get('id');}
             if (preg_match_all('/(?:[\w\d]+\/)?:([\w\d]+)/i', $rule, $matches)) {
                 if ($route = $this->fetchParameterRoute($rule, $route, $uri, $matches)) {
                     break;
